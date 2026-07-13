@@ -6,6 +6,20 @@ config/master.key
 node_modules/
 .DS_Store
 
+# src/frontend build artifacts
+src/frontend/.next/
+src/frontend/out/
+src/frontend/node_modules/
+
+# src/backend artifacts
+src/backend/config/master.key
+src/backend/config/credentials/*.key
+src/backend/.github/
+src/backend/storage/*.sqlite3*
+src/backend/log/*.log
+src/backend/tmp/
+src/backend/.bundle/
+
 # README.md / CLAUDE.md / SPEC/ 以外は追跡対象外とする
 /.claude/
 /app-ui/
@@ -18,3 +32,5 @@ node_modules/
 /parametric-disaster-payout-mvp_design_document.md
 /.agents/
 AGENTS.md
+
+

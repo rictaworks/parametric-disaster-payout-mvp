@@ -1,0 +1,40 @@
+name: Backend CI
+
+on:
+  pull_request:
+    paths:
+      - "src/backend/**"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: src/backend
+
+jobs:
+  lint-and-test:
+    name: RuboCop & RSpec
+    runs-on: ubuntu-latest
+
+    env:
+      RAILS_ENV: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3.4"
+          bundler-cache: true
+          working-directory: src/backend
+
+      - name: Set up database
+        run: bundle exec rails db:create db:schema:load
+
+      - name: Lint (RuboCop)
+        run: bundle exec rubocop --parallel
+
+      - name: Test (RSpec)
+        run: bundle exec rspec --format progress
