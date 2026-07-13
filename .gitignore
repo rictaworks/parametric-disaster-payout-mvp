@@ -19,6 +19,7 @@ src/backend/storage/*.sqlite3*
 src/backend/log/*.log
 src/backend/tmp/
 src/backend/.bundle/
+src/backend/vendor/bundle/
 
 # README.md / CLAUDE.md / SPEC/ 以外は追跡対象外とする
 /.claude/
@@ -32,5 +33,4 @@ src/backend/.bundle/
 /parametric-disaster-payout-mvp_design_document.md
 /.agents/
 AGENTS.md
-
 
