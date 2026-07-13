@@ -16,3 +16,5 @@ node_modules/
 /ENV/
 /DELETE/
 /parametric-disaster-payout-mvp_design_document.md
+/.agents/
+AGENTS.md
