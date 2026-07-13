@@ -36,7 +36,18 @@ bin/rails server   # http://localhost:3001
 
 ### 環境変数
 
+フロントエンドとバックエンドのそれぞれで環境変数を設定する必要があります。
+
+#### フロントエンド
 ```bash
+cd src/frontend
+cp .env.example .env
+# .env を編集して各値を設定する
+```
+
+#### バックエンド
+```bash
+cd src/backend
 cp .env.example .env
 # .env を編集して各値を設定する
 ```
