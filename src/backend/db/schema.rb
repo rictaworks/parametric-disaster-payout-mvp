@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_13_174806) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_13_213247) do
+  create_table "legacy_survey_responses", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "policy_id"
+    t.json "response_data", default: {}, null: false
+    t.datetime "legacy_created_at"
+    t.string "migration_error_reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "notifications", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "policy_id"
@@ -27,15 +37,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_13_174806) do
   end
 
   create_table "observations", force: :cascade do |t|
-    t.integer "policy_id", null: false
     t.integer "station_id", null: false
     t.integer "seismic_intensity_level_id"
     t.decimal "rainfall_mm", precision: 6, scale: 2
     t.datetime "observed_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["policy_id"], name: "index_observations_on_policy_id"
+    t.string "event_id"
+    t.boolean "simulated", default: false, null: false
     t.index ["seismic_intensity_level_id"], name: "index_observations_on_seismic_intensity_level_id"
+    t.index ["station_id", "event_id"], name: "idx_obs_station_event", unique: true, where: "event_id IS NOT NULL"
+    t.index ["station_id", "observed_at"], name: "idx_obs_station_observed", unique: true, where: "event_id IS NULL"
     t.index ["station_id"], name: "index_observations_on_station_id"
   end
 
@@ -74,7 +86,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_13_174806) do
     t.integer "policy_id", null: false
     t.integer "payout_tier_id", null: false
     t.integer "payout_status_id", null: false
-    t.integer "observation_id"
+    t.integer "observation_id", null: false
     t.string "idempotency_key", null: false
     t.datetime "decided_at"
     t.datetime "created_at", null: false
@@ -110,9 +122,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_13_174806) do
     t.datetime "expires_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "station_id"
+    t.datetime "waiting_until"
+    t.datetime "terminated_at"
     t.index ["payout_tier_id"], name: "index_policies_on_payout_tier_id"
     t.index ["plan_id"], name: "index_policies_on_plan_id"
     t.index ["policy_status_id"], name: "index_policies_on_policy_status_id"
+    t.index ["station_id"], name: "index_policies_on_station_id"
     t.index ["user_id"], name: "index_policies_on_user_id"
   end
 
@@ -165,11 +181,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_13_174806) do
 
   create_table "survey_responses", force: :cascade do |t|
     t.integer "user_id", null: false
-    t.integer "policy_id"
     t.json "response_data", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["policy_id"], name: "index_survey_responses_on_policy_id"
+    t.integer "payout_id", null: false
+    t.index ["payout_id"], name: "idx_survey_responses_payout", unique: true
+    t.index ["payout_id"], name: "index_survey_responses_on_payout_id"
     t.index ["user_id"], name: "index_survey_responses_on_user_id"
   end
 
@@ -183,7 +200,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_13_174806) do
   add_foreign_key "notifications", "payouts"
   add_foreign_key "notifications", "policies"
   add_foreign_key "notifications", "users"
-  add_foreign_key "observations", "policies"
   add_foreign_key "observations", "seismic_intensity_levels"
   add_foreign_key "observations", "stations"
   add_foreign_key "payouts", "observations"
@@ -193,7 +209,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_13_174806) do
   add_foreign_key "policies", "payout_tiers"
   add_foreign_key "policies", "plans"
   add_foreign_key "policies", "policy_statuses"
+  add_foreign_key "policies", "stations"
   add_foreign_key "policies", "users"
-  add_foreign_key "survey_responses", "policies"
+  add_foreign_key "survey_responses", "payouts"
   add_foreign_key "survey_responses", "users"
 end

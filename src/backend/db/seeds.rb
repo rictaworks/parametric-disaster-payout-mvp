@@ -47,16 +47,16 @@ seed_master_records(
 seed_master_records(
   SeismicIntensityLevel,
   [
-    ["0", "0"],
-    ["1", "1"],
-    ["2", "2"],
-    ["3", "3"],
-    ["4", "4"],
-    ["5_weak", "5弱"],
-    ["5_strong", "5強"],
-    ["6_weak", "6弱"],
-    ["6_strong", "6強"],
-    ["7", "7"]
+    [ "0", "0" ],
+    [ "1", "1" ],
+    [ "2", "2" ],
+    [ "3", "3" ],
+    [ "4", "4" ],
+    [ "5_weak", "5弱" ],
+    [ "5_strong", "5強" ],
+    [ "6_weak", "6弱" ],
+    [ "6_strong", "6強" ],
+    [ "7", "7" ]
   ].each_with_index.map do |(code, label_ja), index|
     {
       code: code,
