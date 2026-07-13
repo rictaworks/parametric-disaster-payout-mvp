@@ -52,6 +52,9 @@ cp .env.example .env
 # .env を編集して各値を設定する
 ```
 
+> [!NOTE]
+> 本番環境（または暗号化された credentials を復号・編集する環境）では、`RAILS_MASTER_KEY` を環境変数として必ず指定してください。
+
 ## 自動ログイン手順
 
 （後続 Issue で記載）
