@@ -1,0 +1,20 @@
+# Development / Test: SQLite3
+# Production: PostgreSQL (DATABASE_URL 環境変数で接続先を指定)
+default_sqlite: &default_sqlite
+  adapter: sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+
+development:
+  <<: *default_sqlite
+  database: storage/development.sqlite3
+
+test:
+  <<: *default_sqlite
+  database: storage/test.sqlite3
+
+production:
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  url: <%= ENV["DATABASE_URL"] %>
