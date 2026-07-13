@@ -1,0 +1,18 @@
+.env
+.env.*
+!.env.example
+CLAUDE.local.md
+config/master.key
+node_modules/
+.DS_Store
+
+# README.md / CLAUDE.md / SPEC/ 以外は追跡対象外とする
+/.claude/
+/app-ui/
+/TASKS/
+/DEBUG/
+/CLIENT/
+/WORK/
+/ENV/
+/DELETE/
+/parametric-disaster-payout-mvp_design_document.md
