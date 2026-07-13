@@ -20,7 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 開発フロー（TDD 厳守）
 
-`plan → red test → coding → green test` の順を厳守する。Rails 側は RSpec、Next.js 側は Jest。フロント確認は curl / `wget --mirror` / Playwright を用いる。環境変数は `.env` を参照する。テスト観点は @.claude/TM.md、品質は @.claude/QC10.md、セキュリティは @.claude/OWASP10.md を参照。
+`plan → red test → coding → green test` の順を厳守する。Rails 側は RSpec、Next.js 側は Jest。フロント確認は curl / `wget --mirror` / Playwright を用いる。環境変数は `.env` を参照する。テスト観点は @DOCS/TM.md、品質は @.claude/QC10.md、セキュリティは @.claude/OWASP10.md を参照。
 
 詳細な開発ルールは `.claude/rules/` 以下（development.md / architecture.md / workflow.md）を参照。CLAUDE.md と併せて自動的に読み込まれる。
 
