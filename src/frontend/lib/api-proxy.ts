@@ -24,6 +24,39 @@ function isSessionRoute(pathSegments: string[]) {
   return pathSegments.join("/") === "v1/session";
 }
 
+function verifyCsrf(request: Request): boolean {
+  if (["GET", "HEAD", "OPTIONS"].includes(request.method)) {
+    return true;
+  }
+
+  const origin = request.headers.get("origin");
+  if (!origin) {
+    return false;
+  }
+
+  const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
+  if (!host) {
+    return false;
+  }
+
+  const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
+  const protocol = forwardedProto || (process.env.NODE_ENV === "production" ? "https" : "http");
+
+  try {
+    const originUrl = new URL(origin);
+    const expectedOrigin = `${protocol}://${host}`;
+
+    return originUrl.origin === expectedOrigin;
+  } catch {
+    return false;
+  }
+}
+
+function isJsonContentType(contentType: string): boolean {
+  const mediaType = contentType.split(";")[0]?.trim().toLowerCase();
+  return mediaType === "application/json";
+}
+
 async function buildRequestBody(request: Request) {
   if (request.method === "GET" || request.method === "HEAD") {
     return undefined;
@@ -42,6 +75,17 @@ function buildTargetUrl(pathSegments: string[], request: Request) {
 export async function proxyRequest(request: Request, pathSegments: string[]) {
   if (pathSegments.length === 0) {
     return Response.json({ error: "Not Found" }, { status: 404 });
+  }
+
+  if (!verifyCsrf(request)) {
+    return Response.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  if (request.method === "POST" && isSessionRoute(pathSegments)) {
+    const contentType = request.headers.get("content-type") || "";
+    if (!isJsonContentType(contentType)) {
+      return Response.json({ error: "Unsupported Media Type" }, { status: 415 });
+    }
   }
 
   const targetUrl = buildTargetUrl(pathSegments, request);
