@@ -12,6 +12,8 @@ class LegacySurveyResponse < ActiveRecord::Base
 end
 
 RSpec.describe UpdateStage1DomainModelsForReviewComments, type: :migration do
+  self.use_transactional_tests = false
+
   subject(:migration) { described_class.new }
 
   let(:original_db_config) { ActiveRecord::Base.connection_db_config.configuration_hash }
@@ -33,9 +35,10 @@ RSpec.describe UpdateStage1DomainModelsForReviewComments, type: :migration do
 
     yield
   ensure
-    ActiveRecord::Base.connection_handler.clear_all_connections!
+    ActiveRecord::Base.remove_connection
     ActiveRecord::Base.establish_connection(original_db_config)
     reset_model_column_information
+    Dir.glob("#{legacy_database_path}*").each { |path| FileUtils.rm_f(path) }
   end
 
   def reset_model_column_information
