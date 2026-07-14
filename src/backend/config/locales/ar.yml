@@ -1,0 +1,31 @@
+ar:
+  hello: "مرحبًا بالعالم"
+  errors:
+    messages:
+      blank: "لا يمكن أن يكون فارغًا"
+      taken: "مستخدم بالفعل"
+  activerecord:
+    errors:
+      models:
+        observation:
+          locked_by_payouts: "لا يمكن تغييره لأنه مرتبط بمدفوعات"
+          cannot_decrease_from_previous_value: "لا يمكن أن يكون أقل من القيمة السابقة"
+          attributes:
+            rainfall_mm:
+              must_be_blank_for_seismic_stations: "يجب أن يكون فارغًا لمحطات الزلازل"
+            seismic_intensity_level:
+              must_be_blank_for_rainfall_stations: "يجب أن يكون فارغًا لمحطات الأمطار"
+            event_id:
+              must_be_blank_for_rainfall_stations: "يجب أن يكون فارغًا لمحطات الأمطار"
+        policy:
+          measurement_type_must_match_plan_trigger_type: "يجب أن يتطابق نوع القياس مع نوع مشغل الخطة"
+          locked_by_existing_payouts: "لا يمكن تغييره لأن هناك مدفوعات موجودة بالفعل"
+          cannot_be_removed_once_set: "لا يمكن حذفه بعد تعيينه"
+          cannot_be_moved_forward: "لا يمكن تقديمه للأمام"
+        payout:
+          must_match_policy_payout_tier: "يجب أن يطابق مستوى مدفوعات الوثيقة"
+          must_match_policy_station: "يجب أن يطابق محطة الوثيقة"
+          observed_at_must_be_after_policy_waiting_until: "يجب أن يكون observed_at بعد waiting_until الخاص بالوثيقة"
+          immutable_once_created: "لا يمكن تغييره بعد الإنشاء"
+        survey_response:
+          must_be_policy_owner: "يجب أن يكون مالك مدفوعات الوثيقة"

@@ -1,0 +1,31 @@
+zh:
+  hello: "你好，世界"
+  errors:
+    messages:
+      blank: "不能为空"
+      taken: "已被占用"
+  activerecord:
+    errors:
+      models:
+        observation:
+          locked_by_payouts: "由于已存在赔付，无法更改"
+          cannot_decrease_from_previous_value: "不能比前一个值更小"
+          attributes:
+            rainfall_mm:
+              must_be_blank_for_seismic_stations: "地震站点时降雨量必须为空"
+            seismic_intensity_level:
+              must_be_blank_for_rainfall_stations: "降雨站点时震度等级必须为空"
+            event_id:
+              must_be_blank_for_rainfall_stations: "降雨站点时必须为空"
+        policy:
+          measurement_type_must_match_plan_trigger_type: "观测种类必须与保单的触发种类一致"
+          locked_by_existing_payouts: "由于已存在赔付，无法更改"
+          cannot_be_removed_once_set: "一旦设定后不能删除"
+          cannot_be_moved_forward: "不能前移"
+        payout:
+          must_match_policy_payout_tier: "必须与保单的赔付等级一致"
+          must_match_policy_station: "必须与保单的观测点一致"
+          observed_at_must_be_after_policy_waiting_until: "观测时间必须晚于保单等待结束时间"
+          immutable_once_created: "创建后无法更改"
+        survey_response:
+          must_be_policy_owner: "必须是保单赔付的所有者"

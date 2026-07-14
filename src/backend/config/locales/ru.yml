@@ -1,0 +1,31 @@
+ru:
+  hello: "Здравствуйте, мир"
+  errors:
+    messages:
+      blank: "не может быть пустым"
+      taken: "уже используется"
+  activerecord:
+    errors:
+      models:
+        observation:
+          locked_by_payouts: "нельзя изменить, так как запись уже используется выплатами"
+          cannot_decrease_from_previous_value: "не может быть меньше предыдущего значения"
+          attributes:
+            rainfall_mm:
+              must_be_blank_for_seismic_stations: "для сейсмических станций должно быть пустым"
+            seismic_intensity_level:
+              must_be_blank_for_rainfall_stations: "для дождевых станций должно быть пустым"
+            event_id:
+              must_be_blank_for_rainfall_stations: "для дождевых станций должно быть пустым"
+        policy:
+          measurement_type_must_match_plan_trigger_type: "тип измерения должен совпадать с типом триггера плана"
+          locked_by_existing_payouts: "нельзя изменить, так как уже существуют выплаты"
+          cannot_be_removed_once_set: "нельзя удалить после установки"
+          cannot_be_moved_forward: "нельзя сдвигать вперёд"
+        payout:
+          must_match_policy_payout_tier: "должен совпадать с уровнем выплаты полиса"
+          must_match_policy_station: "должен совпадать со станцией полиса"
+          observed_at_must_be_after_policy_waiting_until: "время наблюдения должно быть позже waiting_until полиса"
+          immutable_once_created: "нельзя изменить после создания"
+        survey_response:
+          must_be_policy_owner: "должен быть владельцем выплаты полиса"

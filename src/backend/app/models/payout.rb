@@ -19,7 +19,7 @@ class Payout < ApplicationRecord
     return if policy.blank? || payout_tier.blank?
 
     if payout_tier != policy.payout_tier
-      errors.add(:payout_tier, "must match policy payout tier")
+      errors.add(:payout_tier, :must_match_policy_payout_tier)
     end
   end
 
@@ -27,7 +27,7 @@ class Payout < ApplicationRecord
     return if policy.blank? || observation.blank?
 
     if observation.station_id != policy.station_id
-      errors.add(:observation, "must match policy station")
+      errors.add(:observation, :must_match_policy_station)
     end
   end
 
@@ -35,17 +35,17 @@ class Payout < ApplicationRecord
     return if policy.blank? || observation.blank?
 
     if observation.observed_at < policy.waiting_until
-      errors.add(:observation, "observed_at must be after policy waiting_until")
+      errors.add(:observation, :observed_at_must_be_after_policy_waiting_until)
     end
   end
 
   def policy_and_observation_cannot_be_changed
     if policy_id_changed?
-      errors.add(:policy, "cannot be changed once created")
+      errors.add(:policy, :immutable_once_created)
     end
 
     if observation_id_changed?
-      errors.add(:observation, "cannot be changed once created")
+      errors.add(:observation, :immutable_once_created)
     end
   end
 end

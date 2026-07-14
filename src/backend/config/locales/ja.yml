@@ -1,0 +1,31 @@
+ja:
+  hello: "こんにちは世界"
+  errors:
+    messages:
+      blank: "を入力してください"
+      taken: "はすでに使用されています"
+  activerecord:
+    errors:
+      models:
+        observation:
+          locked_by_payouts: "すでに模擬支払があるため変更できません"
+          cannot_decrease_from_previous_value: "前の値より小さくできません"
+          attributes:
+            rainfall_mm:
+              must_be_blank_for_seismic_stations: "震度観測点では空欄にしてください"
+            seismic_intensity_level:
+              must_be_blank_for_rainfall_stations: "雨量観測点では空欄にしてください"
+            event_id:
+              must_be_blank_for_rainfall_stations: "雨量観測点では空欄にしてください"
+        policy:
+          measurement_type_must_match_plan_trigger_type: "観測種別は保険プランのトリガー種別と一致する必要があります"
+          locked_by_existing_payouts: "すでに模擬支払があるため変更できません"
+          cannot_be_removed_once_set: "一度設定した値は削除できません"
+          cannot_be_moved_forward: "前倒しにはできません"
+        payout:
+          must_match_policy_payout_tier: "保険契約の模擬支払等級と一致する必要があります"
+          must_match_policy_station: "保険契約の観測点と一致する必要があります"
+          observed_at_must_be_after_policy_waiting_until: "観測日時は保険の待機終了日時より後である必要があります"
+          immutable_once_created: "作成後は変更できません"
+        survey_response:
+          must_be_policy_owner: "保険契約の所有者である必要があります"

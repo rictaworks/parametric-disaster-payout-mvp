@@ -35,7 +35,7 @@ class Policy < ApplicationRecord
     return if plan.blank? || station.blank?
 
     if plan.trigger_type != station.measurement_type
-      errors.add(:station, "measurement type must match plan trigger type")
+      errors.add(:station, :measurement_type_must_match_plan_trigger_type)
     end
   end
 
@@ -43,32 +43,32 @@ class Policy < ApplicationRecord
     return unless payouts.exists?
 
     if user_id_changed?
-      errors.add(:user, "cannot be changed because payouts already exist")
+      errors.add(:user, :locked_by_existing_payouts)
     end
     if station_id_changed?
-      errors.add(:station, "cannot be changed because payouts already exist")
+      errors.add(:station, :locked_by_existing_payouts)
     end
     if payout_tier_id_changed?
-      errors.add(:payout_tier, "cannot be changed because payouts already exist")
+      errors.add(:payout_tier, :locked_by_existing_payouts)
     end
     if plan_id_changed?
-      errors.add(:plan, "cannot be changed because payouts already exist")
+      errors.add(:plan, :locked_by_existing_payouts)
     end
     if threshold_changed?
-      errors.add(:threshold, "cannot be changed because payouts already exist")
+      errors.add(:threshold, :locked_by_existing_payouts)
     end
     if waiting_until_changed?
-      errors.add(:waiting_until, "cannot be changed because payouts already exist")
+      errors.add(:waiting_until, :locked_by_existing_payouts)
     end
   end
 
   def station_and_waiting_until_cannot_be_set_to_nil_if_previously_present
     if station_id_was.present? && station_id.nil?
-      errors.add(:station, "cannot be removed once it has been set")
+      errors.add(:station, :cannot_be_removed_once_set)
     end
 
     if waiting_until_was.present? && waiting_until.nil?
-      errors.add(:waiting_until, "cannot be removed once it has been set")
+      errors.add(:waiting_until, :cannot_be_removed_once_set)
     end
   end
 
@@ -77,7 +77,7 @@ class Policy < ApplicationRecord
     return if waiting_until_was.nil? || waiting_until.nil?
 
     if waiting_until < waiting_until_was
-      errors.add(:waiting_until, "cannot be moved forward (shortened)")
+      errors.add(:waiting_until, :cannot_be_moved_forward)
     end
   end
 end
