@@ -1,0 +1,48 @@
+{
+  "app": {
+    "title": "عرض الدفع التأميني المتغير",
+    "tagline": "مسار عرض توضيحي عبر BFF من Vercel"
+  },
+  "banner": {
+    "notice": "هذه الخدمة مخصصة لقياس الطلب ولا تقوم بالاكتتاب في الوثائق أو بإجراء مدفوعات فعلية."
+  },
+  "navigation": {
+    "label": "التنقل",
+    "home": "الرئيسية",
+    "login": "تسجيل الدخول"
+  },
+  "language": {
+    "label": "اللغة",
+    "options": {
+      "ja": "اليابانية",
+      "en": "الإنجليزية",
+      "fr": "الفرنسية",
+      "zh": "الصينية",
+      "ru": "الروسية",
+      "es": "الإسبانية",
+      "ar": "العربية"
+    }
+  },
+  "home": {
+    "eyebrow": "BFF / Route Handler",
+    "title": "أخفِ Rails بينما يعمل مسار العرض التوضيحي في المتصفح.",
+    "description": "يتحدث المتصفح دائمًا فقط مع نطاق Vercel، وتقوم Route Handlers في Next.js بتمرير طلبات API إلى Rails.",
+    "primaryAction": "فتح تسجيل الدخول",
+    "secondaryAction": "شبكة Vercel فقط",
+    "featureA": "شريط دائم يعرض تنبيه العرض",
+    "featureB": "التبديل الفوري بين 7 لغات",
+    "featureC": "ملف تعريف ارتباط للجلسة يصدر من Next.js"
+  },
+  "login": {
+    "eyebrow": "تسجيل الدخول عبر Google",
+    "title": "أرسل رمز هوية Google إلى BFF لبدء جلسة.",
+    "description": "يرسل المتصفح الطلبات إلى نطاق Vercel فقط، وتقوم Next.js بتمريرها بأمان إلى Rails.",
+    "idTokenLabel": "رمز هوية Google",
+    "idTokenPlaceholder": "الصق رمز الهوية الذي حصلت عليه من Google",
+    "submit": "إنشاء جلسة",
+    "submitting": "جارٍ الإرسال",
+    "hint": "يؤدي تسجيل الدخول الناجح إلى تعيين Cookie جلسة ضمن نطاق Vercel.",
+    "success": "تم تسجيل الدخول بنجاح.",
+    "error": "فشل تسجيل الدخول."
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "app": {
+    "title": "パラメトリック災害保険デモ",
+    "tagline": "Vercel BFF 経由の保険（デモ）体験"
+  },
+  "banner": {
+    "notice": "本サービスは保険の引受・実支払を行わない需要調査用の模擬デモです。"
+  },
+  "navigation": {
+    "label": "ナビゲーション",
+    "home": "ホーム",
+    "login": "ログイン"
+  },
+  "language": {
+    "label": "言語",
+    "options": {
+      "ja": "日本語",
+      "en": "English",
+      "fr": "Français",
+      "zh": "中文",
+      "ru": "Русский",
+      "es": "Español",
+      "ar": "العربية"
+    }
+  },
+  "home": {
+    "eyebrow": "BFF / Route Handler",
+    "title": "ブラウザから Rails を隠したまま、模擬支払の流れを確認できます。",
+    "description": "画面は常に Vercel ドメインで動作し、API は Next.js の Route Handler が Rails に中継します。",
+    "primaryAction": "ログイン画面へ",
+    "secondaryAction": "Vercel ドメインのみ通信",
+    "featureA": "常時ストリップで模擬デモ注記を表示",
+    "featureB": "7 言語をワンクリック切替",
+    "featureC": "セッション Cookie は Next.js 側で発行"
+  },
+  "login": {
+    "eyebrow": "Google ログイン",
+    "title": "Google ID トークンを BFF に渡してセッションを開始します。",
+    "description": "ブラウザは Vercel ドメインにだけ送信し、Next.js が Rails へ安全に転送します。",
+    "idTokenLabel": "Google ID トークン",
+    "idTokenPlaceholder": "Google で取得した ID トークンを貼り付け",
+    "submit": "セッションを作成",
+    "submitting": "送信中",
+    "hint": "成功すると Vercel ドメインスコープのセッション Cookie が設定されます。",
+    "success": "ログインに成功しました。",
+    "error": "ログインに失敗しました。"
+  }
+}

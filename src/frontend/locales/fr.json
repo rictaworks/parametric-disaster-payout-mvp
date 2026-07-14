@@ -1,0 +1,48 @@
+{
+  "app": {
+    "title": "Démo d’indemnisation paramétrique",
+    "tagline": "Parcours de démonstration via le BFF Vercel"
+  },
+  "banner": {
+    "notice": "Ce service est une démo de recherche de demande et ne souscrit aucune police ni n’effectue de paiement réel."
+  },
+  "navigation": {
+    "label": "Navigation",
+    "home": "Accueil",
+    "login": "Connexion"
+  },
+  "language": {
+    "label": "Langue",
+    "options": {
+      "ja": "Japonais",
+      "en": "Anglais",
+      "fr": "Français",
+      "zh": "Chinois",
+      "ru": "Russe",
+      "es": "Espagnol",
+      "ar": "Arabe"
+    }
+  },
+  "home": {
+    "eyebrow": "BFF / Route Handler",
+    "title": "Gardez Rails masqué pendant que le parcours de démo s’exécute dans le navigateur.",
+    "description": "Le navigateur communique toujours avec le domaine Vercel, et les Route Handlers Next.js relaient les appels API vers Rails.",
+    "primaryAction": "Ouvrir la connexion",
+    "secondaryAction": "Réseau Vercel uniquement",
+    "featureA": "Bandeau permanent avec l’avis de démonstration",
+    "featureB": "Bascule instantanée entre 7 langues",
+    "featureC": "Cookie de session émis côté Next.js"
+  },
+  "login": {
+    "eyebrow": "Connexion Google",
+    "title": "Envoyez un jeton d’identité Google au BFF pour démarrer une session.",
+    "description": "Le navigateur envoie uniquement au domaine Vercel, et Next.js relaie la requête vers Rails.",
+    "idTokenLabel": "Jeton d’identité Google",
+    "idTokenPlaceholder": "Collez le jeton d’identité obtenu auprès de Google",
+    "submit": "Créer la session",
+    "submitting": "Envoi",
+    "hint": "Une connexion réussie crée un cookie de session limité au domaine Vercel.",
+    "success": "Connexion réussie.",
+    "error": "Échec de la connexion."
+  }
+}
