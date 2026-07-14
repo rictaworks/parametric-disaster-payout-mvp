@@ -270,6 +270,55 @@ RSpec.describe UpdateStage1DomainModelsForReviewComments, type: :migration do
       expect(seismic_observation.simulated).to be(true)
     end
 
+    it "corrects the payout_tier_id of existing payouts to match the policy's payout_tier_id" do
+      alternative_payout_tier = PayoutTier.create!(
+        code: "tier_2",
+        amount_yen: 50_000,
+        **localized_attributes("tier_2")
+      )
+
+      policy_id = legacy_insert(
+        :policies,
+        user_id: user.id,
+        plan_id: rainfall_plan.id,
+        payout_tier_id: payout_tier.id,
+        policy_status_id: policy_status.id,
+        threshold: "30mm",
+        expires_at: 1.year.from_now,
+        created_at: 2.days.ago,
+        updated_at: 2.days.ago
+      )
+
+      observation_id = legacy_insert(
+        :observations,
+        policy_id: policy_id,
+        station_id: rainfall_station.id,
+        rainfall_mm: BigDecimal("10.0"),
+        observed_at: Time.zone.local(2026, 7, 8, 12, 0, 0),
+        created_at: 1.day.ago,
+        updated_at: 1.day.ago
+      )
+
+      payout_id = legacy_insert(
+        :payouts,
+        policy_id: policy_id,
+        payout_tier_id: alternative_payout_tier.id,
+        payout_status_id: payout_status.id,
+        observation_id: observation_id,
+        idempotency_key: "tier-mismatch-#{SecureRandom.hex(4)}",
+        decided_at: 1.day.ago,
+        created_at: 1.day.ago,
+        updated_at: 1.day.ago
+      )
+
+      migration.up
+
+      reset_model_column_information
+
+      expect(Payout.find(payout_id).payout_tier_id).to eq(Policy.find(policy_id).payout_tier_id)
+      expect(Payout.find(payout_id).payout_tier_id).to eq(payout_tier.id)
+    end
+
     it "keeps policies with multiple stations as nil and allows the integrity checks to continue" do
       policy_id = legacy_insert(
         :policies,
