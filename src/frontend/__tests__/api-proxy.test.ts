@@ -179,4 +179,88 @@ describe("API proxy", () => {
     expect(JSON.parse(response.body).error).toBe("Unsupported Media Type");
     expect(global.fetch).not.toHaveBeenCalled();
   });
+
+  it("rejects path segments containing '..' with 404 Not Found instead of forwarding them upstream", async () => {
+    const request = {
+      method: "GET",
+      url: "http://localhost:3000/api/v1/../../rails/info/routes",
+      headers: new Headers({
+        host: "localhost:3000",
+      }),
+      arrayBuffer: async () => new ArrayBuffer(0),
+    } as unknown as Request;
+
+    const response = await proxyRequest(request, ["v1", "..", "..", "rails", "info", "routes"]);
+
+    expect(response.status).toBe(404);
+    expect(JSON.parse(response.body).error).toBe("Not Found");
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("rejects a path segment that is exactly '.' with 404 Not Found", async () => {
+    const request = {
+      method: "GET",
+      url: "http://localhost:3000/api/./v1/session",
+      headers: new Headers({
+        host: "localhost:3000",
+      }),
+      arrayBuffer: async () => new ArrayBuffer(0),
+    } as unknown as Request;
+
+    const response = await proxyRequest(request, [".", "v1", "session"]);
+
+    expect(response.status).toBe(404);
+    expect(JSON.parse(response.body).error).toBe("Not Found");
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("rejects double-encoded '..' segments (%252e%252e) that decode to traversal after Next.js's single decode pass", async () => {
+    // Next.js decodes the raw request URL's `%252e%252e` segment once before handing it
+    // to the route handler, so the value observed here is the once-decoded "%2e%2e".
+    const request = {
+      method: "GET",
+      url: "http://localhost:3000/api/v1/%252e%252e/%252e%252e/rails/info/routes",
+      headers: new Headers({
+        host: "localhost:3000",
+      }),
+      arrayBuffer: async () => new ArrayBuffer(0),
+    } as unknown as Request;
+
+    const response = await proxyRequest(request, [
+      "v1",
+      "%2e%2e",
+      "%2e%2e",
+      "rails",
+      "info",
+      "routes",
+    ]);
+
+    expect(response.status).toBe(404);
+    expect(JSON.parse(response.body).error).toBe("Not Found");
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("re-encodes forwarded path segments so a literal '%2e%2e' segment cannot be normalized into a traversal by the URL parser", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      text: async () => JSON.stringify({}),
+    });
+
+    const request = {
+      method: "GET",
+      url: "http://localhost:3000/api/v1/%2e%2efoo",
+      headers: new Headers({
+        host: "localhost:3000",
+      }),
+      arrayBuffer: async () => new ArrayBuffer(0),
+    } as unknown as Request;
+
+    await proxyRequest(request, ["v1", "%2e%2efoo"]);
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    const [targetUrl] = (global.fetch as jest.Mock).mock.calls[0];
+    expect(String(targetUrl)).toBe("http://rails.internal/api/v1/%252e%252efoo");
+  });
 });

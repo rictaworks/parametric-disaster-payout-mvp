@@ -24,6 +24,34 @@ function isSessionRoute(pathSegments: string[]) {
   return pathSegments.join("/") === "v1/session";
 }
 
+function canonicalDecodeSegment(segment: string): string {
+  let previous = segment;
+
+  for (let i = 0; i < 5; i += 1) {
+    let current: string;
+    try {
+      current = decodeURIComponent(previous);
+    } catch {
+      return previous;
+    }
+
+    if (current === previous) {
+      return current;
+    }
+
+    previous = current;
+  }
+
+  return previous;
+}
+
+function hasTraversalSegment(pathSegments: string[]) {
+  return pathSegments.some((segment) => {
+    const decoded = canonicalDecodeSegment(segment);
+    return decoded === "." || decoded === "..";
+  });
+}
+
 function verifyCsrf(request: Request): boolean {
   if (["GET", "HEAD", "OPTIONS"].includes(request.method)) {
     return true;
@@ -67,13 +95,19 @@ async function buildRequestBody(request: Request) {
 
 function buildTargetUrl(pathSegments: string[], request: Request) {
   const target = new URL(getBackendBaseUrl());
-  target.pathname = `/api/${pathSegments.join("/")}`;
+  const encodedSegments = pathSegments.map((segment) => encodeURIComponent(segment));
+  target.pathname = `/api/${encodedSegments.join("/")}`;
   target.search = new URL(request.url).search;
+
+  if (!target.pathname.startsWith("/api/")) {
+    throw new Error("Resolved target path escaped the /api/ boundary");
+  }
+
   return target;
 }
 
 export async function proxyRequest(request: Request, pathSegments: string[]) {
-  if (pathSegments.length === 0) {
+  if (pathSegments.length === 0 || hasTraversalSegment(pathSegments)) {
     return Response.json({ error: "Not Found" }, { status: 404 });
   }
 
