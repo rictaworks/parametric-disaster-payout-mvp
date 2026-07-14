@@ -75,6 +75,7 @@ export async function proxyRequest(request: Request, pathSegments: string[]) {
   responseHeaders.delete("connection");
 
   const responseHeadersWithCookies = new Headers(responseHeaders);
+  let proxiedBody = responseBody;
 
   if (backendResponse.ok && isSessionRoute(pathSegments)) {
     try {
@@ -93,13 +94,17 @@ export async function proxyRequest(request: Request, pathSegments: string[]) {
             .filter(Boolean)
             .join("; ")
         );
+
+        const sanitizedPayload = { ...payload };
+        delete sanitizedPayload.session_token;
+        proxiedBody = JSON.stringify(sanitizedPayload);
       }
     } catch {
       // Keep the upstream response untouched when the body is not JSON.
     }
   }
 
-  return new Response(responseBody, {
+  return new Response(proxiedBody, {
     status: backendResponse.status,
     headers: responseHeadersWithCookies,
   });
