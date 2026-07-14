@@ -27,15 +27,15 @@ class Observation < ApplicationRecord
     return unless station.measurement_type == "seismic"
 
     if event_id.blank?
-      errors.add(:event_id, "can't be blank")
+      errors.add(:event_id, :blank)
     end
 
     if seismic_intensity_level.blank?
-      errors.add(:seismic_intensity_level, "can't be blank")
+      errors.add(:seismic_intensity_level, :blank)
     end
 
     if rainfall_mm.present?
-      errors.add(:rainfall_mm, "must be blank for seismic stations")
+      errors.add(:rainfall_mm, :must_be_blank_for_seismic_stations)
     end
   end
 
@@ -44,15 +44,15 @@ class Observation < ApplicationRecord
     return unless station.measurement_type == "rainfall"
 
     if rainfall_mm.blank?
-      errors.add(:rainfall_mm, "can't be blank")
+      errors.add(:rainfall_mm, :blank)
     end
 
     if event_id.present?
-      errors.add(:event_id, "must be blank")
+      errors.add(:event_id, :blank)
     end
 
     if seismic_intensity_level.present?
-      errors.add(:seismic_intensity_level, "must be blank for rainfall stations")
+      errors.add(:seismic_intensity_level, :must_be_blank_for_rainfall_stations)
     end
   end
 
@@ -60,15 +60,15 @@ class Observation < ApplicationRecord
     return unless payouts.exists?
 
     if station_id_changed?
-      errors.add(:station, "cannot be changed because it is referenced by payouts")
+      errors.add(:station, :locked_by_payouts)
     end
 
     if event_id_changed?
-      errors.add(:event_id, "cannot be changed because it is referenced by payouts")
+      errors.add(:event_id, :locked_by_payouts)
     end
 
     if observed_at_changed?
-      errors.add(:observed_at, "cannot be changed because it is referenced by payouts")
+      errors.add(:observed_at, :locked_by_payouts)
     end
   end
 
@@ -80,7 +80,7 @@ class Observation < ApplicationRecord
     new_level = seismic_intensity_level
 
     if old_level && new_level && new_level.sort_order < old_level.sort_order
-      errors.add(:seismic_intensity_level, "cannot decrease from previous value")
+      errors.add(:seismic_intensity_level, :cannot_decrease_from_previous_value)
     end
   end
 
@@ -89,7 +89,7 @@ class Observation < ApplicationRecord
     return if rainfall_mm_was.nil? || rainfall_mm.nil?
 
     if rainfall_mm < rainfall_mm_was
-      errors.add(:rainfall_mm, "cannot decrease from previous value")
+      errors.add(:rainfall_mm, :cannot_decrease_from_previous_value)
     end
   end
 end

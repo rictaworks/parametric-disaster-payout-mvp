@@ -401,7 +401,7 @@ RSpec.describe Observation, type: :model do
     observation.rainfall_mm = 50.0
     observation.event_id = "event-123"
     observation.valid?
-    expect(observation.errors[:event_id]).to include("must be blank")
+    expect(observation.errors[:event_id]).to include("can't be blank")
   end
 
   it "enforces uniqueness of event_id scope to station_id for seismic stations" do

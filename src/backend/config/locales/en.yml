@@ -29,3 +29,30 @@
 
 en:
   hello: "Hello world"
+  errors:
+    messages:
+      blank: "can't be blank"
+      taken: "has already been taken"
+  activerecord:
+    errors:
+      models:
+        observation:
+          locked_by_payouts: "cannot be changed because it is referenced by payouts"
+          cannot_decrease_from_previous_value: "cannot decrease from previous value"
+          attributes:
+            rainfall_mm:
+              must_be_blank_for_seismic_stations: "must be blank for seismic stations"
+            seismic_intensity_level:
+              must_be_blank_for_rainfall_stations: "must be blank for rainfall stations"
+        policy:
+          measurement_type_must_match_plan_trigger_type: "measurement type must match plan trigger type"
+          locked_by_existing_payouts: "cannot be changed because payouts already exist"
+          cannot_be_removed_once_set: "cannot be removed once it has been set"
+          cannot_be_moved_forward: "cannot be moved forward (shortened)"
+        payout:
+          must_match_policy_payout_tier: "must match policy payout tier"
+          must_match_policy_station: "must match policy station"
+          observed_at_must_be_after_policy_waiting_until: "observed_at must be after policy waiting_until"
+          immutable_once_created: "cannot be changed once created"
+        survey_response:
+          must_be_policy_owner: "must be the owner of the policy payout"

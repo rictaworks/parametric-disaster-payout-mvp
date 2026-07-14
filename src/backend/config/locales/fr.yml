@@ -1,0 +1,29 @@
+fr:
+  hello: "Bonjour le monde"
+  errors:
+    messages:
+      blank: "ne peut pas être vide"
+      taken: "a déjà été pris"
+  activerecord:
+    errors:
+      models:
+        observation:
+          locked_by_payouts: "ne peut pas être modifié car il est référencé par des versements"
+          cannot_decrease_from_previous_value: "ne peut pas diminuer par rapport à la valeur précédente"
+          attributes:
+            rainfall_mm:
+              must_be_blank_for_seismic_stations: "doit être vide pour les stations sismiques"
+            seismic_intensity_level:
+              must_be_blank_for_rainfall_stations: "doit être vide pour les stations de pluie"
+        policy:
+          measurement_type_must_match_plan_trigger_type: "le type de mesure doit correspondre au type de déclenchement du contrat"
+          locked_by_existing_payouts: "ne peut pas être modifié car des versements existent déjà"
+          cannot_be_removed_once_set: "ne peut pas être supprimé une fois défini"
+          cannot_be_moved_forward: "ne peut pas être avancé"
+        payout:
+          must_match_policy_payout_tier: "doit correspondre au niveau de versement du contrat"
+          must_match_policy_station: "doit correspondre à la station du contrat"
+          observed_at_must_be_after_policy_waiting_until: "observed_at doit être postérieur à waiting_until du contrat"
+          immutable_once_created: "ne peut pas être modifié une fois créé"
+        survey_response:
+          must_be_policy_owner: "doit être le propriétaire du versement du contrat"

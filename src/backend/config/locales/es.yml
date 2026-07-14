@@ -1,0 +1,29 @@
+es:
+  hello: "Hola mundo"
+  errors:
+    messages:
+      blank: "no puede estar en blanco"
+      taken: "ya está en uso"
+  activerecord:
+    errors:
+      models:
+        observation:
+          locked_by_payouts: "no se puede cambiar porque está referenciado por pagos"
+          cannot_decrease_from_previous_value: "no puede disminuir respecto al valor anterior"
+          attributes:
+            rainfall_mm:
+              must_be_blank_for_seismic_stations: "debe estar en blanco para estaciones sísmicas"
+            seismic_intensity_level:
+              must_be_blank_for_rainfall_stations: "debe estar en blanco para estaciones de lluvia"
+        policy:
+          measurement_type_must_match_plan_trigger_type: "el tipo de medición debe coincidir con el tipo de activación del plan"
+          locked_by_existing_payouts: "no se puede cambiar porque ya existen pagos"
+          cannot_be_removed_once_set: "no se puede eliminar una vez establecido"
+          cannot_be_moved_forward: "no se puede adelantar"
+        payout:
+          must_match_policy_payout_tier: "debe coincidir con el nivel de pago de la póliza"
+          must_match_policy_station: "debe coincidir con la estación de la póliza"
+          observed_at_must_be_after_policy_waiting_until: "observed_at debe ser posterior a waiting_until de la póliza"
+          immutable_once_created: "no se puede cambiar una vez creado"
+        survey_response:
+          must_be_policy_owner: "debe ser el propietario del pago de la póliza"

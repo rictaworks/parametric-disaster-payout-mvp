@@ -13,7 +13,7 @@ class SurveyResponse < ApplicationRecord
     return if user.blank? || payout.blank?
 
     if user_id != payout.policy&.user_id
-      errors.add(:user, "must be the owner of the policy payout")
+      errors.add(:user, :must_be_policy_owner)
     end
   end
 end
