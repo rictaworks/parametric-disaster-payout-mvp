@@ -48,7 +48,7 @@ class Observation < ApplicationRecord
     end
 
     if event_id.present?
-      errors.add(:event_id, :blank)
+      errors.add(:event_id, :must_be_blank_for_rainfall_stations)
     end
 
     if seismic_intensity_level.present?

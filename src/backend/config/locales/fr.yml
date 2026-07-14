@@ -15,6 +15,8 @@ fr:
               must_be_blank_for_seismic_stations: "doit être vide pour les stations sismiques"
             seismic_intensity_level:
               must_be_blank_for_rainfall_stations: "doit être vide pour les stations de pluie"
+            event_id:
+              must_be_blank_for_rainfall_stations: "doit être vide pour les stations de pluie"
         policy:
           measurement_type_must_match_plan_trigger_type: "le type de mesure doit correspondre au type de déclenchement du contrat"
           locked_by_existing_payouts: "ne peut pas être modifié car des versements existent déjà"

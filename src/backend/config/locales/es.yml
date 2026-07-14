@@ -15,6 +15,8 @@ es:
               must_be_blank_for_seismic_stations: "debe estar en blanco para estaciones sísmicas"
             seismic_intensity_level:
               must_be_blank_for_rainfall_stations: "debe estar en blanco para estaciones de lluvia"
+            event_id:
+              must_be_blank_for_rainfall_stations: "debe estar en blanco para estaciones de lluvia"
         policy:
           measurement_type_must_match_plan_trigger_type: "el tipo de medición debe coincidir con el tipo de activación del plan"
           locked_by_existing_payouts: "no se puede cambiar porque ya existen pagos"

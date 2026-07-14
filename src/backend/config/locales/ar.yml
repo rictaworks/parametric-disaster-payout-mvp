@@ -15,6 +15,8 @@ ar:
               must_be_blank_for_seismic_stations: "يجب أن يكون فارغًا لمحطات الزلازل"
             seismic_intensity_level:
               must_be_blank_for_rainfall_stations: "يجب أن يكون فارغًا لمحطات الأمطار"
+            event_id:
+              must_be_blank_for_rainfall_stations: "يجب أن يكون فارغًا لمحطات الأمطار"
         policy:
           measurement_type_must_match_plan_trigger_type: "يجب أن يتطابق نوع القياس مع نوع مشغل الخطة"
           locked_by_existing_payouts: "لا يمكن تغييره لأن هناك مدفوعات موجودة بالفعل"

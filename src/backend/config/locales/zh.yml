@@ -15,6 +15,8 @@ zh:
               must_be_blank_for_seismic_stations: "地震站点时降雨量必须为空"
             seismic_intensity_level:
               must_be_blank_for_rainfall_stations: "降雨站点时震度等级必须为空"
+            event_id:
+              must_be_blank_for_rainfall_stations: "降雨站点时必须为空"
         policy:
           measurement_type_must_match_plan_trigger_type: "观测种类必须与保单的触发种类一致"
           locked_by_existing_payouts: "由于已存在赔付，无法更改"
