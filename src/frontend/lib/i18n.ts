@@ -13,6 +13,11 @@ export type Messages = typeof ja;
 
 export const DEFAULT_LOCALE: Locale = "ja";
 export const LOCALE_STORAGE_KEY = "parametric-disaster-payout-locale";
+const RTL_LOCALES: readonly Locale[] = ["ar"];
+
+export function getTextDirection(locale: Locale): "rtl" | "ltr" {
+  return RTL_LOCALES.includes(locale) ? "rtl" : "ltr";
+}
 
 const messagesByLocale: Record<Locale, Messages> = {
   ja,

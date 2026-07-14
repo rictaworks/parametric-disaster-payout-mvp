@@ -2,7 +2,15 @@
 
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, SUPPORTED_LOCALES, type Locale, type Messages, getMessages } from "@/lib/i18n";
+import {
+  DEFAULT_LOCALE,
+  LOCALE_STORAGE_KEY,
+  SUPPORTED_LOCALES,
+  type Locale,
+  type Messages,
+  getMessages,
+  getTextDirection,
+} from "@/lib/i18n";
 
 type LocaleContextValue = {
   locale: Locale;
@@ -35,6 +43,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
     document.documentElement.lang = locale;
+    document.documentElement.dir = getTextDirection(locale);
   }, [locale]);
 
   const value = useMemo<LocaleContextValue>(() => {

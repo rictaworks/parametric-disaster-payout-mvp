@@ -82,6 +82,7 @@ describe("API proxy", () => {
     expect(init.cache).toBe("no-store");
     expect(init.headers.get("X-Internal-API-Secret")).toBe("shared-secret");
     expect(init.headers.get("X-Internal-Session-Token")).toBe("existing-token");
+    expect(init.headers.get("cookie")).toBeNull();
     expect(response.headers.get("set-cookie")).toContain("parametric_session_token=signed-token");
   });
 
@@ -262,5 +263,55 @@ describe("API proxy", () => {
     expect(global.fetch).toHaveBeenCalledTimes(1);
     const [targetUrl] = (global.fetch as jest.Mock).mock.calls[0];
     expect(String(targetUrl)).toBe("http://rails.internal/api/v1/%252e%252efoo");
+  });
+
+  it("does not forward a client-supplied X-Internal-Session-Token header when no session cookie is present", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      text: async () => JSON.stringify({}),
+    });
+
+    const request = {
+      method: "GET",
+      url: "http://localhost:3000/api/v1/policies",
+      headers: new Headers({
+        host: "localhost:3000",
+        "x-internal-session-token": "forged-by-client",
+      }),
+      arrayBuffer: async () => new ArrayBuffer(0),
+    } as unknown as Request;
+
+    await proxyRequest(request, ["v1", "policies"]);
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    const [, init] = (global.fetch as jest.Mock).mock.calls[0];
+    expect(init.headers.get("X-Internal-Session-Token")).toBeNull();
+  });
+
+  it("does not pick up a decoy cookie whose name merely ends with the session cookie name", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      text: async () => JSON.stringify({}),
+    });
+
+    const request = {
+      method: "GET",
+      url: "http://localhost:3000/api/v1/policies",
+      headers: new Headers({
+        host: "localhost:3000",
+        cookie: "evil_parametric_session_token=decoy; parametric_session_token=real-token",
+      }),
+      arrayBuffer: async () => new ArrayBuffer(0),
+    } as unknown as Request;
+
+    await proxyRequest(request, ["v1", "policies"]);
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    const [, init] = (global.fetch as jest.Mock).mock.calls[0];
+    expect(init.headers.get("X-Internal-Session-Token")).toBe("real-token");
   });
 });

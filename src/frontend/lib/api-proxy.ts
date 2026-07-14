@@ -85,6 +85,19 @@ function isJsonContentType(contentType: string): boolean {
   return mediaType === "application/json";
 }
 
+function extractSessionToken(request: Request): string | undefined {
+  const cookieHeader = request.headers.get("cookie");
+  if (!cookieHeader) {
+    return undefined;
+  }
+
+  return cookieHeader
+    .split(";")
+    .map((pair) => pair.trim())
+    .find((pair) => pair.startsWith(`${SESSION_COOKIE_NAME}=`))
+    ?.slice(SESSION_COOKIE_NAME.length + 1);
+}
+
 async function buildRequestBody(request: Request) {
   if (request.method === "GET" || request.method === "HEAD") {
     return undefined;
@@ -127,9 +140,11 @@ export async function proxyRequest(request: Request, pathSegments: string[]) {
 
   headers.delete("host");
   headers.delete("content-length");
+  headers.delete("cookie");
+  headers.delete("x-internal-session-token");
   headers.set("X-Internal-API-Secret", getInternalSecret());
 
-  const sessionToken = request.headers.get("cookie")?.match(/parametric_session_token=([^;]+)/)?.[1];
+  const sessionToken = extractSessionToken(request);
   if (sessionToken) {
     headers.set("X-Internal-Session-Token", sessionToken);
   }
