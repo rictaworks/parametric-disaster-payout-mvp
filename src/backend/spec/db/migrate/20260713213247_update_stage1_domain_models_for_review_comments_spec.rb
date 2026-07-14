@@ -385,6 +385,165 @@ RSpec.describe UpdateStage1DomainModelsForReviewComments, type: :migration do
       expect(legacy_survey_response.migration_error_reason).to include("Associated policy with ID")
     end
 
+    it "raises when duplicate rainfall observations have conflicting rainfall values" do
+      policy_id = legacy_insert(
+        :policies,
+        user_id: user.id,
+        plan_id: rainfall_plan.id,
+        payout_tier_id: payout_tier.id,
+        policy_status_id: policy_status.id,
+        threshold: "30mm",
+        expires_at: 1.year.from_now,
+        created_at: 2.days.ago,
+        updated_at: 2.days.ago
+      )
+
+      observation_time = Time.zone.local(2026, 7, 6, 12, 0, 0)
+      legacy_insert(
+        :observations,
+        policy_id: policy_id,
+        station_id: rainfall_station.id,
+        rainfall_mm: BigDecimal("10.0"),
+        observed_at: observation_time,
+        created_at: observation_time,
+        updated_at: observation_time
+      )
+      legacy_insert(
+        :observations,
+        policy_id: policy_id,
+        station_id: rainfall_station.id,
+        rainfall_mm: BigDecimal("11.0"),
+        observed_at: observation_time,
+        created_at: observation_time,
+        updated_at: observation_time
+      )
+
+      expect { migration.up }
+        .to raise_error(/Conflicting duplicate rainfall values found/)
+    end
+
+    it "raises when duplicate seismic observations include an unresolvable intensity level" do
+      policy_id = legacy_insert(
+        :policies,
+        user_id: user.id,
+        plan_id: seismic_plan.id,
+        payout_tier_id: payout_tier.id,
+        policy_status_id: policy_status.id,
+        threshold: "5弱",
+        expires_at: 1.year.from_now,
+        created_at: 2.days.ago,
+        updated_at: 2.days.ago
+      )
+
+      observation_time = Time.zone.local(2026, 7, 7, 12, 0, 0)
+      legacy_insert(
+        :observations,
+        policy_id: policy_id,
+        station_id: seismic_station.id,
+        seismic_intensity_level_id: seismic_level_5.id,
+        observed_at: observation_time,
+        created_at: observation_time,
+        updated_at: observation_time
+      )
+      legacy_insert(
+        :observations,
+        policy_id: policy_id,
+        station_id: seismic_station.id,
+        seismic_intensity_level_id: nil,
+        observed_at: observation_time,
+        created_at: observation_time,
+        updated_at: observation_time
+      )
+
+      expect { migration.up }
+        .to raise_error(/references a missing or unresolvable SeismicIntensityLevel/)
+    end
+
+    it "raises when a payout observation station is corrupted after the policy station backfill" do
+      policy_id = legacy_insert(
+        :policies,
+        user_id: user.id,
+        plan_id: rainfall_plan.id,
+        payout_tier_id: payout_tier.id,
+        policy_status_id: policy_status.id,
+        threshold: "30mm",
+        expires_at: 1.year.from_now,
+        created_at: 2.days.ago,
+        updated_at: 2.days.ago
+      )
+      observation_id = legacy_insert(
+        :observations,
+        policy_id: policy_id,
+        station_id: rainfall_station.id,
+        rainfall_mm: BigDecimal("10.0"),
+        observed_at: Time.zone.local(2026, 7, 8, 12, 0, 0),
+        created_at: 1.day.ago,
+        updated_at: 1.day.ago
+      )
+      legacy_insert(
+        :payouts,
+        policy_id: policy_id,
+        payout_tier_id: payout_tier.id,
+        payout_status_id: payout_status.id,
+        observation_id: observation_id,
+        idempotency_key: "corrupt-d-#{SecureRandom.hex(4)}",
+        decided_at: 1.day.ago,
+        created_at: 1.day.ago,
+        updated_at: 1.day.ago
+      )
+
+      policy_update_calls = 0
+      allow_any_instance_of(described_class::Policy).to receive(:update_columns).and_wrap_original do |original, *args|
+        policy_update_calls += 1
+        result = original.call(*args)
+        if policy_update_calls == 1
+          described_class::Policy.where(id: policy_id).update_all(station_id: secondary_rainfall_station.id)
+        end
+        result
+      end
+
+      expect { migration.up }
+        .to raise_error(/Data corruption detected: Payout .*does not match policy station/)
+    end
+
+    it "raises when a backfilled payout observation station is corrupted after the policy station backfill" do
+      policy_id = legacy_insert(
+        :policies,
+        user_id: user.id,
+        plan_id: rainfall_plan.id,
+        payout_tier_id: payout_tier.id,
+        policy_status_id: policy_status.id,
+        threshold: "30mm",
+        expires_at: 1.year.from_now,
+        created_at: 2.days.ago,
+        updated_at: 2.days.ago
+      )
+      legacy_insert(
+        :payouts,
+        policy_id: policy_id,
+        payout_tier_id: payout_tier.id,
+        payout_status_id: payout_status.id,
+        observation_id: nil,
+        idempotency_key: "corrupt-e-#{SecureRandom.hex(4)}",
+        decided_at: nil,
+        created_at: Time.zone.local(2026, 7, 9, 12, 0, 0),
+        updated_at: Time.zone.local(2026, 7, 9, 12, 0, 0)
+      )
+
+      policy_update_calls = 0
+      allow_any_instance_of(described_class::Policy).to receive(:update_columns).and_wrap_original do |original, *args|
+        policy_update_calls += 1
+        result = original.call(*args)
+        if policy_update_calls == 2
+          described_class::Policy.where(id: policy_id).update_all(station_id: secondary_rainfall_station.id)
+        end
+        result
+      end
+
+      expect { migration.up }
+        .to raise_error(/Data corruption detected after backfill: Payout .*does not match policy station/)
+    end
+
     it "raises when the plan trigger type does not match the station measurement type" do
       policy_id = legacy_insert(
         :policies,
@@ -420,6 +579,13 @@ RSpec.describe UpdateStage1DomainModelsForReviewComments, type: :migration do
 
       expect { migration.up }
         .to raise_error(/measurement type does not match plan trigger type/)
+    end
+  end
+
+  describe "#down" do
+    it "raises ActiveRecord::IrreversibleMigration" do
+      expect { migration.down }
+        .to raise_error(ActiveRecord::IrreversibleMigration)
     end
   end
 end
