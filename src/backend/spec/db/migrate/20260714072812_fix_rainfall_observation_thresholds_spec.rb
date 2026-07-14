@@ -61,6 +61,47 @@ RSpec.describe FixRainfallObservationThresholds, type: :migration do
       policy = double(threshold: "  25mm_h", id: 9)
       expect(migration.send(:resolve_rainfall_threshold_mm!, policy)).to eq(BigDecimal("25.0"))
     end
+
+    it "resolves threshold at the exact column maximum (9999.99)" do
+      policy = double(threshold: "9999.99mm", id: 10)
+      expect(migration.send(:resolve_rainfall_threshold_mm!, policy)).to eq(BigDecimal("9999.99"))
+    end
+
+    it "raises when the threshold exceeds the column maximum (decimal(6,2))" do
+      policy = double(threshold: "10000mm", id: 11)
+      expect { migration.send(:resolve_rainfall_threshold_mm!, policy) }
+        .to raise_error(
+          RuntimeError,
+          "Migration blocked: Cannot resolve rainfall threshold for Policy 11 threshold '10000mm'."
+        )
+    end
+
+    it "raises when the threshold is negative" do
+      policy = double(threshold: "-5mm", id: 12)
+      expect { migration.send(:resolve_rainfall_threshold_mm!, policy) }
+        .to raise_error(
+          RuntimeError,
+          "Migration blocked: Cannot resolve rainfall threshold for Policy 12 threshold '-5mm'."
+        )
+    end
+
+    it "raises when the threshold is NaN" do
+      policy = double(threshold: "NaN", id: 13)
+      expect { migration.send(:resolve_rainfall_threshold_mm!, policy) }
+        .to raise_error(
+          RuntimeError,
+          "Migration blocked: Cannot resolve rainfall threshold for Policy 13 threshold 'NaN'."
+        )
+    end
+
+    it "raises when the threshold is Infinity" do
+      policy = double(threshold: "Infinity", id: 14)
+      expect { migration.send(:resolve_rainfall_threshold_mm!, policy) }
+        .to raise_error(
+          RuntimeError,
+          "Migration blocked: Cannot resolve rainfall threshold for Policy 14 threshold 'Infinity'."
+        )
+    end
   end
 
   describe "#up" do

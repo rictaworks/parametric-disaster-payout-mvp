@@ -1,6 +1,9 @@
 require "bigdecimal"
 
 class FixRainfallObservationThresholds < ActiveRecord::Migration[7.2]
+  # observations.rainfall_mm は decimal(6, 2) のため、これを超える値は保存できない
+  RAINFALL_MM_MAX = BigDecimal("9999.99")
+
   # 一時的なActiveRecordクラス定義（マイグレーション安全性のため）
   class Policy < ActiveRecord::Base; end
   class Station < ActiveRecord::Base; end
@@ -112,7 +115,15 @@ class FixRainfallObservationThresholds < ActiveRecord::Migration[7.2]
     # 大文字小文字問わず）を除去する。単位除去後にも再度 strip し、
     # 数値と単位の間に空白が挟まっていても解決できるようにする
     normalized = policy.threshold.to_s.strip.gsub(/(?:mm-h|mm\/1h|mm\/h|mm_h|mm)\s*\z/i, '').strip
-    BigDecimal(normalized)
+    value = BigDecimal(normalized)
+
+    # BigDecimal は "NaN" / "Infinity" を例外なく受理するため、有限値・非負・
+    # カラム上限（decimal(6,2) = 9999.99）以内であることを明示的に検証する
+    unless value.finite? && value >= 0 && value <= RAINFALL_MM_MAX
+      raise ArgumentError, "rainfall threshold out of range: #{value}"
+    end
+
+    value
   rescue ArgumentError, TypeError
     raise "Migration blocked: Cannot resolve rainfall threshold for Policy #{policy.id} threshold '#{policy.threshold}'."
   end
