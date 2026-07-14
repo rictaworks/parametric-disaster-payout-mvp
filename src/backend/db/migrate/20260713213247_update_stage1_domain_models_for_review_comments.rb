@@ -6,10 +6,14 @@ class UpdateStage1DomainModelsForReviewComments < ActiveRecord::Migration[7.2]
   class Observation < ActiveRecord::Base; end
   class Payout < ActiveRecord::Base; end
   class SurveyResponse < ActiveRecord::Base; end
+  class Notification < ActiveRecord::Base; end
   class SeismicIntensityLevel < ActiveRecord::Base; end
   class PolicyStatus < ActiveRecord::Base; end
   class LegacySurveyResponse < ActiveRecord::Base
     self.table_name = 'legacy_survey_responses'
+  end
+  class LegacyPayout < ActiveRecord::Base
+    self.table_name = 'legacy_payouts'
   end
 
   def up
@@ -60,6 +64,11 @@ class UpdateStage1DomainModelsForReviewComments < ActiveRecord::Migration[7.2]
       )
     }
 
+    # 複数観測点を参照する支払を持つため station_id を一意に決定できない契約の ID を記録しておく。
+    # このあと E. でこれらの契約に新しい支払が来ても、フォールバック観測点を割り当てて
+    # 既存の支払との整合性を壊すことがないようにするため。
+    ambiguous_station_policy_ids = []
+
     # A. Policy のバックフィル (station_id と waiting_until)
     # 支払が参照する観測点（実データ上の支払根拠）を優先決定し、特定不能・複数ある契約は nil として継続移行する
     # 設定前に、プランの種別と観測点種別が一致しているか厳密に照合し、不一致データは移行を停止して整合性を保証
@@ -76,21 +85,33 @@ class UpdateStage1DomainModelsForReviewComments < ActiveRecord::Migration[7.2]
       candidate_station_ids = if payout_station_ids.size == 1
                                payout_station_ids
       elsif payout_station_ids.size > 1
-                               raise "Policy #{policy.id} has payouts referencing multiple stations (#{payout_station_ids.join(', ')}). Cannot backfill station_id unambiguously."
+                               # 複数観測点を参照する支払がある契約は、一意に決定できないため
+                               # station_id = NULL のレガシー契約として安全に継続移行する（raise しない）
+                               ambiguous_station_policy_ids << policy.id
+                               []
       else
                                obs_station_ids
       end
 
       # プラン種別と観測点種別の照合
       plan = Plan.find_by(id: policy.plan_id)
+
+      # station_id を一意に決定できるか（曖昧性の処理）とは独立して、
+      # 支払が実際に参照している全観測点の種別を検証する。
+      # 複数観測点を参照する契約でも、そのうち一つでもプラン種別と不一致な
+      # 観測点があれば、station_id=nil による安全な継続移行では見逃さず、
+      # 明確なデータ不整合として移行を止める。
+      mismatched_station_ids = payout_station_ids.select do |sid|
+        st = Station.find_by(id: sid)
+        st && plan && st.measurement_type != plan.trigger_type
+      end
+      if mismatched_station_ids.any?
+        raise "Data corruption: Policy #{policy.id} has a payout referencing station(s) #{mismatched_station_ids.join(', ')} whose measurement type does not match plan trigger type '#{plan&.trigger_type}'."
+      end
+
       matched_station_ids = candidate_station_ids.select do |sid|
         st = Station.find_by(id: sid)
         st && plan && st.measurement_type == plan.trigger_type
-      end
-
-      # 支払（Payout）がすでに存在しているのに、その支払が参照する観測点がプラン種別と不一致の場合は不整合例外
-      if payout_station_ids.present? && matched_station_ids.empty?
-        raise "Data corruption: Policy #{policy.id} has payouts referencing stations (#{payout_station_ids.join(', ')}) whose measurement type does not match plan trigger type '#{plan&.trigger_type}'."
       end
 
       # 複数候補が存在する場合や、特定不能な場合は例外にせず nil (レガシー契約) として安全に継続移行
@@ -156,13 +177,19 @@ class UpdateStage1DomainModelsForReviewComments < ActiveRecord::Migration[7.2]
     grouped_seismic.each do |(station_id, observed_at), records|
       next if records.size <= 1
 
-      # 震度レベルが全て一致しているか確認。一致しない場合はデータ完全性が崩れているため例外
-      levels = records.map(&:seismic_intensity_level_id).uniq
-      if levels.size > 1
-        raise "Data corruption: Multiple seismic observations found at station #{station_id} at #{observed_at} with conflicting intensity levels: #{levels.join(', ')}"
+      # マスタを解決できない（seismic_intensity_level_id が nil、または対応するマスタが存在しない）
+      # レコードが1件でも混ざっていると、sort_order の欠損値を 0 として扱うことで
+      # 正当な sort_order = 0 のレコードと同順位になり、誤って代表に選ばれる恐れがあるため、
+      # 代表を決める前に検出して移行を止める
+      if records.any? { |r| SeismicIntensityLevel.find_by(id: r.seismic_intensity_level_id).nil? }
+        raise "Data corruption: Observation at station #{station_id} at #{observed_at} references a missing or unresolvable SeismicIntensityLevel among duplicate records. Isolate this data manually before retrying."
       end
 
-      representative = records.min_by(&:id)
+      # 続報などで震度値が更新された旧観測が複数ある場合、業務仕様（最大観測値）どおり
+      # マスタの sort_order が最大の震度レベルを持つ観測を代表レコードとする（raise しない）
+      representative = records.max_by do |r|
+        SeismicIntensityLevel.find_by(id: r.seismic_intensity_level_id).sort_order
+      end
       duplicates = records - [ representative ]
       duplicate_ids = duplicates.map(&:id)
 
@@ -192,7 +219,12 @@ class UpdateStage1DomainModelsForReviewComments < ActiveRecord::Migration[7.2]
     Payout.where.not(observation_id: nil).find_each do |payout|
       policy = Policy.find_by(id: payout.policy_id)
       obs = Observation.find_by(id: payout.observation_id)
-      if policy && obs && obs.station_id != policy.station_id
+      next if policy.nil? || obs.nil?
+      # station_id が nil の契約は、複数観測点を参照する支払があるため
+      # 上の A. で意図的に特定不能なレガシー契約として継続移行しているので、ここでは検証しない
+      next if policy.station_id.nil?
+
+      if obs.station_id != policy.station_id
         raise "Data corruption detected: Payout #{payout.id} has observation station #{obs.station_id} which does not match policy station #{policy.station_id}. Migration aborted."
       end
     end
@@ -202,12 +234,20 @@ class UpdateStage1DomainModelsForReviewComments < ActiveRecord::Migration[7.2]
     Payout.where(observation_id: nil).find_each do |payout|
       policy = Policy.find_by(id: payout.policy_id)
       if policy.nil?
-        payout.destroy
+        isolate_payout(payout, "Associated policy with ID #{payout.policy_id} not found")
         next
       end
 
-      # 観測履歴のない契約に支払がある場合、プランから特定したダミーの移行用観測点をバックフィルする
       if policy.station_id.nil?
+        if ambiguous_station_policy_ids.include?(policy.id)
+          # 既に複数観測点を参照する支払を持つ契約に、ここでダミーの観測点を割り当てると
+          # 既存の支払が参照している別の観測点との整合性が壊れる。
+          # 一意に決定できない支払として隔離する（既存の payout.nil? ケースと同様に扱う）
+          isolate_payout(payout, "Ambiguous station: Policy #{policy.id} has payouts referencing multiple stations; cannot backfill observation_id unambiguously")
+          next
+        end
+
+        # 観測履歴のない契約に支払がある場合、プランから特定したダミーの移行用観測点をバックフィルする
         plan = Plan.find_by(id: policy.plan_id)
         station = (plan&.trigger_type == "seismic" ? get_or_create_seismic_station.call : get_or_create_rainfall_station.call)
         policy.update_columns(station_id: station.id)
@@ -215,24 +255,46 @@ class UpdateStage1DomainModelsForReviewComments < ActiveRecord::Migration[7.2]
 
       station = Station.find(policy.station_id)
 
-      # 既に同一観測点・同時刻の降雨観測（event_id: nil）が存在するか確認して再利用
-      existing_obs = Observation.find_by(station_id: station.id, observed_at: payout.created_at, event_id: nil)
+      # 震度観測点の場合は、契約の threshold（表示値）から対応するマスタを明示的に特定しておく。
+      # 恣意的な値で正当化せず、特定できない場合は隔離が必要な状態として移行を止める。
+      threshold_level = nil
+      if station.measurement_type == "seismic"
+        threshold_level = SeismicIntensityLevel.find_by(label_ja: policy.threshold)
+        if threshold_level.nil?
+          raise "Migration blocked: Cannot resolve SeismicIntensityLevel for Policy #{policy.id} threshold '#{policy.threshold}'. Isolate this payout manually before retrying."
+        end
+      end
+
+      # 既に同一観測点・同時刻の観測が存在するか確認して再利用する
+      # （震度観測は event_id が付与済みのため event_id: nil では絶対にヒットしない。
+      #   震度観測は、契約の閾値以上（sort_order が閾値以上）の実観測であれば再利用する。
+      #   C. の重複統合により同一観測点・同時刻の震度観測は最大1件しか残っていないため、
+      #   閾値未満であれば実観測を無視して支払根拠を誤魔化さず、新規に閾値通りの観測を作成する）
+      existing_obs = if station.measurement_type == "seismic"
+                       candidate = Observation.where(station_id: station.id, observed_at: payout.created_at)
+                                              .where.not(event_id: nil).first
+                       if candidate
+                         candidate_level = SeismicIntensityLevel.find_by(id: candidate.seismic_intensity_level_id)
+                         candidate if candidate_level && candidate_level.sort_order >= threshold_level.sort_order
+                       end
+      else
+                       Observation.find_by(station_id: station.id, observed_at: payout.created_at, event_id: nil)
+      end
 
       if existing_obs
         payout.update_columns(observation_id: existing_obs.id)
       else
         obs_attrs = {
+          # この時点では observations.policy_id はまだ NOT NULL 制約下にあるため必須で設定する
+          # （制約自体は本メソッド後段の「制約の適用とクリーンアップ」で削除される）
+          policy_id: policy.id,
           station_id: station.id,
           observed_at: payout.created_at,
           simulated: true
         }
 
         if station.measurement_type == "seismic"
-          level = SeismicIntensityLevel.first || SeismicIntensityLevel.create!(
-            code: "temp_level_migration", sort_order: 99,
-            label_ja: "temp", label_en: "temp", label_fr: "temp", label_zh: "temp", label_ru: "temp", label_es: "temp", label_ar: "temp"
-          )
-          obs_attrs[:seismic_intensity_level_id] = level.id
+          obs_attrs[:seismic_intensity_level_id] = threshold_level.id
           obs_attrs[:event_id] = "legacy-event-payout-#{payout.id}"
         else
           obs_attrs[:rainfall_mm] = 0.0
@@ -240,6 +302,18 @@ class UpdateStage1DomainModelsForReviewComments < ActiveRecord::Migration[7.2]
 
         observation = Observation.create!(obs_attrs)
         payout.update_columns(observation_id: observation.id)
+      end
+    end
+
+    # E'. E. でのバックフィル後にも、支払と契約の観測点整合性を再検証する
+    # （D. の時点では station_id が nil だった契約が E. で確定するため、念のため再度確認する）
+    Payout.where.not(observation_id: nil).find_each do |payout|
+      policy = Policy.find_by(id: payout.policy_id)
+      obs = Observation.find_by(id: payout.observation_id)
+      next if policy.nil? || obs.nil? || policy.station_id.nil?
+
+      if obs.station_id != policy.station_id
+        raise "Data corruption detected after backfill: Payout #{payout.id} has observation station #{obs.station_id} which does not match policy station #{policy.station_id}. Migration aborted."
       end
     end
 
@@ -334,5 +408,23 @@ class UpdateStage1DomainModelsForReviewComments < ActiveRecord::Migration[7.2]
       migration_error_reason: reason
     )
     resp.destroy
+  end
+
+  # 支払実績を消去せず legacy_payouts へ全属性を退避してから削除する。
+  # 削除前に、この支払を参照する通知があれば外部キー制約違反にならないよう参照を外しておく
+  # （通知本文自体は個人情報を含まないため、通知そのものは残し支払への参照だけ外す）
+  def isolate_payout(payout, reason)
+    LegacyPayout.create!(
+      policy_id: payout.policy_id,
+      payout_tier_id: payout.payout_tier_id,
+      payout_status_id: payout.payout_status_id,
+      observation_id: payout.observation_id,
+      idempotency_key: payout.idempotency_key,
+      decided_at: payout.decided_at,
+      isolation_reason: reason,
+      legacy_created_at: payout.created_at
+    )
+    Notification.where(payout_id: payout.id).update_all(payout_id: nil)
+    payout.destroy
   end
 end

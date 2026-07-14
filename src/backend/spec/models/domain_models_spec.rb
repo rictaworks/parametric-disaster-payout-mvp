@@ -134,6 +134,26 @@ RSpec.describe Policy, type: :model do
     end
   end
 
+  context "when handling legacy policies with nil station or waiting_until" do
+    let(:legacy_policy) do
+      p = Policy.create!(
+        user: policy.user,
+        plan: policy.plan,
+        station: station,
+        payout_tier: policy.payout_tier,
+        policy_status: policy.policy_status,
+        threshold: "5弱"
+      )
+      p.update_columns(station_id: nil, waiting_until: nil)
+      p
+    end
+
+    it "allows updating other attributes (e.g. terminated_at) without validation errors" do
+      legacy_policy.terminated_at = Time.current
+      expect(legacy_policy).to be_valid
+    end
+  end
+
   context "when waiting_until is updated" do
     before { policy.save! }
 
@@ -993,6 +1013,18 @@ RSpec.describe SurveyResponse, type: :model do
     expect(Payout.exists?(payout.id)).to be_falsey
     expect(SurveyResponse.exists?(survey_response.id)).to be_falsey
   end
+
+  context "with LegacySurveyResponse" do
+    it "does not prevent user deletion and cascades deletes" do
+      ActiveRecord::Base.connection.execute(
+        "INSERT INTO legacy_survey_responses (user_id, response_data, isolation_reason, created_at, updated_at) " \
+        "VALUES (#{user.id}, '{}', 'test_reason', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+      )
+      expect { user.destroy! }.not_to raise_error
+      count = ActiveRecord::Base.connection.select_value("SELECT COUNT(*) FROM legacy_survey_responses WHERE user_id = #{user.id}")
+      expect(count).to eq(0)
+    end
+  end
 end
 
 RSpec.describe "Schema contract", type: :model do
@@ -1021,5 +1053,17 @@ RSpec.describe "Schema contract", type: :model do
     end.to change {
       [ Plan, SeismicIntensityLevel, Station, PayoutTier, PolicyStatus, PayoutStatus ].sum(&:count)
     }.from(0).to(26)
+  end
+
+  it "renames legacy_survey_responses.migration_error_reason to isolation_reason and cascades on user deletion" do
+    connection = ActiveRecord::Base.connection
+
+    column_names = connection.columns(:legacy_survey_responses).map(&:name)
+    expect(column_names).to include("isolation_reason")
+    expect(column_names).not_to include("migration_error_reason")
+
+    user_fk = connection.foreign_keys(:legacy_survey_responses).find { |fk| fk.to_table == "users" }
+    expect(user_fk).not_to be_nil
+    expect(user_fk.on_delete).to eq(:cascade)
   end
 end

@@ -10,13 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_13_213247) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_14_030000) do
+  create_table "legacy_payouts", force: :cascade do |t|
+    t.integer "policy_id"
+    t.integer "payout_tier_id"
+    t.integer "payout_status_id"
+    t.integer "observation_id"
+    t.string "idempotency_key"
+    t.datetime "decided_at"
+    t.string "isolation_reason", null: false
+    t.datetime "legacy_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "legacy_survey_responses", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "policy_id"
     t.json "response_data", default: {}, null: false
     t.datetime "legacy_created_at"
-    t.string "migration_error_reason"
+    t.string "isolation_reason"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -197,6 +210,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_13_213247) do
     t.index ["google_sub"], name: "index_users_on_google_sub", unique: true
   end
 
+  add_foreign_key "legacy_survey_responses", "users", on_delete: :cascade
   add_foreign_key "notifications", "payouts"
   add_foreign_key "notifications", "policies"
   add_foreign_key "notifications", "users"
