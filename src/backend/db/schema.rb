@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_14_030000) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_14_072812) do
   create_table "legacy_payouts", force: :cascade do |t|
     t.integer "policy_id"
     t.integer "payout_tier_id"
