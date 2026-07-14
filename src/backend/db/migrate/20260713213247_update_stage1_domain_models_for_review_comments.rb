@@ -1,3 +1,5 @@
+require "bigdecimal"
+
 class UpdateStage1DomainModelsForReviewComments < ActiveRecord::Migration[7.2]
   # 一時的なActiveRecordクラス定義（マイグレーション安全性のため）
   class Policy < ActiveRecord::Base; end
@@ -258,11 +260,11 @@ class UpdateStage1DomainModelsForReviewComments < ActiveRecord::Migration[7.2]
       # 震度観測点の場合は、契約の threshold（表示値）から対応するマスタを明示的に特定しておく。
       # 恣意的な値で正当化せず、特定できない場合は隔離が必要な状態として移行を止める。
       threshold_level = nil
+      rainfall_mm = nil
       if station.measurement_type == "seismic"
-        threshold_level = SeismicIntensityLevel.find_by(label_ja: policy.threshold)
-        if threshold_level.nil?
-          raise "Migration blocked: Cannot resolve SeismicIntensityLevel for Policy #{policy.id} threshold '#{policy.threshold}'. Isolate this payout manually before retrying."
-        end
+        threshold_level = resolve_seismic_threshold_level!(policy)
+      else
+        rainfall_mm = resolve_rainfall_threshold_mm!(policy)
       end
 
       # 既に同一観測点・同時刻の観測が存在するか確認して再利用する
@@ -297,7 +299,7 @@ class UpdateStage1DomainModelsForReviewComments < ActiveRecord::Migration[7.2]
           obs_attrs[:seismic_intensity_level_id] = threshold_level.id
           obs_attrs[:event_id] = "legacy-event-payout-#{payout.id}"
         else
-          obs_attrs[:rainfall_mm] = 0.0
+          obs_attrs[:rainfall_mm] = rainfall_mm
         end
 
         observation = Observation.create!(obs_attrs)
@@ -426,5 +428,18 @@ class UpdateStage1DomainModelsForReviewComments < ActiveRecord::Migration[7.2]
     )
     Notification.where(payout_id: payout.id).update_all(payout_id: nil)
     payout.destroy
+  end
+
+  def resolve_seismic_threshold_level!(policy)
+    threshold_level = SeismicIntensityLevel.find_by(label_ja: policy.threshold)
+    return threshold_level if threshold_level.present?
+
+    raise "Migration blocked: Cannot resolve SeismicIntensityLevel for Policy #{policy.id} threshold '#{policy.threshold}'. Isolate this payout manually before retrying."
+  end
+
+  def resolve_rainfall_threshold_mm!(policy)
+    BigDecimal(policy.threshold)
+  rescue ArgumentError, TypeError
+    raise "Migration blocked: Cannot resolve rainfall threshold for Policy #{policy.id} threshold '#{policy.threshold}'. Isolate this payout manually before retrying."
   end
 end
