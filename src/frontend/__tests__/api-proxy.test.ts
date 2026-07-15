@@ -314,4 +314,29 @@ describe("API proxy", () => {
     const [, init] = (global.fetch as jest.Mock).mock.calls[0];
     expect(init.headers.get("X-Internal-Session-Token")).toBe("real-token");
   });
+
+  it("skips an empty-valued session cookie and uses a later same-named cookie that has a value", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      text: async () => JSON.stringify({}),
+    });
+
+    const request = {
+      method: "GET",
+      url: "http://localhost:3000/api/v1/policies",
+      headers: new Headers({
+        host: "localhost:3000",
+        cookie: "parametric_session_token=; parametric_session_token=real-token",
+      }),
+      arrayBuffer: async () => new ArrayBuffer(0),
+    } as unknown as Request;
+
+    await proxyRequest(request, ["v1", "policies"]);
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    const [, init] = (global.fetch as jest.Mock).mock.calls[0];
+    expect(init.headers.get("X-Internal-Session-Token")).toBe("real-token");
+  });
 });

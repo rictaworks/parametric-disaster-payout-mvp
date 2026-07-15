@@ -94,8 +94,9 @@ function extractSessionToken(request: Request): string | undefined {
   return cookieHeader
     .split(";")
     .map((pair) => pair.trim())
-    .find((pair) => pair.startsWith(`${SESSION_COOKIE_NAME}=`))
-    ?.slice(SESSION_COOKIE_NAME.length + 1);
+    .filter((pair) => pair.startsWith(`${SESSION_COOKIE_NAME}=`))
+    .map((pair) => pair.slice(SESSION_COOKIE_NAME.length + 1))
+    .find((tokenValue) => tokenValue.length > 0);
 }
 
 async function buildRequestBody(request: Request) {
