@@ -1,0 +1,48 @@
+{
+  "app": {
+    "title": "Parametric Disaster Payout Demo",
+    "tagline": "Insurance demo flow through the Vercel BFF"
+  },
+  "banner": {
+    "notice": "This service is a demo for demand research and does not underwrite policies or make real payments."
+  },
+  "navigation": {
+    "label": "Navigation",
+    "home": "Home",
+    "login": "Login"
+  },
+  "language": {
+    "label": "Language",
+    "options": {
+      "ja": "Japanese",
+      "en": "English",
+      "fr": "French",
+      "zh": "Chinese",
+      "ru": "Russian",
+      "es": "Spanish",
+      "ar": "Arabic"
+    }
+  },
+  "home": {
+    "eyebrow": "BFF / Route Handler",
+    "title": "Keep Rails hidden while the demo payout flow runs in the browser.",
+    "description": "The browser always talks to the Vercel domain, and Next.js Route Handlers relay API traffic to Rails.",
+    "primaryAction": "Open login",
+    "secondaryAction": "Vercel-only network",
+    "featureA": "Persistent strip with the demo notice",
+    "featureB": "Switch among 7 languages instantly",
+    "featureC": "Session cookie issued on the Next.js side"
+  },
+  "login": {
+    "eyebrow": "Google login",
+    "title": "Send a Google ID token to the BFF to start a session.",
+    "description": "The browser posts only to the Vercel domain, and Next.js forwards the request safely to Rails.",
+    "idTokenLabel": "Google ID token",
+    "idTokenPlaceholder": "Paste the ID token from Google",
+    "submit": "Create session",
+    "submitting": "Sending",
+    "hint": "A successful sign-in sets a session cookie scoped to the Vercel domain.",
+    "success": "Login succeeded.",
+    "error": "Login failed."
+  }
+}

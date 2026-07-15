@@ -1,11 +1,36 @@
+"use client";
+
+import Link from "next/link";
+import { useLocale } from "@/components/LocaleContext";
+import { PageSection } from "@/components/PageSection";
+
 export default function Home() {
+  const { messages } = useLocale();
+
   return (
-    <main>
-      <h1>パラメトリック災害保険（デモ）</h1>
-      <p>
-        本サービスは保険の引受・実支払を行わない需要調査用の模擬デモです。
-        実際の金銭のお支払いは発生しません。
-      </p>
-    </main>
+    <PageSection title={messages.home.title} description={messages.home.description}>
+      <div className="stack">
+        <p className="eyebrow">{messages.home.eyebrow}</p>
+
+        <div className="feature-grid">
+          <article className="panel panel--quiet">
+            <h2>{messages.home.featureA}</h2>
+          </article>
+          <article className="panel panel--quiet">
+            <h2>{messages.home.featureB}</h2>
+          </article>
+          <article className="panel panel--quiet">
+            <h2>{messages.home.featureC}</h2>
+          </article>
+        </div>
+
+        <div className="action-row">
+          <Link href="/login" className="primary-button">
+            {messages.home.primaryAction}
+          </Link>
+          <span className="inline-note">{messages.home.secondaryAction}</span>
+        </div>
+      </div>
+    </PageSection>
   );
 }

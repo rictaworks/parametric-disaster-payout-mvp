@@ -1,0 +1,48 @@
+{
+  "app": {
+    "title": "参数化灾害赔付演示",
+    "tagline": "通过 Vercel BFF 的保险演示流程"
+  },
+  "banner": {
+    "notice": "本服务是用于需求调研的演示，不承保保单，也不进行真实赔付。"
+  },
+  "navigation": {
+    "label": "导航",
+    "home": "首页",
+    "login": "登录"
+  },
+  "language": {
+    "label": "语言",
+    "options": {
+      "ja": "日语",
+      "en": "英语",
+      "fr": "法语",
+      "zh": "中文",
+      "ru": "俄语",
+      "es": "西班牙语",
+      "ar": "阿拉伯语"
+    }
+  },
+  "home": {
+    "eyebrow": "BFF / Route Handler",
+    "title": "在浏览器中运行演示流程，同时让 Rails 保持隐藏。",
+    "description": "浏览器始终只与 Vercel 域通信，Next.js Route Handler 再把 API 请求转发给 Rails。",
+    "primaryAction": "打开登录页",
+    "secondaryAction": "仅 Vercel 网络",
+    "featureA": "持续显示演示提示条",
+    "featureB": "一键切换 7 种语言",
+    "featureC": "会话 Cookie 由 Next.js 颁发"
+  },
+  "login": {
+    "eyebrow": "Google 登录",
+    "title": "把 Google ID 令牌发送给 BFF 即可开始会话。",
+    "description": "浏览器只向 Vercel 域发送请求，Next.js 会安全地转发到 Rails。",
+    "idTokenLabel": "Google ID 令牌",
+    "idTokenPlaceholder": "粘贴从 Google 获取的 ID 令牌",
+    "submit": "创建会话",
+    "submitting": "发送中",
+    "hint": "登录成功后会设置作用域为 Vercel 域的会话 Cookie。",
+    "success": "登录成功。",
+    "error": "登录失败。"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "app": {
+    "title": "Демо параметрической выплаты",
+    "tagline": "Поток демо через Vercel BFF"
+  },
+  "banner": {
+    "notice": "Этот сервис предназначен для исследования спроса, не оформляет полисы и не выполняет реальные выплаты."
+  },
+  "navigation": {
+    "label": "Навигация",
+    "home": "Главная",
+    "login": "Вход"
+  },
+  "language": {
+    "label": "Язык",
+    "options": {
+      "ja": "Японский",
+      "en": "Английский",
+      "fr": "Французский",
+      "zh": "Китайский",
+      "ru": "Русский",
+      "es": "Испанский",
+      "ar": "Арабский"
+    }
+  },
+  "home": {
+    "eyebrow": "BFF / Route Handler",
+    "title": "Скрывайте Rails, пока демо-процесс работает в браузере.",
+    "description": "Браузер всегда общается только с доменом Vercel, а Next.js Route Handlers передают API-запросы в Rails.",
+    "primaryAction": "Открыть вход",
+    "secondaryAction": "Только сеть Vercel",
+    "featureA": "Постоянная полоса с уведомлением о демо",
+    "featureB": "Мгновенное переключение между 7 языками",
+    "featureC": "Cookie сеанса выдаётся на стороне Next.js"
+  },
+  "login": {
+    "eyebrow": "Вход через Google",
+    "title": "Отправьте Google ID token в BFF, чтобы начать сеанс.",
+    "description": "Браузер отправляет запрос только на домен Vercel, а Next.js безопасно перенаправляет его в Rails.",
+    "idTokenLabel": "Google ID token",
+    "idTokenPlaceholder": "Вставьте ID token, полученный в Google",
+    "submit": "Создать сеанс",
+    "submitting": "Отправка",
+    "hint": "Успешный вход создаёт cookie сеанса, ограниченную доменом Vercel.",
+    "success": "Вход выполнен успешно.",
+    "error": "Не удалось войти."
+  }
+}

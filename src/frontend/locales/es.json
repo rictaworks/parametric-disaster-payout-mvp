@@ -1,0 +1,48 @@
+{
+  "app": {
+    "title": "Demo de pago paramétrico",
+    "tagline": "Flujo de demostración a través del BFF de Vercel"
+  },
+  "banner": {
+    "notice": "Este servicio es una demo para investigación de demanda y no emite pólizas ni realiza pagos reales."
+  },
+  "navigation": {
+    "label": "Navegación",
+    "home": "Inicio",
+    "login": "Acceder"
+  },
+  "language": {
+    "label": "Idioma",
+    "options": {
+      "ja": "Japonés",
+      "en": "Inglés",
+      "fr": "Francés",
+      "zh": "Chino",
+      "ru": "Ruso",
+      "es": "Español",
+      "ar": "Árabe"
+    }
+  },
+  "home": {
+    "eyebrow": "BFF / Route Handler",
+    "title": "Oculta Rails mientras el flujo de demostración se ejecuta en el navegador.",
+    "description": "El navegador siempre habla solo con el dominio de Vercel, y los Route Handlers de Next.js reenvían las llamadas API a Rails.",
+    "primaryAction": "Abrir acceso",
+    "secondaryAction": "Solo red de Vercel",
+    "featureA": "Franja permanente con el aviso de demostración",
+    "featureB": "Cambio instantáneo entre 7 idiomas",
+    "featureC": "Cookie de sesión emitida por Next.js"
+  },
+  "login": {
+    "eyebrow": "Acceso con Google",
+    "title": "Envía un token de identidad de Google al BFF para iniciar sesión.",
+    "description": "El navegador envía solicitudes solo al dominio de Vercel, y Next.js las reenvía de forma segura a Rails.",
+    "idTokenLabel": "Token de identidad de Google",
+    "idTokenPlaceholder": "Pega el token de identidad obtenido en Google",
+    "submit": "Crear sesión",
+    "submitting": "Enviando",
+    "hint": "Un acceso correcto establece una cookie de sesión limitada al dominio de Vercel.",
+    "success": "Acceso correcto.",
+    "error": "Error al acceder."
+  }
+}
