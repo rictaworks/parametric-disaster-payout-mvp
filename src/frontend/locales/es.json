@@ -9,7 +9,9 @@
   "navigation": {
     "label": "Navegación",
     "home": "Inicio",
-    "login": "Acceder"
+    "policies": "Solicitud",
+    "mypage": "Mi página",
+    "login": "Iniciar sesión"
   },
   "language": {
     "label": "Idioma",
@@ -44,5 +46,122 @@
     "hint": "Un acceso correcto establece una cookie de sesión limitada al dominio de Vercel.",
     "success": "Acceso correcto.",
     "error": "Error al acceder."
+  },
+  "policies": {
+    "new": {
+      "pageTitle": "Asistente de solicitud de póliza",
+      "pageDescription": "Elige plan, estación, umbral, tramo de pago y envía la solicitud mediante el BFF.",
+      "eyebrow": "5 pasos",
+      "title": "Solicitar una póliza simulada",
+      "description": "Selecciona tarjetas de estilo maqueta y activa reCAPTCHA antes de enviar.",
+      "stepperLabel": "Pasos de la solicitud",
+      "steps": {
+        "plan": "1. Plan",
+        "station": "2. Estación",
+        "threshold": "3. Umbral",
+        "payoutTier": "4. Pago",
+        "confirm": "5. Revisión"
+      },
+      "planHelp": "Elige el tipo de plan que coincida con el disparador del desastre.",
+      "stationHelp": "Selecciona el punto de observación usado para evaluar el disparador.",
+      "thresholdHelp": "Selecciona el valor del umbral que se enviará a Rails.",
+      "payoutHelp": "Elige el tramo de pago simulado para esta póliza.",
+      "planDescriptions": {
+        "seismic": "Póliza vinculada a sismos",
+        "rainfall": "Póliza vinculada a lluvias"
+      },
+      "stationBadges": {
+        "seismic": "Punto sísmico",
+        "rainfall": "Punto de lluvia"
+      },
+      "thresholdBadges": {
+        "seismic": "Umbral sísmico",
+        "rainfall": "Umbral de lluvia"
+      },
+      "payoutBadges": {
+        "ten_thousand": "Equivalente a 10.000 JPY (simulado)",
+        "thirty_thousand": "Equivalente a 30.000 JPY (simulado)"
+      },
+      "plans": {
+        "seismic": "Vinculada a sismos",
+        "rainfall": "Vinculada a lluvias"
+      },
+      "stations": {
+        "seismic_tokyo": "Estación sísmica de Tokio",
+        "seismic_osaka": "Estación sísmica de Osaka",
+        "rainfall_tokyo": "Estación pluvial de Tokio"
+      },
+      "thresholds": {
+        "seismic": {
+          "seismic_0": "0",
+          "seismic_1": "1",
+          "seismic_2": "2",
+          "seismic_3": "3",
+          "seismic_4": "4",
+          "seismic_5_weak": "5 débil",
+          "seismic_5_strong": "5 fuerte",
+          "seismic_6_weak": "6 débil",
+          "seismic_6_strong": "6 fuerte",
+          "seismic_7": "7"
+        },
+        "rainfall": {
+          "rainfall_10": "10 mm",
+          "rainfall_20": "20 mm",
+          "rainfall_30": "30 mm",
+          "rainfall_50": "50 mm",
+          "rainfall_80": "80 mm"
+        }
+      },
+      "payoutTiers": {
+        "ten_thousand": "Equivalente a 10.000 JPY (simulado)",
+        "thirty_thousand": "Equivalente a 30.000 JPY (simulado)"
+      },
+      "ageGroupLabel": "Grupo de edad (opcional)",
+      "ageGroups": {
+        "unspecified": "No especificado",
+        "under30": "Menos de 30",
+        "thirties": "30 y tantos",
+        "forties": "40 y tantos",
+        "fiftyPlus": "50+"
+      },
+      "reviewTitle": "Revisa la solicitud",
+      "reviewLabels": {
+        "plan": "Plan",
+        "station": "Estación",
+        "threshold": "Umbral",
+        "payoutTier": "Pago"
+      },
+      "recaptchaLabel": "Casilla reCAPTCHA (simulada)",
+      "recaptchaHint": "Actívala para poder enviar la solicitud.",
+      "actions": {
+        "back": "Atrás",
+        "next": "Siguiente",
+        "submit": "Enviar",
+        "submitting": "Enviando"
+      },
+      "errors": {
+        "duplicatePolicy": "Ya tienes una póliza activa del mismo tipo de plan.",
+        "recaptchaRequired": "Marca la casilla de reCAPTCHA.",
+        "submitFailed": "No se pudo enviar la solicitud."
+      },
+      "statuses": {
+        "pending": "Pendiente"
+      }
+    }
+  },
+  "mypage": {
+    "title": "Mi página",
+    "description": "Consulta la última póliza simulada que solicitaste.",
+    "latestApplication": "Última solicitud",
+    "emptyState": "Todavía no hay solicitudes guardadas. Créala desde el asistente.",
+    "primaryAction": "Abrir el asistente",
+    "waitingExplanation": "En esta demo, la póliza enviada se muestra con el estado Pendiente.",
+    "labels": {
+      "plan": "Plan",
+      "station": "Estación",
+      "threshold": "Umbral",
+      "payoutTier": "Pago",
+      "ageGroup": "Grupo de edad"
+    }
   }
 }

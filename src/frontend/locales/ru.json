@@ -9,6 +9,8 @@
   "navigation": {
     "label": "Навигация",
     "home": "Главная",
+    "policies": "Оформление",
+    "mypage": "Моя страница",
     "login": "Вход"
   },
   "language": {
@@ -44,5 +46,122 @@
     "hint": "Успешный вход создаёт cookie сеанса, ограниченную доменом Vercel.",
     "success": "Вход выполнен успешно.",
     "error": "Не удалось войти."
+  },
+  "policies": {
+    "new": {
+      "pageTitle": "Мастер оформления полиса",
+      "pageDescription": "Последовательно выберите план, станцию, порог, сумму выплат и отправьте заявку через BFF.",
+      "eyebrow": "5 шагов",
+      "title": "Оформить симулированный полис",
+      "description": "Выбирайте карточки по шагам, затем включите reCAPTCHA перед отправкой.",
+      "stepperLabel": "Шаги заявки",
+      "steps": {
+        "plan": "1. План",
+        "station": "2. Станция",
+        "threshold": "3. Порог",
+        "payoutTier": "4. Выплата",
+        "confirm": "5. Проверка"
+      },
+      "planHelp": "Выберите тип плана, соответствующий триггеру бедствия.",
+      "stationHelp": "Выберите пункт наблюдения, используемый для оценки триггера.",
+      "thresholdHelp": "Выберите порог, который будет отправлен в Rails.",
+      "payoutHelp": "Выберите симулированную выплату для этого полиса.",
+      "planDescriptions": {
+        "seismic": "Полис, связанный с землетрясениями",
+        "rainfall": "Полис, связанный с осадками"
+      },
+      "stationBadges": {
+        "seismic": "Сейсмическая станция",
+        "rainfall": "Дождемерная станция"
+      },
+      "thresholdBadges": {
+        "seismic": "Сейсмический порог",
+        "rainfall": "Порог осадков"
+      },
+      "payoutBadges": {
+        "ten_thousand": "Эквивалент 10 000 иен (симуляция)",
+        "thirty_thousand": "Эквивалент 30 000 иен (симуляция)"
+      },
+      "plans": {
+        "seismic": "Сейсмический",
+        "rainfall": "По осадкам"
+      },
+      "stations": {
+        "seismic_tokyo": "Сейсмостанция Токио",
+        "seismic_osaka": "Сейсмостанция Осаки",
+        "rainfall_tokyo": "Дождемерная станция Токио"
+      },
+      "thresholds": {
+        "seismic": {
+          "seismic_0": "0",
+          "seismic_1": "1",
+          "seismic_2": "2",
+          "seismic_3": "3",
+          "seismic_4": "4",
+          "seismic_5_weak": "5 слабый",
+          "seismic_5_strong": "5 сильный",
+          "seismic_6_weak": "6 слабый",
+          "seismic_6_strong": "6 сильный",
+          "seismic_7": "7"
+        },
+        "rainfall": {
+          "rainfall_10": "10 mm",
+          "rainfall_20": "20 mm",
+          "rainfall_30": "30 mm",
+          "rainfall_50": "50 mm",
+          "rainfall_80": "80 mm"
+        }
+      },
+      "payoutTiers": {
+        "ten_thousand": "Эквивалент 10 000 иен (симуляция)",
+        "thirty_thousand": "Эквивалент 30 000 иен (симуляция)"
+      },
+      "ageGroupLabel": "Возрастная группа (необязательно)",
+      "ageGroups": {
+        "unspecified": "Не указано",
+        "under30": "До 30",
+        "thirties": "30-е",
+        "forties": "40-е",
+        "fiftyPlus": "50+"
+      },
+      "reviewTitle": "Проверьте заявку",
+      "reviewLabels": {
+        "plan": "План",
+        "station": "Станция",
+        "threshold": "Порог",
+        "payoutTier": "Выплата"
+      },
+      "recaptchaLabel": "Флажок reCAPTCHA (симуляция)",
+      "recaptchaHint": "Включите его, чтобы отправить заявку.",
+      "actions": {
+        "back": "Назад",
+        "next": "Далее",
+        "submit": "Отправить",
+        "submitting": "Отправка"
+      },
+      "errors": {
+        "duplicatePolicy": "У вас уже есть активный полис того же типа.",
+        "recaptchaRequired": "Пожалуйста, отметьте reCAPTCHA.",
+        "submitFailed": "Не удалось отправить заявку."
+      },
+      "statuses": {
+        "pending": "В ожидании"
+      }
+    }
+  },
+  "mypage": {
+    "title": "Моя страница",
+    "description": "Просмотрите ваш последний симулированный полис.",
+    "latestApplication": "Последняя заявка",
+    "emptyState": "Сохранённых заявок пока нет. Создайте их в мастере.",
+    "primaryAction": "Открыть мастер",
+    "waitingExplanation": "В этой демонстрации отправленный полис показывается со статусом «В ожидании».",
+    "labels": {
+      "plan": "План",
+      "station": "Станция",
+      "threshold": "Порог",
+      "payoutTier": "Выплата",
+      "ageGroup": "Возрастная группа"
+    }
   }
 }

@@ -9,6 +9,8 @@
   "navigation": {
     "label": "ナビゲーション",
     "home": "ホーム",
+    "policies": "申込ウィザード",
+    "mypage": "マイページ",
     "login": "ログイン"
   },
   "language": {
@@ -44,5 +46,122 @@
     "hint": "成功すると Vercel ドメインスコープのセッション Cookie が設定されます。",
     "success": "ログインに成功しました。",
     "error": "ログインに失敗しました。"
+  },
+  "policies": {
+    "new": {
+      "pageTitle": "契約申込ウィザード",
+      "pageDescription": "プラン、観測点、閾値、支払額区分を順に選び、BFF 経由で申込を送信します。",
+      "eyebrow": "5 ステップ",
+      "title": "模擬契約を申し込む",
+      "description": "モック風のカードで選択し、最後に reCAPTCHA チェックを入れて送信します。",
+      "stepperLabel": "申込ステップ",
+      "steps": {
+        "plan": "① プラン選択",
+        "station": "② 観測点選択",
+        "threshold": "③ 支払トリガー閾値選択",
+        "payoutTier": "④ 支払額区分選択",
+        "confirm": "⑤ 内容確認"
+      },
+      "planHelp": "災害トリガーに合うプランを選択してください。",
+      "stationHelp": "トリガー判定に使う観測点を選択してください。",
+      "thresholdHelp": "Rails に送る閾値を選択してください。",
+      "payoutHelp": "この契約で使う模擬支払額区分を選択してください。",
+      "planDescriptions": {
+        "seismic": "震度に連動する契約",
+        "rainfall": "雨量に連動する契約"
+      },
+      "stationBadges": {
+        "seismic": "震度観測点",
+        "rainfall": "雨量観測点"
+      },
+      "thresholdBadges": {
+        "seismic": "震度閾値",
+        "rainfall": "雨量閾値"
+      },
+      "payoutBadges": {
+        "ten_thousand": "1万円相当（模擬）",
+        "thirty_thousand": "3万円相当（模擬）"
+      },
+      "plans": {
+        "seismic": "震度連動",
+        "rainfall": "降雨連動"
+      },
+      "stations": {
+        "seismic_tokyo": "東京震度観測点",
+        "seismic_osaka": "大阪震度観測点",
+        "rainfall_tokyo": "東京雨量観測点"
+      },
+      "thresholds": {
+        "seismic": {
+          "seismic_0": "0",
+          "seismic_1": "1",
+          "seismic_2": "2",
+          "seismic_3": "3",
+          "seismic_4": "4",
+          "seismic_5_weak": "5弱",
+          "seismic_5_strong": "5強",
+          "seismic_6_weak": "6弱",
+          "seismic_6_strong": "6強",
+          "seismic_7": "7"
+        },
+        "rainfall": {
+          "rainfall_10": "10 mm",
+          "rainfall_20": "20 mm",
+          "rainfall_30": "30 mm",
+          "rainfall_50": "50 mm",
+          "rainfall_80": "80 mm"
+        }
+      },
+      "payoutTiers": {
+        "ten_thousand": "1万円相当（模擬）",
+        "thirty_thousand": "3万円相当（模擬）"
+      },
+      "ageGroupLabel": "年齢層（任意）",
+      "ageGroups": {
+        "unspecified": "未選択",
+        "under30": "30 歳未満",
+        "thirties": "30 代",
+        "forties": "40 代",
+        "fiftyPlus": "50 歳以上"
+      },
+      "reviewTitle": "内容を確認してください",
+      "reviewLabels": {
+        "plan": "プラン",
+        "station": "観測点",
+        "threshold": "閾値",
+        "payoutTier": "支払額区分"
+      },
+      "recaptchaLabel": "reCAPTCHA チェックボックス（模擬）",
+      "recaptchaHint": "これを有効にすると申込ボタンが押せます。",
+      "actions": {
+        "back": "戻る",
+        "next": "次へ",
+        "submit": "申込する",
+        "submitting": "送信中"
+      },
+      "errors": {
+        "duplicatePolicy": "同一プラン種別の有効な契約が既にあります。",
+        "recaptchaRequired": "reCAPTCHA のチェックが必要です。",
+        "submitFailed": "申込に失敗しました。"
+      },
+      "statuses": {
+        "pending": "待機中"
+      }
+    }
+  },
+  "mypage": {
+    "title": "マイページ",
+    "description": "最新の模擬契約を確認できます。",
+    "latestApplication": "最新の申込",
+    "emptyState": "まだ申込データがありません。申込ウィザードから作成してください。",
+    "primaryAction": "申込ウィザードへ",
+    "waitingExplanation": "このデモでは、申込完了後の契約は「待機中」として表示されます。",
+    "labels": {
+      "plan": "プラン",
+      "station": "観測点",
+      "threshold": "閾値",
+      "payoutTier": "支払額区分",
+      "ageGroup": "年齢層"
+    }
   }
 }

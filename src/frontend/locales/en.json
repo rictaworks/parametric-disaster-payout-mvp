@@ -9,6 +9,8 @@
   "navigation": {
     "label": "Navigation",
     "home": "Home",
+    "policies": "Apply",
+    "mypage": "My page",
     "login": "Login"
   },
   "language": {
@@ -44,5 +46,122 @@
     "hint": "A successful sign-in sets a session cookie scoped to the Vercel domain.",
     "success": "Login succeeded.",
     "error": "Login failed."
+  },
+  "policies": {
+    "new": {
+      "pageTitle": "Policy application wizard",
+      "pageDescription": "Choose the plan, station, trigger threshold, payout tier, and then submit through the BFF.",
+      "eyebrow": "5 steps",
+      "title": "Apply for a simulated policy",
+      "description": "Pick options with mock-style cards, then turn on reCAPTCHA before submitting.",
+      "stepperLabel": "Application steps",
+      "steps": {
+        "plan": "1. Plan",
+        "station": "2. Station",
+        "threshold": "3. Trigger threshold",
+        "payoutTier": "4. Payout tier",
+        "confirm": "5. Review"
+      },
+      "planHelp": "Choose the plan type that matches the disaster trigger.",
+      "stationHelp": "Select the observation point used to evaluate the trigger.",
+      "thresholdHelp": "Select the threshold value that will be sent to Rails.",
+      "payoutHelp": "Choose the simulated payout tier for this policy.",
+      "planDescriptions": {
+        "seismic": "Earthquake-linked policy",
+        "rainfall": "Rainfall-linked policy"
+      },
+      "stationBadges": {
+        "seismic": "Seismic observation point",
+        "rainfall": "Rainfall observation point"
+      },
+      "thresholdBadges": {
+        "seismic": "Earthquake threshold",
+        "rainfall": "Rainfall threshold"
+      },
+      "payoutBadges": {
+        "ten_thousand": "Equivalent to JPY 10,000 (simulated)",
+        "thirty_thousand": "Equivalent to JPY 30,000 (simulated)"
+      },
+      "plans": {
+        "seismic": "Seismic-linked",
+        "rainfall": "Rainfall-linked"
+      },
+      "stations": {
+        "seismic_tokyo": "Tokyo seismic station",
+        "seismic_osaka": "Osaka seismic station",
+        "rainfall_tokyo": "Tokyo rainfall station"
+      },
+      "thresholds": {
+        "seismic": {
+          "seismic_0": "0",
+          "seismic_1": "1",
+          "seismic_2": "2",
+          "seismic_3": "3",
+          "seismic_4": "4",
+          "seismic_5_weak": "5 weak",
+          "seismic_5_strong": "5 strong",
+          "seismic_6_weak": "6 weak",
+          "seismic_6_strong": "6 strong",
+          "seismic_7": "7"
+        },
+        "rainfall": {
+          "rainfall_10": "10 mm",
+          "rainfall_20": "20 mm",
+          "rainfall_30": "30 mm",
+          "rainfall_50": "50 mm",
+          "rainfall_80": "80 mm"
+        }
+      },
+      "payoutTiers": {
+        "ten_thousand": "Equivalent to JPY 10,000 (simulated)",
+        "thirty_thousand": "Equivalent to JPY 30,000 (simulated)"
+      },
+      "ageGroupLabel": "Age group (optional)",
+      "ageGroups": {
+        "unspecified": "Not specified",
+        "under30": "Under 30",
+        "thirties": "30s",
+        "forties": "40s",
+        "fiftyPlus": "50+"
+      },
+      "reviewTitle": "Review the request",
+      "reviewLabels": {
+        "plan": "Plan",
+        "station": "Station",
+        "threshold": "Threshold",
+        "payoutTier": "Payout tier"
+      },
+      "recaptchaLabel": "reCAPTCHA checkbox (simulated)",
+      "recaptchaHint": "Turn this on to enable submission.",
+      "actions": {
+        "back": "Back",
+        "next": "Next",
+        "submit": "Submit",
+        "submitting": "Sending"
+      },
+      "errors": {
+        "duplicatePolicy": "You already have an active policy for the same plan type.",
+        "recaptchaRequired": "Please check the reCAPTCHA box.",
+        "submitFailed": "Submission failed."
+      },
+      "statuses": {
+        "pending": "Pending"
+      }
+    }
+  },
+  "mypage": {
+    "title": "My page",
+    "description": "Review the latest simulated policy you applied for.",
+    "latestApplication": "Latest application",
+    "emptyState": "No application has been saved yet. Create one from the wizard.",
+    "primaryAction": "Open the wizard",
+    "waitingExplanation": "In this demo, a submitted policy is shown with the Pending status.",
+    "labels": {
+      "plan": "Plan",
+      "station": "Station",
+      "threshold": "Threshold",
+      "payoutTier": "Payout tier",
+      "ageGroup": "Age group"
+    }
   }
 }

@@ -45,6 +45,12 @@ function AppNavigation() {
       <Link href="/" className="app-nav__link">
         {messages.navigation.home}
       </Link>
+      <Link href="/policies/new" className="app-nav__link">
+        {messages.navigation.policies}
+      </Link>
+      <Link href="/mypage" className="app-nav__link">
+        {messages.navigation.mypage}
+      </Link>
       <Link href="/login" className="app-nav__link">
         {messages.navigation.login}
       </Link>

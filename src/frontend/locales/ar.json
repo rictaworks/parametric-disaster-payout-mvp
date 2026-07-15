@@ -9,6 +9,8 @@
   "navigation": {
     "label": "التنقل",
     "home": "الرئيسية",
+    "policies": "طلب",
+    "mypage": "صفحتي",
     "login": "تسجيل الدخول"
   },
   "language": {
@@ -44,5 +46,122 @@
     "hint": "يؤدي تسجيل الدخول الناجح إلى تعيين Cookie جلسة ضمن نطاق Vercel.",
     "success": "تم تسجيل الدخول بنجاح.",
     "error": "فشل تسجيل الدخول."
+  },
+  "policies": {
+    "new": {
+      "pageTitle": "معالج طلب الوثيقة",
+      "pageDescription": "اختر الخطة والمحطة والعتبة وشريحة الدفع ثم أرسل الطلب عبر BFF.",
+      "eyebrow": "5 خطوات",
+      "title": "طلب وثيقة محاكاة",
+      "description": "اختر من بطاقات شبيهة بالنموذج، ثم فعّل reCAPTCHA قبل الإرسال.",
+      "stepperLabel": "خطوات الطلب",
+      "steps": {
+        "plan": "1. الخطة",
+        "station": "2. المحطة",
+        "threshold": "3. العتبة",
+        "payoutTier": "4. شريحة الدفع",
+        "confirm": "5. المراجعة"
+      },
+      "planHelp": "اختر نوع الخطة المطابق للمحفز الكارثي.",
+      "stationHelp": "اختر نقطة الرصد المستخدمة لتقييم المحفز.",
+      "thresholdHelp": "اختر قيمة العتبة التي سترسل إلى Rails.",
+      "payoutHelp": "اختر شريحة الدفع المحاكاة لهذه الوثيقة.",
+      "planDescriptions": {
+        "seismic": "وثيقة مرتبطة بالزلازل",
+        "rainfall": "وثيقة مرتبطة بالأمطار"
+      },
+      "stationBadges": {
+        "seismic": "نقطة رصد زلزالية",
+        "rainfall": "نقطة رصد أمطار"
+      },
+      "thresholdBadges": {
+        "seismic": "عتبة زلزالية",
+        "rainfall": "عتبة أمطار"
+      },
+      "payoutBadges": {
+        "ten_thousand": "ما يعادل 10,000 ين (محاكاة)",
+        "thirty_thousand": "ما يعادل 30,000 ين (محاكاة)"
+      },
+      "plans": {
+        "seismic": "مرتبطة بالزلازل",
+        "rainfall": "مرتبطة بالأمطار"
+      },
+      "stations": {
+        "seismic_tokyo": "محطة طوكيو الزلزالية",
+        "seismic_osaka": "محطة أوساكا الزلزالية",
+        "rainfall_tokyo": "محطة طوكيو للأمطار"
+      },
+      "thresholds": {
+        "seismic": {
+          "seismic_0": "0",
+          "seismic_1": "1",
+          "seismic_2": "2",
+          "seismic_3": "3",
+          "seismic_4": "4",
+          "seismic_5_weak": "5 ضعيف",
+          "seismic_5_strong": "5 قوي",
+          "seismic_6_weak": "6 ضعيف",
+          "seismic_6_strong": "6 قوي",
+          "seismic_7": "7"
+        },
+        "rainfall": {
+          "rainfall_10": "10 mm",
+          "rainfall_20": "20 mm",
+          "rainfall_30": "30 mm",
+          "rainfall_50": "50 mm",
+          "rainfall_80": "80 mm"
+        }
+      },
+      "payoutTiers": {
+        "ten_thousand": "ما يعادل 10,000 ين (محاكاة)",
+        "thirty_thousand": "ما يعادل 30,000 ين (محاكاة)"
+      },
+      "ageGroupLabel": "الفئة العمرية (اختياري)",
+      "ageGroups": {
+        "unspecified": "غير محدد",
+        "under30": "أقل من 30",
+        "thirties": "العقد الثالث",
+        "forties": "العقد الرابع",
+        "fiftyPlus": "50+"
+      },
+      "reviewTitle": "راجع الطلب",
+      "reviewLabels": {
+        "plan": "الخطة",
+        "station": "المحطة",
+        "threshold": "العتبة",
+        "payoutTier": "شريحة الدفع"
+      },
+      "recaptchaLabel": "مربع reCAPTCHA (محاكاة)",
+      "recaptchaHint": "فعّله لتمكين الإرسال.",
+      "actions": {
+        "back": "رجوع",
+        "next": "التالي",
+        "submit": "إرسال",
+        "submitting": "جارٍ الإرسال"
+      },
+      "errors": {
+        "duplicatePolicy": "لديك بالفعل وثيقة فعّالة من نفس نوع الخطة.",
+        "recaptchaRequired": "يرجى تحديد مربع reCAPTCHA.",
+        "submitFailed": "فشل الإرسال."
+      },
+      "statuses": {
+        "pending": "قيد الانتظار"
+      }
+    }
+  },
+  "mypage": {
+    "title": "صفحتي",
+    "description": "راجع أحدث وثيقة محاكاة قمت بطلبها.",
+    "latestApplication": "آخر طلب",
+    "emptyState": "لا توجد طلبات محفوظة بعد. أنشئ واحدة من المعالج.",
+    "primaryAction": "فتح المعالج",
+    "waitingExplanation": "في هذا العرض، تظهر الوثيقة المرسلة بالحالة قيد الانتظار.",
+    "labels": {
+      "plan": "الخطة",
+      "station": "المحطة",
+      "threshold": "العتبة",
+      "payoutTier": "شريحة الدفع",
+      "ageGroup": "الفئة العمرية"
+    }
   }
 }
