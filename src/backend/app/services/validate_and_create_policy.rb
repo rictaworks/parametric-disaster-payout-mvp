@@ -21,18 +21,10 @@ class ValidateAndCreatePolicy
     missing_masters = masters.select { |_, value| value.nil? }.keys
     return failure(:unprocessable_entity, "master_not_found", missing_masters) if missing_masters.any?
 
-    return failure(:conflict, "duplicate_policy") if duplicate_policy_exists?(masters)
+    policy, duplicate = create_policy_within_lock(masters)
 
-    policy = Policy.new(
-      user: user,
-      plan: masters.fetch(:plan),
-      station: masters.fetch(:station),
-      payout_tier: masters.fetch(:payout_tier),
-      policy_status: masters.fetch(:pending_status),
-      threshold: threshold
-    )
-
-    return Result.new(policy: policy, status: :created) if policy.save
+    return failure(:conflict, "duplicate_policy") if duplicate
+    return Result.new(policy: policy, status: :created) if policy.persisted?
 
     failure(:unprocessable_entity, "validation_failed", policy.errors.to_hash(true))
   end
@@ -54,6 +46,32 @@ class ValidateAndCreatePolicy
       active_status: PolicyStatus.find_by(code: "active"),
       processing_status: PolicyStatus.find_by(code: "processing")
     }
+  end
+
+  def create_policy_within_lock(masters)
+    policy = nil
+    duplicate = false
+
+    ActiveRecord::Base.transaction do
+      user.lock!
+
+      if duplicate_policy_exists?(masters)
+        duplicate = true
+        raise ActiveRecord::Rollback
+      end
+
+      policy = Policy.new(
+        user: user,
+        plan: masters.fetch(:plan),
+        station: masters.fetch(:station),
+        payout_tier: masters.fetch(:payout_tier),
+        policy_status: masters.fetch(:pending_status),
+        threshold: threshold
+      )
+      policy.save
+    end
+
+    [ policy, duplicate ]
   end
 
   def duplicate_policy_exists?(masters)

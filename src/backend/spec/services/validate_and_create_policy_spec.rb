@@ -163,4 +163,31 @@ RSpec.describe ValidateAndCreatePolicy do
       expect(result.error).to eq("duplicate_policy")
     end
   end
+
+  it "acquires the user row lock before checking for or creating a duplicate policy" do
+    # A real transaction blocks at user.lock! until a concurrent request's
+    # transaction commits, so the duplicate check must run after the lock is
+    # acquired, not before it, or two concurrent requests could both pass the
+    # check before either has written its policy.
+    expect(user).to receive(:lock!).ordered.and_call_original
+    expect(service).to receive(:duplicate_policy_exists?).ordered.and_call_original
+
+    result = service.call
+
+    expect(result).to be_success
+  end
+
+  it "rejects the request and creates no policy when the post-lock duplicate check finds one" do
+    # Simulates a concurrent request's policy becoming visible only once this
+    # service has acquired the lock (i.e. after another transaction committed
+    # while this one was waiting on the row lock).
+    allow(service).to receive(:duplicate_policy_exists?).and_return(true)
+
+    result = service.call
+
+    expect(result).not_to be_success
+    expect(result.status).to eq(:conflict)
+    expect(result.error).to eq("duplicate_policy")
+    expect(Policy.where(user: user).count).to eq(0)
+  end
 end
