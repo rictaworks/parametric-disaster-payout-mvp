@@ -14,7 +14,7 @@ RSpec.describe RecaptchaVerifier do
 
   def stub_google_response(body)
     fake_http = instance_double(Net::HTTP)
-    allow(fake_http).to receive(:post).and_return(instance_double(Net::HTTPResponse, body: body))
+    allow(fake_http).to receive(:request).and_return(instance_double(Net::HTTPResponse, body: body))
     allow(Net::HTTP).to receive(:start) { |*_args, &block| block.call(fake_http) }
   end
 
@@ -56,6 +56,21 @@ RSpec.describe RecaptchaVerifier do
 
     expect(Rails.logger).to receive(:error).with(/JSON/)
     expect(verifier.valid?(token)).to be false
+  end
+
+  it "sends the secret and token as an application/x-www-form-urlencoded form body" do
+    fake_http = instance_double(Net::HTTP)
+    sent_request = nil
+    allow(fake_http).to receive(:request) do |request|
+      sent_request = request
+      instance_double(Net::HTTPResponse, body: { "success" => true }.to_json)
+    end
+    allow(Net::HTTP).to receive(:start) { |*_args, &block| block.call(fake_http) }
+
+    verifier.valid?(token)
+
+    expect(sent_request["Content-Type"]).to eq("application/x-www-form-urlencoded")
+    expect(sent_request.body).to eq("secret=server-secret&response=client-token")
   end
 
   it "configures explicit open and read timeouts for the outbound request" do

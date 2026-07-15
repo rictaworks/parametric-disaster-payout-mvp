@@ -26,6 +26,9 @@ class RecaptchaVerifier
   private
 
   def fetch_verification(secret, token)
+    request = Net::HTTP::Post.new(VERIFY_URI.path)
+    request.set_form_data("secret" => secret, "response" => token)
+
     Net::HTTP.start(
       VERIFY_URI.host,
       VERIFY_URI.port,
@@ -33,7 +36,7 @@ class RecaptchaVerifier
       open_timeout: OPEN_TIMEOUT,
       read_timeout: READ_TIMEOUT
     ) do |http|
-      http.post(VERIFY_URI.path, URI.encode_www_form(secret: secret, response: token)).body
+      http.request(request).body
     end
   end
 end
