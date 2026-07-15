@@ -9,6 +9,8 @@
   "navigation": {
     "label": "Navigation",
     "home": "Accueil",
+    "policies": "Demande",
+    "mypage": "Mon espace",
     "login": "Connexion"
   },
   "language": {
@@ -44,5 +46,134 @@
     "hint": "Une connexion réussie crée un cookie de session limité au domaine Vercel.",
     "success": "Connexion réussie.",
     "error": "Échec de la connexion."
+  },
+  "policies": {
+    "new": {
+      "pageTitle": "Assistant de demande de contrat",
+      "pageDescription": "Choisissez le plan, la station, le seuil, le montant simulé, puis envoyez la demande via le BFF.",
+      "eyebrow": "5 étapes",
+      "title": "Demander un contrat simulé",
+      "description": "Sélectionnez des cartes de type maquette, puis activez reCAPTCHA avant l’envoi.",
+      "stepperLabel": "Étapes de la demande",
+      "steps": {
+        "plan": "1. Plan",
+        "station": "2. Station",
+        "threshold": "3. Seuil",
+        "payoutTier": "4. Montant",
+        "confirm": "5. Vérification"
+      },
+      "planHelp": "Choisissez le type de plan qui correspond au déclencheur.",
+      "stationHelp": "Sélectionnez la station d’observation utilisée pour le déclencheur.",
+      "thresholdHelp": "Sélectionnez la valeur de seuil envoyée à Rails.",
+      "payoutHelp": "Choisissez la tranche de paiement simulée pour ce contrat.",
+      "planDescriptions": {
+        "seismic": "Contrat lié aux séismes",
+        "rainfall": "Contrat lié aux pluies"
+      },
+      "stationBadges": {
+        "seismic": "Station sismique",
+        "rainfall": "Station pluviométrique"
+      },
+      "thresholdBadges": {
+        "seismic": "Seuil sismique",
+        "rainfall": "Seuil de pluie"
+      },
+      "payoutBadges": {
+        "ten_thousand": "Équivalent à 10 000 JPY (simulé)",
+        "thirty_thousand": "Équivalent à 30 000 JPY (simulé)"
+      },
+      "plans": {
+        "seismic": "Lié aux séismes",
+        "rainfall": "Lié aux pluies"
+      },
+      "stations": {
+        "seismic_tokyo": "Station sismique de Tokyo",
+        "seismic_osaka": "Station sismique d’Osaka",
+        "rainfall_tokyo": "Station pluviométrique de Tokyo"
+      },
+      "thresholds": {
+        "seismic": {
+          "seismic_0": "0",
+          "seismic_1": "1",
+          "seismic_2": "2",
+          "seismic_3": "3",
+          "seismic_4": "4",
+          "seismic_5_weak": "5 faible",
+          "seismic_5_strong": "5 fort",
+          "seismic_6_weak": "6 faible",
+          "seismic_6_strong": "6 fort",
+          "seismic_7": "7"
+        },
+        "rainfall": {
+          "rainfall_10": "10 mm",
+          "rainfall_20": "20 mm",
+          "rainfall_30": "30 mm",
+          "rainfall_50": "50 mm",
+          "rainfall_80": "80 mm"
+        }
+      },
+      "payoutTiers": {
+        "ten_thousand": "Équivalent à 10 000 JPY (simulé)",
+        "thirty_thousand": "Équivalent à 30 000 JPY (simulé)"
+      },
+      "ageGroupLabel": "Tranche d’âge (facultatif)",
+      "ageGroups": {
+        "unspecified": "Non précisé",
+        "under30": "Moins de 30 ans",
+        "thirties": "30 ans",
+        "forties": "40 ans",
+        "fiftyPlus": "50 ans et plus"
+      },
+      "reviewTitle": "Vérifiez votre demande",
+      "reviewLabels": {
+        "plan": "Plan",
+        "station": "Station",
+        "threshold": "Seuil",
+        "payoutTier": "Montant"
+      },
+      "recaptchaLabel": "Vérification reCAPTCHA",
+      "recaptchaHint": "Terminez la vérification pour activer l’envoi.",
+      "actions": {
+        "back": "Retour",
+        "next": "Suivant",
+        "submit": "Envoyer",
+        "submitting": "Envoi"
+      },
+      "errors": {
+        "duplicatePolicy": "Vous avez déjà un contrat actif du même type de plan.",
+        "recaptchaRequired": "Veuillez terminer la vérification reCAPTCHA.",
+        "submitFailed": "L’envoi a échoué.",
+        "recaptchaUnavailable": "reCAPTCHA est indisponible. Veuillez réessayer plus tard.",
+        "mastersLoadFailed": "Échec du chargement des données de référence. Veuillez réessayer plus tard."
+      },
+      "statuses": {
+        "pending": "En attente",
+        "active": "Actif",
+        "processing": "Traitement du paiement",
+        "cap_reached": "Plafond atteint",
+        "cancelled": "Résilié",
+        "expired": "Expiré",
+        "unknown": "Inconnu"
+      },
+      "loadingMasters": "Chargement..."
+    }
+  },
+  "mypage": {
+    "title": "Mon espace",
+    "description": "Consultez l’état de vos contrats.",
+    "emptyState": "Vous n’avez encore aucun contrat. Créez-en un depuis l’assistant de souscription.",
+    "primaryAction": "Ouvrir l’assistant",
+    "waitingExplanation": "Dans cette démo, un contrat envoyé apparaît avec le statut En attente.",
+    "labels": {
+      "plan": "Plan",
+      "station": "Station",
+      "threshold": "Seuil",
+      "payoutTier": "Montant",
+      "ageGroup": "Tranche d’âge"
+    },
+    "applicationsHeading": "Vos contrats",
+    "loading": "Chargement...",
+    "loadFailed": "Échec du chargement de vos contrats. Veuillez réessayer plus tard.",
+    "unauthenticated": "Connectez-vous pour consulter vos contrats."
   }
 }

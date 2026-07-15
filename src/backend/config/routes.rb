@@ -8,7 +8,9 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       post "session", to: "sessions#create"
+      get "policies", to: "policies#index"
       post "policies", to: "policies#create"
+      get "masters", to: "masters#index"
     end
   end
 

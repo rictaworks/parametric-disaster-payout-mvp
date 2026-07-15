@@ -7,9 +7,11 @@
     "notice": "本服务是用于需求调研的演示，不承保保单，也不进行真实赔付。"
   },
   "navigation": {
-    "label": "导航",
-    "home": "首页",
-    "login": "登录"
+    "label": "導覽",
+    "home": "首頁",
+    "policies": "申請流程",
+    "mypage": "我的頁面",
+    "login": "登入"
   },
   "language": {
     "label": "语言",
@@ -44,5 +46,134 @@
     "hint": "登录成功后会设置作用域为 Vercel 域的会话 Cookie。",
     "success": "登录成功。",
     "error": "登录失败。"
+  },
+  "policies": {
+    "new": {
+      "pageTitle": "契約申請精靈",
+      "pageDescription": "依序選擇方案、觀測站、門檻、給付區分，最後透過 BFF 送出申請。",
+      "eyebrow": "5 步驟",
+      "title": "申請模擬契約",
+      "description": "使用卡片式介面逐步選擇，最後勾選 reCAPTCHA 再送出。",
+      "stepperLabel": "申請步驟",
+      "steps": {
+        "plan": "1. 方案",
+        "station": "2. 觀測站",
+        "threshold": "3. 觸發門檻",
+        "payoutTier": "4. 給付區分",
+        "confirm": "5. 確認"
+      },
+      "planHelp": "請選擇符合災害觸發條件的方案。",
+      "stationHelp": "請選擇用來判定觸發條件的觀測站。",
+      "thresholdHelp": "請選擇將送往 Rails 的門檻值。",
+      "payoutHelp": "請選擇此契約的模擬給付金額區分。",
+      "planDescriptions": {
+        "seismic": "地震連動契約",
+        "rainfall": "降雨連動契約"
+      },
+      "stationBadges": {
+        "seismic": "地震觀測站",
+        "rainfall": "雨量觀測站"
+      },
+      "thresholdBadges": {
+        "seismic": "地震門檻",
+        "rainfall": "雨量門檻"
+      },
+      "payoutBadges": {
+        "ten_thousand": "相當於 10,000 日圓（模擬）",
+        "thirty_thousand": "相當於 30,000 日圓（模擬）"
+      },
+      "plans": {
+        "seismic": "地震連動",
+        "rainfall": "降雨連動"
+      },
+      "stations": {
+        "seismic_tokyo": "東京地震觀測站",
+        "seismic_osaka": "大阪地震觀測站",
+        "rainfall_tokyo": "東京雨量觀測站"
+      },
+      "thresholds": {
+        "seismic": {
+          "seismic_0": "0",
+          "seismic_1": "1",
+          "seismic_2": "2",
+          "seismic_3": "3",
+          "seismic_4": "4",
+          "seismic_5_weak": "5 弱",
+          "seismic_5_strong": "5 強",
+          "seismic_6_weak": "6 弱",
+          "seismic_6_strong": "6 強",
+          "seismic_7": "7"
+        },
+        "rainfall": {
+          "rainfall_10": "10 mm",
+          "rainfall_20": "20 mm",
+          "rainfall_30": "30 mm",
+          "rainfall_50": "50 mm",
+          "rainfall_80": "80 mm"
+        }
+      },
+      "payoutTiers": {
+        "ten_thousand": "相當於 10,000 日圓（模擬）",
+        "thirty_thousand": "相當於 30,000 日圓（模擬）"
+      },
+      "ageGroupLabel": "年齡層（可選）",
+      "ageGroups": {
+        "unspecified": "未指定",
+        "under30": "30 歲以下",
+        "thirties": "30 多歲",
+        "forties": "40 多歲",
+        "fiftyPlus": "50 歲以上"
+      },
+      "reviewTitle": "請確認內容",
+      "reviewLabels": {
+        "plan": "方案",
+        "station": "觀測站",
+        "threshold": "門檻",
+        "payoutTier": "給付區分"
+      },
+      "recaptchaLabel": "reCAPTCHA 驗證",
+      "recaptchaHint": "完成驗證後即可送出申請。",
+      "actions": {
+        "back": "返回",
+        "next": "下一步",
+        "submit": "申請",
+        "submitting": "送出中"
+      },
+      "errors": {
+        "duplicatePolicy": "您已經有同一方案類型的有效契約。",
+        "recaptchaRequired": "請完成 reCAPTCHA 驗證。",
+        "submitFailed": "申請失敗。",
+        "recaptchaUnavailable": "reCAPTCHA 目前無法使用，請稍後再試。",
+        "mastersLoadFailed": "主資料讀取失敗，請稍後再試。"
+      },
+      "statuses": {
+        "pending": "等待中",
+        "active": "有效",
+        "processing": "給付處理中",
+        "cap_reached": "達到上限",
+        "cancelled": "解約",
+        "expired": "失效",
+        "unknown": "未知"
+      },
+      "loadingMasters": "讀取中..."
+    }
+  },
+  "mypage": {
+    "title": "我的頁面",
+    "description": "您可以查看自己的契約狀態。",
+    "emptyState": "目前尚無契約，請透過申請精靈建立。",
+    "primaryAction": "開啟申請流程",
+    "waitingExplanation": "在此示範中，送出的契約會顯示為等待中。",
+    "labels": {
+      "plan": "方案",
+      "station": "觀測站",
+      "threshold": "門檻",
+      "payoutTier": "給付區分",
+      "ageGroup": "年齡層"
+    },
+    "applicationsHeading": "我的契約",
+    "loading": "讀取中...",
+    "loadFailed": "契約資料讀取失敗，請稍後再試。",
+    "unauthenticated": "請先登入以查看您的契約。"
   }
 }

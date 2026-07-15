@@ -191,3 +191,126 @@ RSpec.describe "POST /api/v1/policies", type: :request do
     expect(response).to have_http_status(:unauthorized)
   end
 end
+
+RSpec.describe "GET /api/v1/policies", type: :request do
+  let(:user) { User.create!(google_sub: "google-sub-policy-index") }
+  let(:other_user) { User.create!(google_sub: "google-sub-policy-index-other") }
+  let(:internal_api_secret) { "shared-secret" }
+  let(:headers) do
+    {
+      "X-Internal-API-Secret" => internal_api_secret,
+      "X-Internal-Session-Token" => user.internal_session_token
+    }
+  end
+  let(:plan) do
+    Plan.create!(
+      code: "seismic_policy_index",
+      trigger_type: "seismic",
+      label_ja: "震度連動",
+      label_en: "Seismic-linked",
+      label_fr: "Seismic-linked",
+      label_zh: "Seismic-linked",
+      label_ru: "Seismic-linked",
+      label_es: "Seismic-linked",
+      label_ar: "Seismic-linked"
+    )
+  end
+  let(:station) do
+    Station.create!(
+      code: "seismic_tokyo_policy_index",
+      measurement_type: "seismic",
+      label_ja: "東京震度観測点",
+      label_en: "Tokyo seismic station",
+      label_fr: "Tokyo seismic station",
+      label_zh: "Tokyo seismic station",
+      label_ru: "Tokyo seismic station",
+      label_es: "Tokyo seismic station",
+      label_ar: "Tokyo seismic station"
+    )
+  end
+  let(:payout_tier) do
+    PayoutTier.create!(
+      code: "ten_thousand_policy_index",
+      amount_yen: 10_000,
+      label_ja: "1万円相当（模擬）",
+      label_en: "Equivalent to JPY 10,000 (simulated)",
+      label_fr: "Equivalent to JPY 10,000 (simulated)",
+      label_zh: "Equivalent to JPY 10,000 (simulated)",
+      label_ru: "Equivalent to JPY 10,000 (simulated)",
+      label_es: "Equivalent to JPY 10,000 (simulated)",
+      label_ar: "Equivalent to JPY 10,000 (simulated)"
+    )
+  end
+  let!(:pending_status) do
+    PolicyStatus.create!(
+      code: "pending",
+      sort_order: 0,
+      label_ja: "待機中",
+      label_en: "Pending",
+      label_fr: "Pending",
+      label_zh: "Pending",
+      label_ru: "Pending",
+      label_es: "Pending",
+      label_ar: "Pending"
+    )
+  end
+
+  before do
+    allow(ENV).to receive(:[]).and_call_original
+    allow(ENV).to receive(:[]).with("INTERNAL_API_SECRET").and_return(internal_api_secret)
+  end
+
+  it "returns only the authenticated user's own policies" do
+    own_policy = Policy.create!(
+      user: user,
+      plan: plan,
+      station: station,
+      payout_tier: payout_tier,
+      policy_status: pending_status,
+      threshold: "5弱"
+    )
+    Policy.create!(
+      user: other_user,
+      plan: plan,
+      station: station,
+      payout_tier: payout_tier,
+      policy_status: pending_status,
+      threshold: "5弱"
+    )
+
+    get "/api/v1/policies", headers: headers
+
+    expect(response).to have_http_status(:ok)
+    body = JSON.parse(response.body)
+
+    expect(body["policies"].length).to eq(1)
+    expect(body["policies"].first).to include(
+      "id" => own_policy.id,
+      "user_id" => user.id,
+      "plan_code" => "seismic_policy_index",
+      "station_code" => "seismic_tokyo_policy_index",
+      "payout_tier_code" => "ten_thousand_policy_index",
+      "policy_status_code" => "pending",
+      "threshold" => "5弱"
+    )
+  end
+
+  it "returns an empty list when the user has no policies" do
+    get "/api/v1/policies", headers: headers
+
+    expect(response).to have_http_status(:ok)
+    expect(JSON.parse(response.body)).to eq("policies" => [])
+  end
+
+  it "returns 401 when the internal session token is missing" do
+    get "/api/v1/policies", headers: { "X-Internal-API-Secret" => internal_api_secret }
+
+    expect(response).to have_http_status(:unauthorized)
+  end
+
+  it "returns 403 when the internal API secret is missing or invalid" do
+    get "/api/v1/policies", headers: { "X-Internal-Session-Token" => user.internal_session_token }
+
+    expect(response).to have_http_status(:forbidden)
+  end
+end
