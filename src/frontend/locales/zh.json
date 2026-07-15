@@ -147,9 +147,9 @@
         "mastersLoadFailed": "主資料讀取失敗，請稍後再試。"
       },
       "statuses": {
-        "pending": "待機中",
+        "pending": "等待中",
         "active": "有效",
-        "processing": "支払處理中",
+        "processing": "給付處理中",
         "cap_reached": "達到上限",
         "cancelled": "解約",
         "expired": "失效",
@@ -163,7 +163,7 @@
     "description": "您可以查看自己的契約狀態。",
     "emptyState": "目前尚無契約，請透過申請精靈建立。",
     "primaryAction": "開啟申請流程",
-    "waitingExplanation": "在此示範中，送出的契約會顯示為待機中。",
+    "waitingExplanation": "在此示範中，送出的契約會顯示為等待中。",
     "labels": {
       "plan": "方案",
       "station": "觀測站",

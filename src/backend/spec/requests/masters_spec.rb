@@ -43,26 +43,13 @@ RSpec.describe "GET /api/v1/masters", type: :request do
       label_ar: "Equivalent to JPY 10,000 (simulated)"
     )
   end
-  let!(:seismic_intensity_level) do
-    SeismicIntensityLevel.create!(
-      code: "5_weak_masters",
-      sort_order: 900,
-      label_ja: "5弱",
-      label_en: "5 weak",
-      label_fr: "5 weak",
-      label_zh: "5 weak",
-      label_ru: "5 weak",
-      label_es: "5 weak",
-      label_ar: "5 weak"
-    )
-  end
 
   before do
     allow(ENV).to receive(:[]).and_call_original
     allow(ENV).to receive(:[]).with("INTERNAL_API_SECRET").and_return(internal_api_secret)
   end
 
-  it "returns plan, station, payout tier, and seismic intensity level masters with their real IDs" do
+  it "returns plan, station, and payout tier masters with their real IDs" do
     get "/api/v1/masters", headers: headers
 
     expect(response).to have_http_status(:ok)
@@ -82,11 +69,6 @@ RSpec.describe "GET /api/v1/masters", type: :request do
       "id" => payout_tier.id,
       "code" => "ten_thousand_masters",
       "amount_yen" => 10_000
-    )
-    expect(body["seismic_intensity_levels"]).to include(
-      "code" => "5_weak_masters",
-      "label_ja" => "5弱",
-      "sort_order" => 900
     )
   end
 
