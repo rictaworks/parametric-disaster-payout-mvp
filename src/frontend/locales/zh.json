@@ -131,8 +131,8 @@
         "threshold": "門檻",
         "payoutTier": "給付區分"
       },
-      "recaptchaLabel": "reCAPTCHA 勾選框（模擬）",
-      "recaptchaHint": "勾選後即可送出。",
+      "recaptchaLabel": "reCAPTCHA 驗證",
+      "recaptchaHint": "完成驗證後即可送出申請。",
       "actions": {
         "back": "返回",
         "next": "下一步",
@@ -141,19 +141,27 @@
       },
       "errors": {
         "duplicatePolicy": "您已經有同一方案類型的有效契約。",
-        "recaptchaRequired": "請先勾選 reCAPTCHA。",
-        "submitFailed": "申請失敗。"
+        "recaptchaRequired": "請完成 reCAPTCHA 驗證。",
+        "submitFailed": "申請失敗。",
+        "recaptchaUnavailable": "reCAPTCHA 目前無法使用，請稍後再試。",
+        "mastersLoadFailed": "主資料讀取失敗，請稍後再試。"
       },
       "statuses": {
-        "pending": "待機中"
-      }
+        "pending": "待機中",
+        "active": "有效",
+        "processing": "支払處理中",
+        "cap_reached": "達到上限",
+        "cancelled": "解約",
+        "expired": "失效",
+        "unknown": "未知"
+      },
+      "loadingMasters": "讀取中..."
     }
   },
   "mypage": {
     "title": "我的頁面",
-    "description": "查看最新的模擬契約。",
-    "latestApplication": "最新申請",
-    "emptyState": "目前沒有儲存的申請。請從申請流程建立。",
+    "description": "您可以查看自己的契約狀態。",
+    "emptyState": "目前尚無契約，請透過申請精靈建立。",
     "primaryAction": "開啟申請流程",
     "waitingExplanation": "在此示範中，送出的契約會顯示為待機中。",
     "labels": {
@@ -162,6 +170,10 @@
       "threshold": "門檻",
       "payoutTier": "給付區分",
       "ageGroup": "年齡層"
-    }
+    },
+    "applicationsHeading": "我的契約",
+    "loading": "讀取中...",
+    "loadFailed": "契約資料讀取失敗，請稍後再試。",
+    "unauthenticated": "請先登入以查看您的契約。"
   }
 }

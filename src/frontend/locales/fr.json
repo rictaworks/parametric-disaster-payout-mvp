@@ -131,8 +131,8 @@
         "threshold": "Seuil",
         "payoutTier": "Montant"
       },
-      "recaptchaLabel": "Case reCAPTCHA (simulée)",
-      "recaptchaHint": "Activez-la pour pouvoir envoyer la demande.",
+      "recaptchaLabel": "Vérification reCAPTCHA",
+      "recaptchaHint": "Terminez la vérification pour activer l’envoi.",
       "actions": {
         "back": "Retour",
         "next": "Suivant",
@@ -141,19 +141,27 @@
       },
       "errors": {
         "duplicatePolicy": "Vous avez déjà un contrat actif du même type de plan.",
-        "recaptchaRequired": "Veuillez cocher la case reCAPTCHA.",
-        "submitFailed": "L’envoi a échoué."
+        "recaptchaRequired": "Veuillez terminer la vérification reCAPTCHA.",
+        "submitFailed": "L’envoi a échoué.",
+        "recaptchaUnavailable": "reCAPTCHA est indisponible. Veuillez réessayer plus tard.",
+        "mastersLoadFailed": "Échec du chargement des données de référence. Veuillez réessayer plus tard."
       },
       "statuses": {
-        "pending": "En attente"
-      }
+        "pending": "En attente",
+        "active": "Actif",
+        "processing": "Traitement du paiement",
+        "cap_reached": "Plafond atteint",
+        "cancelled": "Résilié",
+        "expired": "Expiré",
+        "unknown": "Inconnu"
+      },
+      "loadingMasters": "Chargement..."
     }
   },
   "mypage": {
     "title": "Mon espace",
-    "description": "Consultez votre dernier contrat simulé.",
-    "latestApplication": "Dernière demande",
-    "emptyState": "Aucune demande enregistrée pour le moment. Créez-en une depuis l’assistant.",
+    "description": "Consultez l’état de vos contrats.",
+    "emptyState": "Vous n’avez encore aucun contrat. Créez-en un depuis l’assistant de souscription.",
     "primaryAction": "Ouvrir l’assistant",
     "waitingExplanation": "Dans cette démo, un contrat envoyé apparaît avec le statut En attente.",
     "labels": {
@@ -162,6 +170,10 @@
       "threshold": "Seuil",
       "payoutTier": "Montant",
       "ageGroup": "Tranche d’âge"
-    }
+    },
+    "applicationsHeading": "Vos contrats",
+    "loading": "Chargement...",
+    "loadFailed": "Échec du chargement de vos contrats. Veuillez réessayer plus tard.",
+    "unauthenticated": "Connectez-vous pour consulter vos contrats."
   }
 }

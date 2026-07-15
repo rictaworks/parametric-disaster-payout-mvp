@@ -131,8 +131,8 @@
         "threshold": "Umbral",
         "payoutTier": "Pago"
       },
-      "recaptchaLabel": "Casilla reCAPTCHA (simulada)",
-      "recaptchaHint": "Actívala para poder enviar la solicitud.",
+      "recaptchaLabel": "Verificación reCAPTCHA",
+      "recaptchaHint": "Completa la verificación para habilitar el envío.",
       "actions": {
         "back": "Atrás",
         "next": "Siguiente",
@@ -141,19 +141,27 @@
       },
       "errors": {
         "duplicatePolicy": "Ya tienes una póliza activa del mismo tipo de plan.",
-        "recaptchaRequired": "Marca la casilla de reCAPTCHA.",
-        "submitFailed": "No se pudo enviar la solicitud."
+        "recaptchaRequired": "Completa la verificación reCAPTCHA.",
+        "submitFailed": "No se pudo enviar la solicitud.",
+        "recaptchaUnavailable": "reCAPTCHA no está disponible. Inténtalo de nuevo más tarde.",
+        "mastersLoadFailed": "No se pudieron cargar los datos de referencia. Inténtalo de nuevo más tarde."
       },
       "statuses": {
-        "pending": "Pendiente"
-      }
+        "pending": "Pendiente",
+        "active": "Activo",
+        "processing": "Procesando pago",
+        "cap_reached": "Tope alcanzado",
+        "cancelled": "Cancelado",
+        "expired": "Vencido",
+        "unknown": "Desconocido"
+      },
+      "loadingMasters": "Cargando..."
     }
   },
   "mypage": {
     "title": "Mi página",
-    "description": "Consulta la última póliza simulada que solicitaste.",
-    "latestApplication": "Última solicitud",
-    "emptyState": "Todavía no hay solicitudes guardadas. Créala desde el asistente.",
+    "description": "Consulta el estado de tus pólizas.",
+    "emptyState": "Aún no tienes pólizas. Créala desde el asistente de solicitud.",
     "primaryAction": "Abrir el asistente",
     "waitingExplanation": "En esta demo, la póliza enviada se muestra con el estado Pendiente.",
     "labels": {
@@ -162,6 +170,10 @@
       "threshold": "Umbral",
       "payoutTier": "Pago",
       "ageGroup": "Grupo de edad"
-    }
+    },
+    "applicationsHeading": "Tus pólizas",
+    "loading": "Cargando...",
+    "loadFailed": "No se pudieron cargar tus pólizas. Inténtalo de nuevo más tarde.",
+    "unauthenticated": "Inicia sesión para ver tus pólizas."
   }
 }

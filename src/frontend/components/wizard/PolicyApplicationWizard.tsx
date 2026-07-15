@@ -1,75 +1,121 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleContext";
+import { RecaptchaWidget } from "./RecaptchaWidget";
 import {
+  fetchPolicyMasters,
   POLICY_AGE_GROUP_OPTIONS,
   POLICY_PAYOUT_TIER_OPTIONS,
   POLICY_PLAN_OPTIONS,
   POLICY_STATION_OPTIONS,
   POLICY_THRESHOLD_OPTIONS,
-  POLICY_WIZARD_STORAGE_KEY,
   type PolicyAgeGroupValue,
-  type PolicyApplicationRecord,
+  type PolicyMasters,
 } from "./policyWizardData";
 
 type WizardStep = 0 | 1 | 2 | 3 | 4;
+
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 export function PolicyApplicationWizard() {
   const { messages } = useLocale();
   const router = useRouter();
 
   const [step, setStep] = useState<WizardStep>(0);
-  const [planId, setPlanId] = useState<number>(POLICY_PLAN_OPTIONS[0].id);
-  const [stationId, setStationId] = useState<number>(POLICY_STATION_OPTIONS.seismic[0].id);
+  const [planKey, setPlanKey] = useState<string>(POLICY_PLAN_OPTIONS[0].key);
+  const [stationKey, setStationKey] = useState<string>(POLICY_STATION_OPTIONS.seismic[0].key);
   const [thresholdValue, setThresholdValue] = useState<string>(POLICY_THRESHOLD_OPTIONS.seismic[0].value);
-  const [payoutTierId, setPayoutTierId] = useState<number>(POLICY_PAYOUT_TIER_OPTIONS[0].id);
+  const [payoutTierKey, setPayoutTierKey] = useState<string>(POLICY_PAYOUT_TIER_OPTIONS[0].key);
   const [ageGroupValue, setAgeGroupValue] = useState<PolicyAgeGroupValue>("");
-  const [recaptchaChecked, setRecaptchaChecked] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const [recaptchaResetKey, setRecaptchaResetKey] = useState(0);
   const [statusMessage, setStatusMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [masters, setMasters] = useState<PolicyMasters | null>(null);
+  const [mastersError, setMastersError] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchPolicyMasters()
+      .then((result) => {
+        if (!cancelled) {
+          setMasters(result);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setMastersError(true);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const selectedPlan = useMemo(
-    () => POLICY_PLAN_OPTIONS.find((option) => option.id === planId) ?? POLICY_PLAN_OPTIONS[0],
-    [planId]
+    () => POLICY_PLAN_OPTIONS.find((option) => option.key === planKey) ?? POLICY_PLAN_OPTIONS[0],
+    [planKey]
   );
 
   const stationOptions = POLICY_STATION_OPTIONS[selectedPlan.key];
   const thresholdOptions = POLICY_THRESHOLD_OPTIONS[selectedPlan.key];
-  const activeStationId = stationOptions.some((option) => option.id === stationId) ? stationId : stationOptions[0].id;
+  const activeStationKey = stationOptions.some((option) => option.key === stationKey) ? stationKey : stationOptions[0].key;
   const activeThresholdValue = thresholdOptions.some((option) => option.value === thresholdValue)
     ? thresholdValue
     : thresholdOptions[0].value;
   const thresholdLabels = messages.policies.new.thresholds[
     selectedPlan.key as keyof typeof messages.policies.new.thresholds
   ] as Record<string, string>;
-  const selectedStation = stationOptions.find((option) => option.id === activeStationId) ?? stationOptions[0];
+  const selectedStation = stationOptions.find((option) => option.key === activeStationKey) ?? stationOptions[0];
   const selectedThreshold =
     thresholdOptions.find((option) => option.value === activeThresholdValue) ?? thresholdOptions[0];
   const selectedPayoutTier =
-    POLICY_PAYOUT_TIER_OPTIONS.find((option) => option.id === payoutTierId) ?? POLICY_PAYOUT_TIER_OPTIONS[0];
-  const selectedAgeGroup = POLICY_AGE_GROUP_OPTIONS.find((option) => option.value === ageGroupValue);
+    POLICY_PAYOUT_TIER_OPTIONS.find((option) => option.key === payoutTierKey) ?? POLICY_PAYOUT_TIER_OPTIONS[0];
 
-  function updatePlan(nextPlanId: number | string) {
-    const normalizedPlanId = Number(nextPlanId);
-    const nextPlan = POLICY_PLAN_OPTIONS.find((option) => option.id === normalizedPlanId);
+  function updatePlan(nextPlanKey: string) {
+    const nextPlan = POLICY_PLAN_OPTIONS.find((option) => option.key === nextPlanKey);
     if (!nextPlan) {
       return;
     }
 
-    setPlanId(nextPlan.id);
-    setStationId(POLICY_STATION_OPTIONS[nextPlan.key][0].id);
+    setPlanKey(nextPlan.key);
+    setStationKey(POLICY_STATION_OPTIONS[nextPlan.key][0].key);
     setThresholdValue(POLICY_THRESHOLD_OPTIONS[nextPlan.key][0].value);
   }
+
+  const handleRecaptchaVerify = useCallback((token: string) => {
+    setRecaptchaToken(token);
+  }, []);
+
+  const handleRecaptchaExpire = useCallback(() => {
+    setRecaptchaToken(null);
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!recaptchaChecked) {
+    if (!recaptchaToken) {
       setStatusMessage(messages.policies.new.errors.recaptchaRequired);
       setStep(4);
+      return;
+    }
+
+    if (!masters) {
+      setStatusMessage(messages.policies.new.errors.mastersLoadFailed);
+      return;
+    }
+
+    const plan = masters.plans.find((option) => option.code === selectedPlan.key);
+    const station = masters.stations.find((option) => option.code === selectedStation.key);
+    const payoutTier = masters.payoutTiers.find((option) => option.code === selectedPayoutTier.key);
+
+    if (!plan || !station || !payoutTier) {
+      setStatusMessage(messages.policies.new.errors.mastersLoadFailed);
       return;
     }
 
@@ -83,11 +129,11 @@ export function PolicyApplicationWizard() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          plan_id: planId,
-          station_id: activeStationId,
-          payout_tier_id: payoutTierId,
+          plan_id: plan.id,
+          station_id: station.id,
+          payout_tier_id: payoutTier.id,
           threshold: activeThresholdValue,
-          recaptcha_token: "simulated-recaptcha-token",
+          recaptcha_token: recaptchaToken,
         }),
       });
 
@@ -100,30 +146,17 @@ export function PolicyApplicationWizard() {
         } else {
           setStatusMessage(messages.policies.new.errors.submitFailed);
         }
+
+        setRecaptchaToken(null);
+        setRecaptchaResetKey((value) => value + 1);
         return;
       }
 
-      const record: PolicyApplicationRecord = {
-        policyId: parsedBody.policy.id,
-        statusKey: "pending",
-        statusLabel: messages.policies.new.statuses.pending,
-        planId: selectedPlan.id,
-        planLabel: messages.policies.new.plans[selectedPlan.key],
-        stationId: selectedStation.id,
-        stationLabel: messages.policies.new.stations[selectedStation.key],
-        thresholdValue: selectedThreshold.value,
-        thresholdLabel: thresholdLabels[selectedThreshold.key],
-        payoutTierId: selectedPayoutTier.id,
-        payoutTierLabel: messages.policies.new.payoutTiers[selectedPayoutTier.key],
-        ageGroupValue,
-        ageGroupLabel: selectedAgeGroup ? messages.policies.new.ageGroups[selectedAgeGroup.key] : messages.policies.new.ageGroups.unspecified,
-        submittedAt: new Date().toISOString(),
-      };
-
-      window.localStorage.setItem(POLICY_WIZARD_STORAGE_KEY, JSON.stringify(record));
       router.push("/mypage");
     } catch {
       setStatusMessage(messages.policies.new.errors.submitFailed);
+      setRecaptchaToken(null);
+      setRecaptchaResetKey((value) => value + 1);
     } finally {
       setSubmitting(false);
     }
@@ -174,12 +207,12 @@ export function PolicyApplicationWizard() {
             description={messages.policies.new.planHelp}
             options={POLICY_PLAN_OPTIONS.map((option) => ({
               key: option.key,
-              id: option.id,
+              id: option.key,
               label: messages.policies.new.plans[option.key],
               hint: messages.policies.new.planDescriptions[option.key],
             }))}
-            selectedId={planId}
-            onSelect={(nextPlanId) => updatePlan(nextPlanId)}
+            selectedId={planKey}
+            onSelect={(nextPlanKey) => updatePlan(String(nextPlanKey))}
           />
         ) : null}
 
@@ -189,14 +222,14 @@ export function PolicyApplicationWizard() {
             description={messages.policies.new.stationHelp}
             options={stationOptions.map((option) => ({
               key: option.key,
-              id: option.id,
+              id: option.key,
               label: messages.policies.new.stations[option.key],
               hint: selectedPlan.key === "seismic"
                 ? messages.policies.new.stationBadges.seismic
                 : messages.policies.new.stationBadges.rainfall,
             }))}
-            selectedId={activeStationId}
-            onSelect={(nextStationId) => setStationId(Number(nextStationId))}
+            selectedId={activeStationKey}
+            onSelect={(nextStationKey) => setStationKey(String(nextStationKey))}
           />
         ) : null}
 
@@ -223,12 +256,12 @@ export function PolicyApplicationWizard() {
             description={messages.policies.new.payoutHelp}
             options={POLICY_PAYOUT_TIER_OPTIONS.map((option) => ({
               key: option.key,
-              id: option.id,
+              id: option.key,
               label: messages.policies.new.payoutTiers[option.key],
               hint: messages.policies.new.payoutBadges[option.key],
             }))}
-            selectedId={payoutTierId}
-            onSelect={(nextTierId) => setPayoutTierId(Number(nextTierId))}
+            selectedId={payoutTierKey}
+            onSelect={(nextTierKey) => setPayoutTierKey(String(nextTierKey))}
           />
         ) : null}
 
@@ -256,17 +289,26 @@ export function PolicyApplicationWizard() {
               </dl>
             </div>
 
-            <label className="wizard-check">
-              <input
-                type="checkbox"
-                checked={recaptchaChecked}
-                onChange={(event) => setRecaptchaChecked(event.target.checked)}
-              />
-              <span>
-                <strong>{messages.policies.new.recaptchaLabel}</strong>
-                <small>{messages.policies.new.recaptchaHint}</small>
-              </span>
-            </label>
+            {mastersError ? (
+              <p className="status-message status-message--error">{messages.policies.new.errors.mastersLoadFailed}</p>
+            ) : !masters ? (
+              <p className="inline-note">{messages.policies.new.loadingMasters}</p>
+            ) : null}
+
+            <div className="wizard-recaptcha">
+              <strong>{messages.policies.new.recaptchaLabel}</strong>
+              <small>{messages.policies.new.recaptchaHint}</small>
+              {RECAPTCHA_SITE_KEY ? (
+                <RecaptchaWidget
+                  key={recaptchaResetKey}
+                  siteKey={RECAPTCHA_SITE_KEY}
+                  onVerify={handleRecaptchaVerify}
+                  onExpire={handleRecaptchaExpire}
+                />
+              ) : (
+                <p className="status-message status-message--error">{messages.policies.new.errors.recaptchaUnavailable}</p>
+              )}
+            </div>
 
             <label className="wizard-field">
               <span>{messages.policies.new.ageGroupLabel}</span>
@@ -304,7 +346,7 @@ export function PolicyApplicationWizard() {
           <button
             type="submit"
             className="primary-button"
-            disabled={submitting || !recaptchaChecked}
+            disabled={submitting || !recaptchaToken || !masters}
           >
             {submitting ? messages.policies.new.actions.submitting : messages.policies.new.actions.submit}
           </button>
@@ -327,12 +369,12 @@ function WizardChoiceGroup({
   description: string;
   options: Array<{
     key: string;
-    id: number | string;
+    id: string;
     label: string;
     hint: string;
   }>;
-  selectedId: number | string;
-  onSelect: (value: number | string) => void;
+  selectedId: string;
+  onSelect: (value: string) => void;
 }) {
   return (
     <div className="wizard-choice-group">

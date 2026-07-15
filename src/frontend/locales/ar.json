@@ -131,8 +131,8 @@
         "threshold": "العتبة",
         "payoutTier": "شريحة الدفع"
       },
-      "recaptchaLabel": "مربع reCAPTCHA (محاكاة)",
-      "recaptchaHint": "فعّله لتمكين الإرسال.",
+      "recaptchaLabel": "التحقق عبر reCAPTCHA",
+      "recaptchaHint": "أكمل التحقق لتفعيل الإرسال.",
       "actions": {
         "back": "رجوع",
         "next": "التالي",
@@ -141,19 +141,27 @@
       },
       "errors": {
         "duplicatePolicy": "لديك بالفعل وثيقة فعّالة من نفس نوع الخطة.",
-        "recaptchaRequired": "يرجى تحديد مربع reCAPTCHA.",
-        "submitFailed": "فشل الإرسال."
+        "recaptchaRequired": "يرجى إكمال التحقق عبر reCAPTCHA.",
+        "submitFailed": "فشل الإرسال.",
+        "recaptchaUnavailable": "خدمة reCAPTCHA غير متاحة حاليًا. يرجى المحاولة لاحقًا.",
+        "mastersLoadFailed": "تعذّر تحميل البيانات المرجعية. يرجى المحاولة لاحقًا."
       },
       "statuses": {
-        "pending": "قيد الانتظار"
-      }
+        "pending": "قيد الانتظار",
+        "active": "نشط",
+        "processing": "جارٍ معالجة الدفع",
+        "cap_reached": "تم بلوغ الحد",
+        "cancelled": "ملغى",
+        "expired": "منتهي الصلاحية",
+        "unknown": "غير معروف"
+      },
+      "loadingMasters": "جارٍ التحميل..."
     }
   },
   "mypage": {
     "title": "صفحتي",
-    "description": "راجع أحدث وثيقة محاكاة قمت بطلبها.",
-    "latestApplication": "آخر طلب",
-    "emptyState": "لا توجد طلبات محفوظة بعد. أنشئ واحدة من المعالج.",
+    "description": "يمكنك الاطلاع على حالة وثائقك.",
+    "emptyState": "لا توجد لديك وثائق بعد. أنشئ واحدة من معالج التقديم.",
     "primaryAction": "فتح المعالج",
     "waitingExplanation": "في هذا العرض، تظهر الوثيقة المرسلة بالحالة قيد الانتظار.",
     "labels": {
@@ -162,6 +170,10 @@
       "threshold": "العتبة",
       "payoutTier": "شريحة الدفع",
       "ageGroup": "الفئة العمرية"
-    }
+    },
+    "applicationsHeading": "وثائقك",
+    "loading": "جارٍ التحميل...",
+    "loadFailed": "تعذّر تحميل وثائقك. يرجى المحاولة لاحقًا.",
+    "unauthenticated": "سجّل الدخول لعرض وثائقك."
   }
 }

@@ -1,19 +1,17 @@
-export const POLICY_WIZARD_STORAGE_KEY = "parametric_latest_policy_application";
-
 export const POLICY_PLAN_OPTIONS = [
-  { id: 1, key: "seismic" },
-  { id: 2, key: "rainfall" },
+  { code: "seismic", key: "seismic" },
+  { code: "rainfall", key: "rainfall" },
 ] as const;
 
 export type PolicyPlanKey = (typeof POLICY_PLAN_OPTIONS)[number]["key"];
 
 export const POLICY_STATION_OPTIONS = {
   seismic: [
-    { id: 1, key: "seismic_tokyo" },
-    { id: 2, key: "seismic_osaka" },
+    { code: "seismic_tokyo", key: "seismic_tokyo" },
+    { code: "seismic_osaka", key: "seismic_osaka" },
   ],
-  rainfall: [{ id: 3, key: "rainfall_tokyo" }],
-} as const satisfies Record<PolicyPlanKey, readonly { id: number; key: string }[]>;
+  rainfall: [{ code: "rainfall_tokyo", key: "rainfall_tokyo" }],
+} as const satisfies Record<PolicyPlanKey, readonly { code: string; key: string }[]>;
 
 export const POLICY_THRESHOLD_OPTIONS = {
   seismic: [
@@ -38,8 +36,8 @@ export const POLICY_THRESHOLD_OPTIONS = {
 } as const satisfies Record<PolicyPlanKey, readonly { value: string; key: string }[]>;
 
 export const POLICY_PAYOUT_TIER_OPTIONS = [
-  { id: 1, key: "ten_thousand" },
-  { id: 2, key: "thirty_thousand" },
+  { code: "ten_thousand", key: "ten_thousand" },
+  { code: "thirty_thousand", key: "thirty_thousand" },
 ] as const;
 
 export const POLICY_AGE_GROUP_OPTIONS = [
@@ -52,20 +50,32 @@ export const POLICY_AGE_GROUP_OPTIONS = [
 
 export type PolicyAgeGroupValue = (typeof POLICY_AGE_GROUP_OPTIONS)[number]["value"];
 
-export type PolicyApplicationRecord = {
-  policyId: number;
-  statusKey: "pending";
-  statusLabel: string;
-  planId: number;
-  planLabel: string;
-  stationId: number;
-  stationLabel: string;
-  thresholdValue: string;
-  thresholdLabel: string;
-  payoutTierId: number;
-  payoutTierLabel: string;
-  ageGroupValue: PolicyAgeGroupValue;
-  ageGroupLabel: string;
-  submittedAt: string;
+export type MasterPlan = { id: number; code: string; trigger_type: string };
+export type MasterStation = { id: number; code: string; measurement_type: string };
+export type MasterPayoutTier = { id: number; code: string; amount_yen: number };
+
+export type PolicyMasters = {
+  plans: MasterPlan[];
+  stations: MasterStation[];
+  payoutTiers: MasterPayoutTier[];
 };
 
+export async function fetchPolicyMasters(): Promise<PolicyMasters> {
+  const response = await fetch("/api/v1/masters");
+
+  if (!response.ok) {
+    throw new Error("Failed to load policy masters");
+  }
+
+  const body = (await response.json()) as {
+    plans: MasterPlan[];
+    stations: MasterStation[];
+    payout_tiers: MasterPayoutTier[];
+  };
+
+  return {
+    plans: body.plans,
+    stations: body.stations,
+    payoutTiers: body.payout_tiers,
+  };
+}

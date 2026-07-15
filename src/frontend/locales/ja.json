@@ -131,8 +131,8 @@
         "threshold": "閾値",
         "payoutTier": "支払額区分"
       },
-      "recaptchaLabel": "reCAPTCHA チェックボックス（模擬）",
-      "recaptchaHint": "これを有効にすると申込ボタンが押せます。",
+      "recaptchaLabel": "reCAPTCHA 認証",
+      "recaptchaHint": "認証を完了すると申込ボタンが押せます。",
       "actions": {
         "back": "戻る",
         "next": "次へ",
@@ -141,19 +141,27 @@
       },
       "errors": {
         "duplicatePolicy": "同一プラン種別の有効な契約が既にあります。",
-        "recaptchaRequired": "reCAPTCHA のチェックが必要です。",
-        "submitFailed": "申込に失敗しました。"
+        "recaptchaRequired": "reCAPTCHA の認証を完了してください。",
+        "submitFailed": "申込に失敗しました。",
+        "recaptchaUnavailable": "reCAPTCHA を利用できません。時間をおいて再度お試しください。",
+        "mastersLoadFailed": "マスタデータの取得に失敗しました。時間をおいて再度お試しください。"
       },
       "statuses": {
-        "pending": "待機中"
-      }
+        "pending": "待機中",
+        "active": "有効",
+        "processing": "支払処理中",
+        "cap_reached": "上限到達",
+        "cancelled": "解約",
+        "expired": "失効",
+        "unknown": "不明"
+      },
+      "loadingMasters": "読み込み中..."
     }
   },
   "mypage": {
     "title": "マイページ",
-    "description": "最新の模擬契約を確認できます。",
-    "latestApplication": "最新の申込",
-    "emptyState": "まだ申込データがありません。申込ウィザードから作成してください。",
+    "description": "ご自身の契約状況を確認できます。",
+    "emptyState": "まだ契約がありません。申込ウィザードから作成してください。",
     "primaryAction": "申込ウィザードへ",
     "waitingExplanation": "このデモでは、申込完了後の契約は「待機中」として表示されます。",
     "labels": {
@@ -162,6 +170,10 @@
       "threshold": "閾値",
       "payoutTier": "支払額区分",
       "ageGroup": "年齢層"
-    }
+    },
+    "applicationsHeading": "申込内容",
+    "loading": "読み込み中...",
+    "loadFailed": "契約情報の取得に失敗しました。時間をおいて再度お試しください。",
+    "unauthenticated": "ログインすると契約情報を確認できます。"
   }
 }

@@ -131,8 +131,8 @@
         "threshold": "Порог",
         "payoutTier": "Выплата"
       },
-      "recaptchaLabel": "Флажок reCAPTCHA (симуляция)",
-      "recaptchaHint": "Включите его, чтобы отправить заявку.",
+      "recaptchaLabel": "Проверка reCAPTCHA",
+      "recaptchaHint": "Пройдите проверку, чтобы включить отправку.",
       "actions": {
         "back": "Назад",
         "next": "Далее",
@@ -141,19 +141,27 @@
       },
       "errors": {
         "duplicatePolicy": "У вас уже есть активный полис того же типа.",
-        "recaptchaRequired": "Пожалуйста, отметьте reCAPTCHA.",
-        "submitFailed": "Не удалось отправить заявку."
+        "recaptchaRequired": "Пожалуйста, пройдите проверку reCAPTCHA.",
+        "submitFailed": "Не удалось отправить заявку.",
+        "recaptchaUnavailable": "reCAPTCHA недоступна. Попробуйте позже.",
+        "mastersLoadFailed": "Не удалось загрузить справочные данные. Попробуйте позже."
       },
       "statuses": {
-        "pending": "В ожидании"
-      }
+        "pending": "В ожидании",
+        "active": "Активен",
+        "processing": "Обработка выплаты",
+        "cap_reached": "Лимит достигнут",
+        "cancelled": "Отменён",
+        "expired": "Истёк",
+        "unknown": "Неизвестно"
+      },
+      "loadingMasters": "Загрузка..."
     }
   },
   "mypage": {
     "title": "Моя страница",
-    "description": "Просмотрите ваш последний симулированный полис.",
-    "latestApplication": "Последняя заявка",
-    "emptyState": "Сохранённых заявок пока нет. Создайте их в мастере.",
+    "description": "Здесь можно проверить статус ваших полисов.",
+    "emptyState": "У вас пока нет полисов. Создайте его в мастере оформления.",
     "primaryAction": "Открыть мастер",
     "waitingExplanation": "В этой демонстрации отправленный полис показывается со статусом «В ожидании».",
     "labels": {
@@ -162,6 +170,10 @@
       "threshold": "Порог",
       "payoutTier": "Выплата",
       "ageGroup": "Возрастная группа"
-    }
+    },
+    "applicationsHeading": "Ваши полисы",
+    "loading": "Загрузка...",
+    "loadFailed": "Не удалось загрузить ваши полисы. Попробуйте позже.",
+    "unauthenticated": "Войдите, чтобы увидеть свои полисы."
   }
 }

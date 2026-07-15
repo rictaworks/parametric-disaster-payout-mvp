@@ -131,8 +131,8 @@
         "threshold": "Threshold",
         "payoutTier": "Payout tier"
       },
-      "recaptchaLabel": "reCAPTCHA checkbox (simulated)",
-      "recaptchaHint": "Turn this on to enable submission.",
+      "recaptchaLabel": "reCAPTCHA verification",
+      "recaptchaHint": "Complete the challenge to enable submission.",
       "actions": {
         "back": "Back",
         "next": "Next",
@@ -141,19 +141,27 @@
       },
       "errors": {
         "duplicatePolicy": "You already have an active policy for the same plan type.",
-        "recaptchaRequired": "Please check the reCAPTCHA box.",
-        "submitFailed": "Submission failed."
+        "recaptchaRequired": "Please complete the reCAPTCHA challenge.",
+        "submitFailed": "Submission failed.",
+        "recaptchaUnavailable": "reCAPTCHA is unavailable. Please try again later.",
+        "mastersLoadFailed": "Failed to load reference data. Please try again later."
       },
       "statuses": {
-        "pending": "Pending"
-      }
+        "pending": "Pending",
+        "active": "Active",
+        "processing": "Processing payout",
+        "cap_reached": "Cap reached",
+        "cancelled": "Cancelled",
+        "expired": "Expired",
+        "unknown": "Unknown"
+      },
+      "loadingMasters": "Loading..."
     }
   },
   "mypage": {
     "title": "My page",
-    "description": "Review the latest simulated policy you applied for.",
-    "latestApplication": "Latest application",
-    "emptyState": "No application has been saved yet. Create one from the wizard.",
+    "description": "Check the status of your own policies.",
+    "emptyState": "You have no policies yet. Create one from the application wizard.",
     "primaryAction": "Open the wizard",
     "waitingExplanation": "In this demo, a submitted policy is shown with the Pending status.",
     "labels": {
@@ -162,6 +170,10 @@
       "threshold": "Threshold",
       "payoutTier": "Payout tier",
       "ageGroup": "Age group"
-    }
+    },
+    "applicationsHeading": "Your policies",
+    "loading": "Loading...",
+    "loadFailed": "Failed to load your policies. Please try again later.",
+    "unauthenticated": "Log in to view your policies."
   }
 }
