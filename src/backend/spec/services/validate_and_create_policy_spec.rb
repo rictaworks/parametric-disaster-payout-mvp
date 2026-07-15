@@ -173,41 +173,176 @@ RSpec.describe ValidateAndCreatePolicy do
     expect(Policy.count).to eq(0)
   end
 
-  it "does not require a master match for rainfall plan thresholds" do
-    rainfall_plan = Plan.create!(
-      code: "rainfall_policy_service",
-      trigger_type: "rainfall",
-      label_ja: "降雨連動",
-      label_en: "Rainfall-linked",
-      label_fr: "Rainfall-linked",
-      label_zh: "Rainfall-linked",
-      label_ru: "Rainfall-linked",
-      label_es: "Rainfall-linked",
-      label_ar: "Rainfall-linked"
-    )
-    rainfall_station = Station.create!(
-      code: "rainfall_tokyo_policy_service",
-      measurement_type: "rainfall",
-      label_ja: "東京雨量観測点",
-      label_en: "Tokyo rainfall station",
-      label_fr: "Tokyo rainfall station",
-      label_zh: "Tokyo rainfall station",
-      label_ru: "Tokyo rainfall station",
-      label_es: "Tokyo rainfall station",
-      label_ar: "Tokyo rainfall station"
-    )
+  context "for rainfall plan thresholds" do
+    let!(:rainfall_plan) do
+      Plan.create!(
+        code: "rainfall_policy_service",
+        trigger_type: "rainfall",
+        label_ja: "降雨連動",
+        label_en: "Rainfall-linked",
+        label_fr: "Rainfall-linked",
+        label_zh: "Rainfall-linked",
+        label_ru: "Rainfall-linked",
+        label_es: "Rainfall-linked",
+        label_ar: "Rainfall-linked"
+      )
+    end
+    let!(:rainfall_station) do
+      Station.create!(
+        code: "rainfall_tokyo_policy_service",
+        measurement_type: "rainfall",
+        label_ja: "東京雨量観測点",
+        label_en: "Tokyo rainfall station",
+        label_fr: "Tokyo rainfall station",
+        label_zh: "Tokyo rainfall station",
+        label_ru: "Tokyo rainfall station",
+        label_es: "Tokyo rainfall station",
+        label_ar: "Tokyo rainfall station"
+      )
+    end
 
-    result = described_class.new(
-      user: user,
-      plan_id: rainfall_plan.id,
-      station_id: rainfall_station.id,
-      payout_tier_id: payout_tier_id,
-      threshold: "50mm/h",
-      recaptcha_token: recaptcha_token
-    ).call
+    it "does not require a seismic intensity master match, but accepts a finite positive number" do
+      result = described_class.new(
+        user: user,
+        plan_id: rainfall_plan.id,
+        station_id: rainfall_station.id,
+        payout_tier_id: payout_tier_id,
+        threshold: "50.0",
+        recaptcha_token: recaptcha_token
+      ).call
 
-    expect(result).to be_success
-    expect(result.policy.threshold).to eq("50mm/h")
+      expect(result).to be_success
+      expect(result.policy.threshold).to eq("50.0")
+    end
+
+    # フロントエンドの申込ウィザード（policyWizardData.ts）は
+    # "10 mm" のように単位付きの文字列をそのまま送信するため、単位を正規化して受理する
+    it "normalizes and accepts the unit-suffixed values sent by the application wizard" do
+      result = described_class.new(
+        user: user,
+        plan_id: rainfall_plan.id,
+        station_id: rainfall_station.id,
+        payout_tier_id: payout_tier_id,
+        threshold: "10 mm",
+        recaptcha_token: recaptcha_token
+      ).call
+
+      expect(result).to be_success
+      expect(result.policy.threshold).to eq("10.0")
+    end
+
+    it "rejects a threshold with no extractable number" do
+      result = described_class.new(
+        user: user,
+        plan_id: rainfall_plan.id,
+        station_id: rainfall_station.id,
+        payout_tier_id: payout_tier_id,
+        threshold: "mm",
+        recaptcha_token: recaptcha_token
+      ).call
+
+      expect(result).not_to be_success
+      expect(result.status).to eq(:unprocessable_entity)
+      expect(result.error).to eq("threshold_invalid")
+      expect(Policy.count).to eq(0)
+    end
+
+    # 数字が複数箇所に分断された入力は、文字削除による正規化では意図しない数値へ
+    # 結合されてしまう（例: "1abc2 mm" -> "12"）。形式検証によりこれを拒否する
+    it "rejects a threshold whose digits are split across multiple fragments" do
+      result = described_class.new(
+        user: user,
+        plan_id: rainfall_plan.id,
+        station_id: rainfall_station.id,
+        payout_tier_id: payout_tier_id,
+        threshold: "1abc2 mm",
+        recaptcha_token: recaptcha_token
+      ).call
+
+      expect(result).not_to be_success
+      expect(result.status).to eq(:unprocessable_entity)
+      expect(result.error).to eq("threshold_invalid")
+      expect(Policy.count).to eq(0)
+    end
+
+    it "rejects a threshold in exponential notation" do
+      result = described_class.new(
+        user: user,
+        plan_id: rainfall_plan.id,
+        station_id: rainfall_station.id,
+        payout_tier_id: payout_tier_id,
+        threshold: "10e3",
+        recaptcha_token: recaptcha_token
+      ).call
+
+      expect(result).not_to be_success
+      expect(result.status).to eq(:unprocessable_entity)
+      expect(result.error).to eq("threshold_invalid")
+      expect(Policy.count).to eq(0)
+    end
+
+    it "accepts a threshold at the maximum storable precision (4 integer digits, 2 decimal digits)" do
+      result = described_class.new(
+        user: user,
+        plan_id: rainfall_plan.id,
+        station_id: rainfall_station.id,
+        payout_tier_id: payout_tier_id,
+        threshold: "9999.99",
+        recaptcha_token: recaptcha_token
+      ).call
+
+      expect(result).to be_success
+      expect(result.policy.threshold).to eq("9999.99")
+    end
+
+    # policies.threshold は varchar(255) のため理論上は桁数無制限の値でも保存できてしまうが、
+    # observations.max_value / rainfall_mm のカラム精度（precision: 6, scale: 2）を超える閾値は
+    # 実際の観測値と比較不能であり、無意味かつ ActiveRecord::ValueTooLong の再現条件にもなりうる
+    it "rejects a threshold that exceeds the storable precision (e.g. a 300-digit number)" do
+      result = described_class.new(
+        user: user,
+        plan_id: rainfall_plan.id,
+        station_id: rainfall_station.id,
+        payout_tier_id: payout_tier_id,
+        threshold: "1" * 300,
+        recaptcha_token: recaptcha_token
+      ).call
+
+      expect(result).not_to be_success
+      expect(result.status).to eq(:unprocessable_entity)
+      expect(result.error).to eq("threshold_invalid")
+      expect(Policy.count).to eq(0)
+    end
+
+    it "rejects a NaN threshold" do
+      result = described_class.new(
+        user: user,
+        plan_id: rainfall_plan.id,
+        station_id: rainfall_station.id,
+        payout_tier_id: payout_tier_id,
+        threshold: "NaN",
+        recaptcha_token: recaptcha_token
+      ).call
+
+      expect(result).not_to be_success
+      expect(result.status).to eq(:unprocessable_entity)
+      expect(result.error).to eq("threshold_invalid")
+    end
+
+    it "rejects a zero or negative threshold" do
+      result = described_class.new(
+        user: user,
+        plan_id: rainfall_plan.id,
+        station_id: rainfall_station.id,
+        payout_tier_id: payout_tier_id,
+        threshold: "0",
+        recaptcha_token: recaptcha_token
+      ).call
+
+      expect(result).not_to be_success
+      expect(result.status).to eq(:unprocessable_entity)
+      expect(result.error).to eq("threshold_invalid")
+    end
   end
 
   %w[pending active processing].each do |status_code|

@@ -1,5 +1,7 @@
 zh:
   hello: "你好，世界"
+  notifications:
+    payout_ordered: "已生成模拟赔付指令。请在个人页面查看您的保单及赔付历史。"
   errors:
     messages:
       blank: "不能为空"

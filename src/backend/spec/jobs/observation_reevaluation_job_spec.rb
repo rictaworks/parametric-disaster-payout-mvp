@@ -40,17 +40,51 @@ RSpec.describe ObservationReevaluationJob do
     )
   end
 
-  # NOTE: This job is a Stage 6 placeholder queue entry point only (see the class comment).
-  # It intentionally performs no trigger evaluation or payout creation yet; that lands in
-  # Stage 7 (Issue #8). This spec only pins today's documented no-op contract so a future
-  # change to real evaluation logic here is an intentional, visible diff rather than a
-  # silent behavior change.
-  it "does not raise and does not create any payouts" do
+  it "delegates to EvaluateTrigger and does not create a payout when no policy matches" do
     expect { described_class.new.perform(observation.id) }.not_to raise_error
     expect(Payout.count).to eq(0)
   end
 
   it "does not raise when the observation no longer exists" do
     expect { described_class.new.perform(-1) }.not_to raise_error
+  end
+
+  describe "automatic retry on transient database errors" do
+    include ActiveJob::TestHelper
+
+    around do |example|
+      original_adapter = ActiveJob::Base.queue_adapter
+      ActiveJob::Base.queue_adapter = :test
+      example.run
+      ActiveJob::Base.queue_adapter = original_adapter
+    end
+
+    ApplicationJob::RETRYABLE_DATABASE_ERRORS.each do |error_class|
+      it "retries instead of failing permanently when EvaluateTrigger raises #{error_class}" do
+        call_count = 0
+        allow(EvaluateTrigger).to receive(:call) do
+          call_count += 1
+          raise error_class if call_count == 1
+
+          EvaluateTrigger::Result.new(payouts: [], status: :success)
+        end
+
+        perform_enqueued_jobs do
+          expect {
+            described_class.perform_later(observation.id)
+          }.not_to raise_error
+        end
+
+        expect(call_count).to eq(2)
+      end
+    end
+
+    it "does not retry (and re-raises) for a non-retryable error" do
+      allow(EvaluateTrigger).to receive(:call).and_raise(StandardError, "unexpected failure")
+
+      expect {
+        described_class.new(observation.id).perform_now
+      }.to raise_error(StandardError, "unexpected failure")
+    end
   end
 end

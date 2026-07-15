@@ -60,8 +60,12 @@ Rails.application.configure do
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
 
-  # Use a real queuing backend for Active Job (and separate queues per environment).
-  # config.active_job.queue_adapter = :resque
+  # Use a real queuing backend for Active Job so job data (and pending payout
+  # evaluations) survive process restarts/crashes, instead of Rails' in-memory
+  # async adapter which loses unprocessed jobs on restart.
+  # Solid Queue tables live in the same primary PostgreSQL database (single-DB
+  # setup; no separate `queue` database role), so no `connects_to` is needed.
+  config.active_job.queue_adapter = :solid_queue
   # config.active_job.queue_name_prefix = "backend_production"
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to

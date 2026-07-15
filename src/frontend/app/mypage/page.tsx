@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PageSection } from "@/components/PageSection";
 import { useLocale } from "@/components/LocaleContext";
-import { POLICY_PLAN_OPTIONS, POLICY_THRESHOLD_OPTIONS } from "@/components/wizard/policyWizardData";
+import { POLICY_PLAN_OPTIONS, findThresholdOption } from "@/components/wizard/policyWizardData";
 
 type FetchedPolicy = {
   id: number;
@@ -87,7 +87,7 @@ export default function MyPage() {
       return value;
     }
 
-    const thresholdOption = POLICY_THRESHOLD_OPTIONS[plan.key].find((option) => option.value === value);
+    const thresholdOption = findThresholdOption(plan.key, value);
     if (!thresholdOption) {
       return value;
     }

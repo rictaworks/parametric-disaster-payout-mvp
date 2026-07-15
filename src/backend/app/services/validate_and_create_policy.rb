@@ -51,9 +51,24 @@ class ValidateAndCreatePolicy
   end
 
   def threshold_valid?(masters)
-    return true unless masters.fetch(:plan).trigger_type == "seismic"
+    case masters.fetch(:plan).trigger_type
+    when "seismic"
+      SeismicIntensityLevel.exists?(label_ja: threshold)
+    when "rainfall"
+      normalized_rainfall_threshold.present?
+    else
+      true
+    end
+  end
 
-    SeismicIntensityLevel.exists?(label_ja: threshold)
+  # 検証を通過した値はそのまま Policy#threshold に保存する。RainfallThresholdParser は
+  # evaluate_trigger.rb でも同じ解析ロジックとして使われるため、ここで正規化した数値文字列は
+  # 評価時にも問題なく解析できる
+  def normalized_rainfall_threshold
+    return @normalized_rainfall_threshold if defined?(@normalized_rainfall_threshold)
+
+    value = RainfallThresholdParser.parse(threshold)
+    @normalized_rainfall_threshold = value&.to_s("F")
   end
 
   def create_policy_within_lock(masters)
@@ -74,12 +89,16 @@ class ValidateAndCreatePolicy
         station: masters.fetch(:station),
         payout_tier: masters.fetch(:payout_tier),
         policy_status: masters.fetch(:pending_status),
-        threshold: threshold
+        threshold: policy_threshold(masters)
       )
       policy.save
     end
 
     [ policy, duplicate ]
+  end
+
+  def policy_threshold(masters)
+    masters.fetch(:plan).trigger_type == "rainfall" ? normalized_rainfall_threshold : threshold
   end
 
   def duplicate_policy_exists?(masters)

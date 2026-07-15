@@ -29,6 +29,12 @@ port ENV.fetch("PORT", 3001)
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 
+# 本番環境では Solid Queue のワーカーを Puma と同一プロセス（フォーク）内で起動する。
+# Railway 無料枠では専用のワーカー用サービスを追加せずに済み、かつ Web プロセスの
+# 再起動・クラッシュ時にも Solid Queue のスーパーバイザーが道連れで再起動されるため、
+# 観測取込トリガー判定ジョブ（ObservationReevaluationJob）の取りこぼしを防げる
+plugin :solid_queue if ENV.fetch("RAILS_ENV", "development") == "production"
+
 # Specify the PID file. Defaults to tmp/pids/server.pid in development.
 # In other environments, only set the PID file if requested.
 pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
