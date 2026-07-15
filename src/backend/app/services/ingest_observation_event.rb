@@ -86,7 +86,12 @@ class IngestObservationEvent
       end
     attrs = attrs.merge(max_value: incoming_value, updated_at: Time.current)
 
-    updated_rows = Observation.where(id: observation.id).where("max_value < ?", incoming_value).update_all(attrs)
+    # max_value IS NULL matches rows created before the max_value column was backfilled;
+    # without it, a NULL < incoming_value comparison is never true in SQL and the update
+    # (and its re-evaluation enqueue) would be silently skipped for those legacy rows.
+    updated_rows = Observation.where(id: observation.id)
+                               .where("max_value IS NULL OR max_value < ?", incoming_value)
+                               .update_all(attrs)
     return false if updated_rows.zero?
 
     observation.assign_attributes(attrs)

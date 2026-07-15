@@ -178,6 +178,42 @@ RSpec.describe IngestObservationEvent do
       end
     end
 
+    context "when the existing observation predates the max_value backfill (NULL column)" do
+      let!(:existing_observation) do
+        Observation.create!(
+          station: seismic_station,
+          event_id: "event-001",
+          observed_at: Time.zone.parse("2026-07-15 09:00:00"),
+          seismic_intensity_level: seismic_level_4,
+          max_value: 4,
+          simulated: false
+        ).tap do |observation|
+          # Simulate a pre-migration row: the max_value column exists but was never
+          # backfilled, so it is NULL even though the row has real measurement data.
+          Observation.where(id: observation.id).update_all(max_value: nil)
+        end
+      end
+
+      let(:payload) do
+        {
+          station_id: seismic_station.id,
+          event_id: "event-001",
+          occurred_at: Time.zone.parse("2026-07-15 09:00:00"),
+          seismic_intensity_level_id: seismic_level_5_weak.id,
+          simulated: false
+        }
+      end
+
+      it "still updates the maximum and queues re-evaluation instead of silently skipping it" do
+        result = service.call
+
+        expect(result).to be_success
+        expect(result.status).to eq(:updated)
+        expect(existing_observation.reload.max_value).to eq(BigDecimal("5"))
+        expect(queue_job).to have_received(:perform_later).with(existing_observation.id)
+      end
+    end
+
     context "when a concurrent process commits a higher maximum before this attempt applies its update" do
       let!(:existing_observation) do
         Observation.create!(
