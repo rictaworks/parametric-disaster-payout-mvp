@@ -5,6 +5,11 @@ class IngestObservationEvent
     end
   end
 
+  # A concurrent ingest (5分ポーリングと管理画面注入の同時到着など) can race between the
+  # existence check and the insert/update below. MAX_ATTEMPTS bounds the retry loop that
+  # re-reads and re-applies the comparison after losing such a race exactly once or twice.
+  MAX_ATTEMPTS = 3
+
   def initialize(payload:, queue_job: ObservationReevaluationJob)
     @payload = payload.deep_symbolize_keys
     @queue_job = queue_job
@@ -20,32 +25,73 @@ class IngestObservationEvent
     return Result.new(status: :ignored) if station.measurement_type == "seismic" && seismic_intensity_level.nil?
     return Result.new(status: :ignored) if station.measurement_type == "rainfall" && rainfall_mm.nil?
 
-    ActiveRecord::Base.transaction do
-      observation = find_summary_observation(station, occurrence_time)
+    attempts = 0
+    begin
+      attempts += 1
+      ingest(station, occurrence_time)
+    rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
+      # A concurrent insert can win either as a DB-level unique violation or, if the other
+      # process commits between our own uniqueness validation and insert, as a validation
+      # failure here. Both mean someone else just created the row we were about to create.
+      raise if attempts >= MAX_ATTEMPTS
 
-      if observation.nil?
-        observation = build_summary_observation(station, occurrence_time)
-        observation.save!
-        history_event = record_history!(observation, occurrence_time)
-        enqueue_re_evaluation!(observation)
-        return Result.new(observation: observation, history_event: history_event, queued: true, status: :created)
-      end
-
-      if incoming_value > observation.max_value.to_d
-        update_max_observation!(observation)
-        history_event = record_history!(observation, occurrence_time)
-        enqueue_re_evaluation!(observation)
-        return Result.new(observation: observation, history_event: history_event, queued: true, status: :updated)
-      end
-
-      history_event = record_history!(observation, occurrence_time)
-      Result.new(observation: observation, history_event: history_event, queued: false, status: :recorded)
+      retry
     end
   end
 
   private
 
   attr_reader :payload, :queue_job
+
+  def ingest(station, occurrence_time)
+    observation = find_summary_observation(station, occurrence_time)
+
+    return create_summary_observation!(station, occurrence_time) if observation.nil?
+
+    apply_update_or_record!(observation, occurrence_time)
+  end
+
+  def create_summary_observation!(station, occurrence_time)
+    ActiveRecord::Base.transaction do
+      observation = build_summary_observation(station, occurrence_time)
+      observation.save!
+      history_event = record_history!(observation, occurrence_time)
+      enqueue_re_evaluation!(observation)
+      Result.new(observation: observation, history_event: history_event, queued: true, status: :created)
+    end
+  end
+
+  # Uses a single conditional UPDATE (`WHERE max_value < ?`) instead of read-then-write so a
+  # concurrent ingest that already committed a higher max_value cannot be clobbered by this
+  # attempt's stale in-memory comparison (see IngestObservationEvent MAX_ATTEMPTS comment).
+  def apply_update_or_record!(observation, occurrence_time)
+    ActiveRecord::Base.transaction do
+      if incoming_value > observation.max_value.to_d && apply_conditional_max_update!(observation)
+        history_event = record_history!(observation, occurrence_time)
+        enqueue_re_evaluation!(observation)
+        Result.new(observation: observation, history_event: history_event, queued: true, status: :updated)
+      else
+        history_event = record_history!(observation, occurrence_time)
+        Result.new(observation: observation, history_event: history_event, queued: false, status: :recorded)
+      end
+    end
+  end
+
+  def apply_conditional_max_update!(observation)
+    attrs =
+      if observation.station.measurement_type == "seismic"
+        { seismic_intensity_level_id: seismic_intensity_level.id }
+      else
+        { rainfall_mm: rainfall_mm }
+      end
+    attrs = attrs.merge(max_value: incoming_value, updated_at: Time.current)
+
+    updated_rows = Observation.where(id: observation.id).where("max_value < ?", incoming_value).update_all(attrs)
+    return false if updated_rows.zero?
+
+    observation.assign_attributes(attrs)
+    true
+  end
 
   def find_station
     station_identifier = payload[:station_id] || payload[:station_code] || payload[:station]
@@ -83,16 +129,6 @@ class IngestObservationEvent
     end
 
     observation
-  end
-
-  def update_max_observation!(observation)
-    observation.max_value = incoming_value
-    if observation.station.measurement_type == "seismic"
-      observation.assign_attributes(seismic_intensity_level: seismic_intensity_level)
-    else
-      observation.assign_attributes(rainfall_mm: rainfall_mm)
-    end
-    observation.save!
   end
 
   def record_history!(observation, occurrence_time)

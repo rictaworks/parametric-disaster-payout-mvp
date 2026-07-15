@@ -178,6 +178,92 @@ RSpec.describe IngestObservationEvent do
       end
     end
 
+    context "when a concurrent process commits a higher maximum before this attempt applies its update" do
+      let!(:existing_observation) do
+        Observation.create!(
+          station: seismic_station,
+          event_id: "event-001",
+          observed_at: Time.zone.parse("2026-07-15 09:00:00"),
+          seismic_intensity_level: seismic_level_4,
+          max_value: 4,
+          simulated: false
+        )
+      end
+
+      let(:payload) do
+        {
+          station_id: seismic_station.id,
+          event_id: "event-001",
+          occurred_at: Time.zone.parse("2026-07-15 09:00:00"),
+          seismic_intensity_level_id: seismic_level_5_weak.id,
+          simulated: false
+        }
+      end
+
+      before do
+        allow(Observation).to receive(:find_by).and_wrap_original do |method, *args|
+          record = method.call(*args)
+          if record&.id == existing_observation.id
+            Observation.where(id: existing_observation.id).update_all(max_value: 6)
+          end
+          record
+        end
+      end
+
+      it "does not overwrite the concurrently committed higher maximum and does not re-queue" do
+        result = service.call
+
+        expect(result).to be_success
+        expect(result.status).to eq(:recorded)
+        expect(existing_observation.reload.max_value).to eq(BigDecimal("6"))
+        expect(queue_job).not_to have_received(:perform_later)
+      end
+    end
+
+    context "when two ingests race to create the same new observation" do
+      let!(:existing_observation) do
+        Observation.create!(
+          station: seismic_station,
+          event_id: "event-002",
+          observed_at: Time.zone.parse("2026-07-15 09:30:00"),
+          seismic_intensity_level: seismic_level_4,
+          max_value: 4,
+          simulated: false
+        )
+      end
+
+      let(:payload) do
+        {
+          station_id: seismic_station.id,
+          event_id: "event-002",
+          occurred_at: Time.zone.parse("2026-07-15 09:30:00"),
+          seismic_intensity_level_id: seismic_level_5_weak.id,
+          simulated: false
+        }
+      end
+
+      before do
+        # Simulate this attempt's existence check racing ahead of a concurrent insert: the
+        # first lookup misses the row that (in reality) another process is about to commit,
+        # so this attempt tries to create it too and collides with the real unique index.
+        call_count = 0
+        allow(Observation).to receive(:find_by).and_wrap_original do |method, *args|
+          call_count += 1
+          call_count == 1 ? nil : method.call(*args)
+        end
+      end
+
+      it "retries after losing the create race and applies its update against the winning row" do
+        result = nil
+        expect { result = service.call }.not_to raise_error
+
+        expect(result).to be_success
+        expect(result.status).to eq(:updated)
+        expect(existing_observation.reload.max_value).to eq(BigDecimal("5"))
+        expect(Observation.where(station: seismic_station, event_id: "event-002").count).to eq(1)
+      end
+    end
+
     context "when the station is unknown" do
       let(:payload) do
         {
