@@ -2,6 +2,7 @@ class Observation < ApplicationRecord
   belongs_to :station
   belongs_to :seismic_intensity_level, optional: true
   has_many :payouts
+  has_many :observation_events, dependent: :destroy
 
   validates :observed_at, presence: true
 
@@ -15,6 +16,17 @@ class Observation < ApplicationRecord
   validates :observed_at, uniqueness: { scope: :station_id }, if: -> { event_id.nil? }
 
   before_validation :normalize_event_id
+
+  def measurement_value
+    return rainfall_mm if rainfall_mm.present?
+    return seismic_intensity_level.sort_order if seismic_intensity_level.present?
+
+    nil
+  end
+
+  def max_value
+    self[:max_value] || measurement_value
+  end
 
   private
 

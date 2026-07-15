@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_14_072812) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_15_062922) do
   create_table "legacy_payouts", force: :cascade do |t|
     t.integer "policy_id"
     t.integer "payout_tier_id"
@@ -49,6 +49,16 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_14_072812) do
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
+  create_table "observation_events", force: :cascade do |t|
+    t.integer "observation_id", null: false
+    t.datetime "occurred_at", null: false
+    t.json "payload", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["observation_id", "occurred_at"], name: "index_observation_events_on_observation_id_and_occurred_at"
+    t.index ["observation_id"], name: "index_observation_events_on_observation_id"
+  end
+
   create_table "observations", force: :cascade do |t|
     t.integer "station_id", null: false
     t.integer "seismic_intensity_level_id"
@@ -58,6 +68,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_14_072812) do
     t.datetime "updated_at", null: false
     t.string "event_id"
     t.boolean "simulated", default: false, null: false
+    t.decimal "max_value", precision: 6, scale: 2
     t.index ["seismic_intensity_level_id"], name: "index_observations_on_seismic_intensity_level_id"
     t.index ["station_id", "event_id"], name: "idx_obs_station_event", unique: true, where: "event_id IS NOT NULL"
     t.index ["station_id", "observed_at"], name: "idx_obs_station_observed", unique: true, where: "event_id IS NULL"
@@ -214,6 +225,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_14_072812) do
   add_foreign_key "notifications", "payouts"
   add_foreign_key "notifications", "policies"
   add_foreign_key "notifications", "users"
+  add_foreign_key "observation_events", "observations"
   add_foreign_key "observations", "seismic_intensity_levels"
   add_foreign_key "observations", "stations"
   add_foreign_key "payouts", "observations"
