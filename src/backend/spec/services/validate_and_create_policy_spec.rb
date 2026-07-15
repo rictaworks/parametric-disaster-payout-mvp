@@ -82,6 +82,19 @@ RSpec.describe ValidateAndCreatePolicy do
       label_ar: "Processing payout"
     )
   end
+  let!(:seismic_intensity_level_5_weak) do
+    SeismicIntensityLevel.create!(
+      code: "5_weak",
+      sort_order: 5,
+      label_ja: "5弱",
+      label_en: "5 weak",
+      label_fr: "5 weak",
+      label_zh: "5 weak",
+      label_ru: "5 weak",
+      label_es: "5 weak",
+      label_ar: "5 weak"
+    )
+  end
   let(:recaptcha_client) { instance_double(RecaptchaVerifier, valid?: recaptcha_valid) }
   let(:recaptcha_valid) { true }
   let(:service) do
@@ -142,6 +155,59 @@ RSpec.describe ValidateAndCreatePolicy do
     expect(result.status).to eq(:unprocessable_entity)
     expect(result.error).to eq("master_not_found")
     expect(result.details).to include(:plan, :station, :payout_tier)
+  end
+
+  it "rejects a seismic threshold that does not match any seismic intensity level master" do
+    result = described_class.new(
+      user: user,
+      plan_id: plan_id,
+      station_id: station_id,
+      payout_tier_id: payout_tier_id,
+      threshold: "存在しない震度",
+      recaptcha_token: recaptcha_token
+    ).call
+
+    expect(result).not_to be_success
+    expect(result.status).to eq(:unprocessable_entity)
+    expect(result.error).to eq("threshold_invalid")
+    expect(Policy.count).to eq(0)
+  end
+
+  it "does not require a master match for rainfall plan thresholds" do
+    rainfall_plan = Plan.create!(
+      code: "rainfall_policy_service",
+      trigger_type: "rainfall",
+      label_ja: "降雨連動",
+      label_en: "Rainfall-linked",
+      label_fr: "Rainfall-linked",
+      label_zh: "Rainfall-linked",
+      label_ru: "Rainfall-linked",
+      label_es: "Rainfall-linked",
+      label_ar: "Rainfall-linked"
+    )
+    rainfall_station = Station.create!(
+      code: "rainfall_tokyo_policy_service",
+      measurement_type: "rainfall",
+      label_ja: "東京雨量観測点",
+      label_en: "Tokyo rainfall station",
+      label_fr: "Tokyo rainfall station",
+      label_zh: "Tokyo rainfall station",
+      label_ru: "Tokyo rainfall station",
+      label_es: "Tokyo rainfall station",
+      label_ar: "Tokyo rainfall station"
+    )
+
+    result = described_class.new(
+      user: user,
+      plan_id: rainfall_plan.id,
+      station_id: rainfall_station.id,
+      payout_tier_id: payout_tier_id,
+      threshold: "50mm/h",
+      recaptcha_token: recaptcha_token
+    ).call
+
+    expect(result).to be_success
+    expect(result.policy.threshold).to eq("50mm/h")
   end
 
   %w[pending active processing].each do |status_code|

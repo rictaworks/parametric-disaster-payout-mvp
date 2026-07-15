@@ -21,6 +21,8 @@ class ValidateAndCreatePolicy
     missing_masters = masters.select { |_, value| value.nil? }.keys
     return failure(:unprocessable_entity, "master_not_found", missing_masters) if missing_masters.any?
 
+    return failure(:unprocessable_entity, "threshold_invalid") unless threshold_valid?(masters)
+
     policy, duplicate = create_policy_within_lock(masters)
 
     return failure(:conflict, "duplicate_policy") if duplicate
@@ -46,6 +48,12 @@ class ValidateAndCreatePolicy
       active_status: PolicyStatus.find_by(code: "active"),
       processing_status: PolicyStatus.find_by(code: "processing")
     }
+  end
+
+  def threshold_valid?(masters)
+    return true unless masters.fetch(:plan).trigger_type == "seismic"
+
+    SeismicIntensityLevel.exists?(label_ja: threshold)
   end
 
   def create_policy_within_lock(masters)

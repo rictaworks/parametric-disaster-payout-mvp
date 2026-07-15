@@ -90,6 +90,19 @@ RSpec.describe "POST /api/v1/policies", type: :request do
       label_ar: "Processing payout"
     )
   end
+  let!(:seismic_intensity_level_5_weak) do
+    SeismicIntensityLevel.create!(
+      code: "5_weak",
+      sort_order: 5,
+      label_ja: "5弱",
+      label_en: "5 weak",
+      label_fr: "5 weak",
+      label_zh: "5 weak",
+      label_ru: "5 weak",
+      label_es: "5 weak",
+      label_ar: "5 weak"
+    )
+  end
   let(:params) do
     {
       plan_id: plan.id,
@@ -144,6 +157,16 @@ RSpec.describe "POST /api/v1/policies", type: :request do
     body = JSON.parse(response.body)
     expect(body["error"]).to eq("master_not_found")
     expect(body["details"]).to include("plan")
+  end
+
+  it "returns 422 when the seismic threshold does not match any seismic intensity level" do
+    post "/api/v1/policies",
+      params: params.merge(threshold: "存在しない震度"),
+      headers: headers
+
+    expect(response).to have_http_status(422)
+    expect(JSON.parse(response.body)).to include("error" => "threshold_invalid")
+    expect(Policy.count).to eq(0)
   end
 
   it "returns 409 when the user already has an active policy for the same plan type" do
