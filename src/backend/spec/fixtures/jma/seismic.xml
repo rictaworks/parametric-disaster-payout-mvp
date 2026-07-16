@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report>
+  <Head>
+    <ReportId>eq-20260715-090000</ReportId>
+    <ReportDateTime>2026-07-15T09:01:00+09:00</ReportDateTime>
+  </Head>
+  <Body>
+    <Earthquake>
+      <OriginTime>2026-07-15T09:00:00+09:00</OriginTime>
+      <Intensity>
+        <Observation>
+          <Pref>
+            <Area>
+              <City>
+                <Name>東京震度観測点</Name>
+                <Code>seismic_tokyo</Code>
+                <Intensity>5弱</Intensity>
+              </City>
+            </Area>
+          </Pref>
+        </Observation>
+      </Intensity>
+    </Earthquake>
+  </Body>
+</Report>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report>
+  <Head>
+    <ReportDateTime>2026-07-15T10:05:00+09:00</ReportDateTime>
+  </Head>
+  <Body>
+    <MeteorologicalInfo>
+      <TimeSeriesInfo>
+        <Item>
+          <TimeDefine>
+            <Time>2026-07-15T10:00:00+09:00</Time>
+          </TimeDefine>
+          <Area>
+            <Station>
+              <Name>東京雨量観測点</Name>
+              <Code>rainfall_tokyo</Code>
+              <Time>2026-07-15T10:00:00+09:00</Time>
+              <Precipitation>12.5</Precipitation>
+            </Station>
+          </Area>
+        </Item>
+      </TimeSeriesInfo>
+    </MeteorologicalInfo>
+  </Body>
+</Report>
