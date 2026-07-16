@@ -14,6 +14,12 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :admin do
+    namespace :api do
+      patch "payouts/:id/complete", to: "payouts#complete"
+    end
+  end
+
   # Defines the root path route ("/")
   # root "posts#index"
 end

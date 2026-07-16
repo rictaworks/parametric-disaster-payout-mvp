@@ -67,7 +67,7 @@ class EvaluateTrigger
           user: policy.user,
           policy: policy,
           payout: payout,
-          kind: "payout_ordered",
+          kind: Notification::KIND_PAYOUT_ORDERED,
           message: I18n.t("notifications.payout_ordered")
         )
 
