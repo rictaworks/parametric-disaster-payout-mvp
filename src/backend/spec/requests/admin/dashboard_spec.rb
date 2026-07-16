@@ -140,4 +140,27 @@ RSpec.describe "Admin dashboard", type: :request do
     expect(response.body).to include("無効化")
     expect(response.body).to include(completed_payout.payout_status.code)
   end
+
+  describe "session cookie scope" do
+    around do |example|
+      orig = ActionController::Base.allow_forgery_protection
+      begin
+        ActionController::Base.allow_forgery_protection = true
+        example.run
+      ensure
+        ActionController::Base.allow_forgery_protection = orig
+      end
+    end
+
+    it "scopes the CSRF session cookie to /admin with SameSite=Strict, not the app-wide default" do
+      get "/admin/payouts", headers: auth_headers
+
+      set_cookie = response.headers["Set-Cookie"]
+
+      expect(set_cookie).to include("_backend_admin_session=")
+      expect(set_cookie).to include("path=/admin")
+      expect(set_cookie).to include("samesite=strict")
+      expect(set_cookie).not_to include("_session_id=")
+    end
+  end
 end
