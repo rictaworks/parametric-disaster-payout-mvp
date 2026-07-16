@@ -7,6 +7,11 @@ es:
   admin_api:
     payouts:
       invalid_status_transition: "Transición de estado no válida"
+  api:
+    policies:
+      only_pending_can_be_activated: "Solo las pólizas pendientes pueden activarse"
+    survey_responses:
+      payout_must_be_completed: "Solo se pueden enviar encuestas para pagos completados"
   errors:
     messages:
       blank: "no puede estar en blanco"
@@ -36,3 +41,4 @@ es:
           immutable_once_created: "no se puede cambiar una vez creado"
         survey_response:
           must_be_policy_owner: "debe ser el propietario del pago de la póliza"
+          must_be_completed_to_accept_survey: "debe completarse para aceptar la respuesta de la encuesta"

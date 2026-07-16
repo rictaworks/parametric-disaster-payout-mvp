@@ -174,6 +174,55 @@
     "applicationsHeading": "Ваши полисы",
     "loading": "Загрузка...",
     "loadFailed": "Не удалось загрузить ваши полисы. Попробуйте позже.",
-    "unauthenticated": "Войдите, чтобы увидеть свои полисы."
+    "unauthenticated": "Войдите, чтобы увидеть свои полисы.",
+    "survey": {
+      "requestTitle": "Запрос на опрос",
+      "requestDescription": "Пожалуйста, пройдите опрос после завершения имитации выплаты.",
+      "targetPayoutPrefix": "ID выплаты: ",
+      "feedbackLabel": "Содержимое ответа",
+      "submitting": "Отправка...",
+      "submit": "Отправить опрос",
+      "defaultFeedback": "Пожалуйста, поделитесь впечатлениями об этой имитации выплаты.",
+      "forbidden": "Вы не можете отправить этот опрос.",
+      "submitFailed": "Не удалось отправить опрос.",
+      "savedPrefix": "Опрос сохранён. (ID выплаты: ",
+      "savedSuffix": ")"
+    },
+    "status": {
+      "forbidden": "Вы не можете выполнить это действие с данным полисом.",
+      "updateFailed": "Не удалось обновить полис.",
+      "updated": "Полис обновлён."
+    },
+    "countdown": {
+      "elapsed": "Период ожидания истёк",
+      "remainingPrefix": "осталось "
+    },
+    "policiesHeading": "Список полисов",
+    "countdownLabel": "До окончания ожидания: ",
+    "terminatedAt": "Дата аннулирования",
+    "actions": {
+      "forceWaitingPeriod": "[Прототип] Немедленно завершить период ожидания",
+      "cancel": "Аннулировать"
+    },
+    "notificationsHeading": "Список уведомлений",
+    "emptyNotifications": "Уведомлений пока нет.",
+    "notificationTable": {
+      "kind": "Тип",
+      "message": "Содержимое",
+      "receivedAt": "Время получения"
+    },
+    "payoutsHeading": "История выплат",
+    "emptyPayouts": "История выплат пуста.",
+    "payoutTable": {
+      "date": "Дата выплаты",
+      "policy": "Полис",
+      "tier": "Уровень выплаты",
+      "status": "Статус",
+      "survey": "Опрос"
+    },
+    "surveyStatus": {
+      "submitted": "Пройден",
+      "pending": "Не пройден"
+    }
   }
 }

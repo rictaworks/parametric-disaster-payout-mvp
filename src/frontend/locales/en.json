@@ -171,9 +171,58 @@
       "payoutTier": "Payout tier",
       "ageGroup": "Age group"
     },
-    "applicationsHeading": "Your policies",
+    "applicationsHeading": "Application status",
     "loading": "Loading...",
-    "loadFailed": "Failed to load your policies. Please try again later.",
-    "unauthenticated": "Log in to view your policies."
+    "loadFailed": "Failed to load policy information. Please try again later.",
+    "unauthenticated": "Log in to check your policy information.",
+    "survey": {
+      "requestTitle": "Survey Request",
+      "requestDescription": "Please cooperate with the survey after the simulated payout completed.",
+      "targetPayoutPrefix": "Target Payout ID: ",
+      "feedbackLabel": "Feedback content",
+      "submitting": "Sending...",
+      "submit": "Submit Survey",
+      "defaultFeedback": "Please share your feedback on this simulated payout experience.",
+      "forbidden": "You cannot submit this survey.",
+      "submitFailed": "Failed to submit the survey.",
+      "savedPrefix": "Survey saved. (Payout ID: ",
+      "savedSuffix": ")"
+    },
+    "status": {
+      "forbidden": "You cannot perform this action on this policy.",
+      "updateFailed": "Failed to update the policy.",
+      "updated": "Policy updated."
+    },
+    "countdown": {
+      "elapsed": "Waiting period has elapsed",
+      "remainingPrefix": "in "
+    },
+    "policiesHeading": "Policies List",
+    "countdownLabel": "Time until active: ",
+    "terminatedAt": "Cancellation Date",
+    "actions": {
+      "forceWaitingPeriod": "[Prototype Action] Force waiting period elapse",
+      "cancel": "Cancel"
+    },
+    "notificationsHeading": "Notifications List",
+    "emptyNotifications": "No notifications yet.",
+    "notificationTable": {
+      "kind": "Type",
+      "message": "Content",
+      "receivedAt": "Received Date"
+    },
+    "payoutsHeading": "Payout History",
+    "emptyPayouts": "No payout history yet.",
+    "payoutTable": {
+      "date": "Payout Date",
+      "policy": "Policy",
+      "tier": "Payout Tier",
+      "status": "Status",
+      "survey": "Survey"
+    },
+    "surveyStatus": {
+      "submitted": "Submitted",
+      "pending": "Pending"
+    }
   }
 }

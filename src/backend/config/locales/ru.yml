@@ -7,6 +7,11 @@ ru:
   admin_api:
     payouts:
       invalid_status_transition: "Недопустимый переход состояния"
+  api:
+    policies:
+      only_pending_can_be_activated: "Активировать можно только полисы в ожидании"
+    survey_responses:
+      payout_must_be_completed: "Опрос можно отправить только для завершённых выплат"
   errors:
     messages:
       blank: "не может быть пустым"
@@ -36,3 +41,4 @@ ru:
           immutable_once_created: "нельзя изменить после создания"
         survey_response:
           must_be_policy_owner: "должен быть владельцем выплаты полиса"
+          must_be_completed_to_accept_survey: "должен быть завершен, чтобы принять ответ на опрос"

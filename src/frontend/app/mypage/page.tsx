@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PageSection } from "@/components/PageSection";
 import { useLocale } from "@/components/LocaleContext";
 import { POLICY_PLAN_OPTIONS, findThresholdOption } from "@/components/wizard/policyWizardData";
+import type { Messages } from "@/lib/i18n";
 
 type FetchedPolicy = {
   id: number;
@@ -66,14 +67,14 @@ function formatDateTime(value: string | null) {
   }).format(new Date(value));
 }
 
-function formatCountdown(waitingUntil: string | null) {
+function formatCountdown(waitingUntil: string | null, messages: Messages) {
   if (!waitingUntil) {
     return "-";
   }
 
   const diff = new Date(waitingUntil).getTime() - Date.now();
   if (diff <= 0) {
-    return "免責明け済み";
+    return messages.mypage.countdown.elapsed;
   }
 
   const totalMinutes = Math.ceil(diff / 60_000);
@@ -92,13 +93,13 @@ function formatCountdown(waitingUntil: string | null) {
     parts.push(`${minutes}分`);
   }
 
-  return `あと ${parts.join(" ")}`;
+  return `${messages.mypage.countdown.remainingPrefix}${parts.join(" ")}`;
 }
 
 export default function MyPage() {
   const { messages } = useLocale();
   const [state, setState] = useState<PageState>({ status: "loading" });
-  const [surveyDraft, setSurveyDraft] = useState("今回の模擬支払体験の感想をお聞かせください。");
+  const [surveyDraft, setSurveyDraft] = useState(messages.mypage.survey.defaultFeedback);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [submittingSurvey, setSubmittingSurvey] = useState(false);
@@ -227,18 +228,18 @@ export default function MyPage() {
     }
 
     if (response.status === 403) {
-      setActionError("この契約は操作できません。");
+      setActionError(messages.mypage.status.forbidden);
       return;
     }
 
     if (!response.ok) {
-      setActionError("契約の更新に失敗しました。");
+      setActionError(messages.mypage.status.updateFailed);
       return;
     }
 
     const body = (await response.json()) as { policy: FetchedPolicy };
     updatePolicy(body.policy);
-    setActionMessage("契約を更新しました。");
+    setActionMessage(messages.mypage.status.updated);
   }
 
   async function handleSurveySubmit(event: FormEvent<HTMLFormElement>) {
@@ -275,12 +276,12 @@ export default function MyPage() {
       }
 
       if (response.status === 403) {
-        setActionError("アンケートを送信できません。");
+        setActionError(messages.mypage.survey.forbidden);
         return;
       }
 
       if (!response.ok) {
-        setActionError("アンケートの送信に失敗しました。");
+        setActionError(messages.mypage.survey.submitFailed);
         return;
       }
 
@@ -289,8 +290,8 @@ export default function MyPage() {
         ...surveyTarget,
         survey_response_submitted: true,
       });
-      setSurveyDraft("今回の模擬支払体験の感想をお聞かせください。");
-      setActionMessage(`アンケートを保存しました。（支払ID: ${body.survey_response.payout_id}）`);
+      setSurveyDraft(messages.mypage.survey.defaultFeedback);
+      setActionMessage(`${messages.mypage.survey.savedPrefix}${body.survey_response.payout_id}${messages.mypage.survey.savedSuffix}`);
     } finally {
       setSubmittingSurvey(false);
     }
@@ -334,18 +335,18 @@ export default function MyPage() {
           <>
             {surveyTarget ? (
               <article className="panel panel--quiet stack">
-                <p className="eyebrow">アンケート依頼</p>
-                <h2>支払完了（模擬）後の回答にご協力ください。</h2>
-                <p>{`対象支払ID: ${surveyTarget.id} / ${payoutTierLabel(surveyTarget.payout_tier_code)}`}</p>
+                <p className="eyebrow">{messages.mypage.survey.requestTitle}</p>
+                <h2>{messages.mypage.survey.requestDescription}</h2>
+                <p>{`${messages.mypage.survey.targetPayoutPrefix}${surveyTarget.id} / ${payoutTierLabel(surveyTarget.payout_tier_code)}`}</p>
 
                 <form className="mypage-form" onSubmit={handleSurveySubmit}>
                   <label>
-                    <span>回答内容</span>
+                    <span>{messages.mypage.survey.feedbackLabel}</span>
                     <textarea value={surveyDraft} onChange={(event) => setSurveyDraft(event.target.value)} rows={4} />
                   </label>
                   <div className="action-row">
                     <button className="primary-button" type="submit" disabled={submittingSurvey}>
-                      {submittingSurvey ? "送信中" : "アンケートを送信"}
+                      {submittingSurvey ? messages.mypage.survey.submitting : messages.mypage.survey.submit}
                     </button>
                   </div>
                 </form>
@@ -353,7 +354,7 @@ export default function MyPage() {
             ) : null}
 
             <article className="panel panel--quiet stack">
-              <p className="eyebrow">契約一覧</p>
+              <p className="eyebrow">{messages.mypage.policiesHeading}</p>
               {state.policies.length === 0 ? (
                 <p>{messages.mypage.emptyState}</p>
               ) : (
@@ -361,7 +362,7 @@ export default function MyPage() {
                   <article key={policy.id} className="mypage-card">
                     <div className="mypage-card__header">
                       <strong className="mypage-card__status">{statusLabel(policy.policy_status_code)}</strong>
-                      <span>{`免責明けまで: ${formatCountdown(policy.waiting_until)}`}</span>
+                      <span>{`${messages.mypage.countdownLabel}${formatCountdown(policy.waiting_until, messages)}`}</span>
                     </div>
 
                     <dl className="mypage-card__list">
@@ -382,7 +383,7 @@ export default function MyPage() {
                         <dd>{payoutTierLabel(policy.payout_tier_code)}</dd>
                       </div>
                       <div>
-                        <dt>解約日時</dt>
+                        <dt>{messages.mypage.terminatedAt}</dt>
                         <dd>{formatDateTime(policy.terminated_at)}</dd>
                       </div>
                     </dl>
@@ -394,13 +395,13 @@ export default function MyPage() {
                           type="button"
                           onClick={() => patchPolicyAction(`/api/v1/policies/${policy.id}/force_waiting_period_elapsed`)}
                         >
-                          【プロトタイプ操作】免責期間を即時経過
+                          {messages.mypage.actions.forceWaitingPeriod}
                         </button>
                       ) : null}
 
                       {policy.policy_status_code !== "cancelled" && policy.policy_status_code !== "expired" ? (
                         <button className="primary-button" type="button" onClick={() => patchPolicyAction(`/api/v1/policies/${policy.id}/cancel`)}>
-                          解約
+                          {messages.mypage.actions.cancel}
                         </button>
                       ) : null}
                     </div>
@@ -410,16 +411,16 @@ export default function MyPage() {
             </article>
 
             <article className="panel panel--quiet">
-              <p className="eyebrow">通知一覧</p>
+              <p className="eyebrow">{messages.mypage.notificationsHeading}</p>
               {state.notifications.length === 0 ? (
-                <p>通知はまだありません。</p>
+                <p>{messages.mypage.emptyNotifications}</p>
               ) : (
                 <table className="mypage-table">
                   <thead>
                     <tr>
-                      <th>種別</th>
-                      <th>本文</th>
-                      <th>受信日時</th>
+                      <th>{messages.mypage.notificationTable.kind}</th>
+                      <th>{messages.mypage.notificationTable.message}</th>
+                      <th>{messages.mypage.notificationTable.receivedAt}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -436,18 +437,18 @@ export default function MyPage() {
             </article>
 
             <article className="panel panel--quiet">
-              <p className="eyebrow">支払履歴</p>
+              <p className="eyebrow">{messages.mypage.payoutsHeading}</p>
               {state.payouts.length === 0 ? (
-                <p>支払履歴はまだありません。</p>
+                <p>{messages.mypage.emptyPayouts}</p>
               ) : (
                 <table className="mypage-table">
                   <thead>
                     <tr>
-                      <th>支払日</th>
-                      <th>契約</th>
-                      <th>支払額区分</th>
-                      <th>状態</th>
-                      <th>アンケート</th>
+                      <th>{messages.mypage.payoutTable.date}</th>
+                      <th>{messages.mypage.payoutTable.policy}</th>
+                      <th>{messages.mypage.payoutTable.tier}</th>
+                      <th>{messages.mypage.payoutTable.status}</th>
+                      <th>{messages.mypage.payoutTable.survey}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -457,7 +458,7 @@ export default function MyPage() {
                         <td>{`${planLabel(payout.policy_plan_code)} / ${stationLabel(payout.policy_station_code)}`}</td>
                         <td>{`${payoutTierLabel(payout.payout_tier_code)} (${payout.payout_tier_amount_yen.toLocaleString("ja-JP")}円)`}</td>
                         <td>{statusLabel(payout.policy_status_code)}</td>
-                        <td>{payout.survey_response_submitted ? "回答済み" : "未回答"}</td>
+                        <td>{payout.survey_response_submitted ? messages.mypage.surveyStatus.submitted : messages.mypage.surveyStatus.pending}</td>
                       </tr>
                     ))}
                   </tbody>

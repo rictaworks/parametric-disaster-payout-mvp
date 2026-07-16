@@ -51,8 +51,18 @@ module Api
         policy = Policy.find(params[:id])
         return head :forbidden unless policy.user_id == current_user.id
 
-        active_status = PolicyStatus.find_by!(code: "active")
-        policy.update_columns(waiting_until: Time.current, policy_status_id: active_status.id, updated_at: Time.current)
+        policy.with_lock do
+          unless policy.policy_status.code == "pending"
+            render json: { error: I18n.t("api.policies.only_pending_can_be_activated") }, status: :unprocessable_entity
+            return
+          end
+
+          active_status = PolicyStatus.find_by!(code: "active")
+          policy.update!(
+            waiting_until: Time.current,
+            policy_status: active_status
+          )
+        end
 
         render json: { policy: serialize_policy(policy.reload) }
       rescue ActiveRecord::RecordNotFound

@@ -933,8 +933,8 @@ RSpec.describe SurveyResponse, type: :model do
       ),
       station: station,
       payout_tier: payout_tier,
-      policy_status: PolicyStatus.create!(
-        code: "active_survey_spec",
+      policy_status: PolicyStatus.find_or_create_by!(
+        code: "active",
         sort_order: 1,
         label_ja: "有効",
         label_en: "Active",
@@ -971,16 +971,16 @@ RSpec.describe SurveyResponse, type: :model do
     Payout.create!(
       policy: policy,
       payout_tier: payout_tier,
-      payout_status: PayoutStatus.create!(
-        code: "ordered_survey_spec",
-        sort_order: 0,
-        label_ja: "指図済",
-        label_en: "Ordered",
-        label_fr: "Ordered",
-        label_zh: "Ordered",
-        label_ru: "Ordered",
-        label_es: "Ordered",
-        label_ar: "Ordered"
+      payout_status: PayoutStatus.find_or_create_by!(
+        code: "completed_simulated",
+        sort_order: 1,
+        label_ja: "完了（シミュレーション）",
+        label_en: "Completed (simulated)",
+        label_fr: "Completed (simulated)",
+        label_zh: "Completed (simulated)",
+        label_ru: "Completed (simulated)",
+        label_es: "Completed (simulated)",
+        label_ar: "Completed (simulated)"
       ),
       observation: observation,
       idempotency_key: "payout-survey-123"

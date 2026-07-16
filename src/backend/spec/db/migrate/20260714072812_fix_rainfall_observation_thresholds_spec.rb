@@ -214,7 +214,15 @@ RSpec.describe FixRainfallObservationThresholds, type: :migration do
       p
     end
     let!(:obs_conflict) { Observation.create!(station_id: rainfall_station.id, observed_at: Time.current, simulated: true, rainfall_mm: 0.0) }
-    let!(:payout_conflict_a) { Payout.create!(policy_id: policy_conflict_a.id, observation_id: obs_conflict.id, payout_status_id: payout_status.id, payout_tier_id: payout_tier.id, idempotency_key: "key_conflict_a") }
+    let!(:completed_status) do
+      PayoutStatus.find_or_create_by!(code: "completed_simulated") do |s|
+        s.sort_order = 2
+        s.label_ja = "完了（シミュレーション）"
+        s.label_en = "Completed (simulated)"
+        s.label_fr = "test"; s.label_zh = "test"; s.label_ru = "test"; s.label_es = "test"; s.label_ar = "test"
+      end
+    end
+    let!(:payout_conflict_a) { Payout.create!(policy_id: policy_conflict_a.id, observation_id: obs_conflict.id, payout_status_id: completed_status.id, payout_tier_id: payout_tier.id, idempotency_key: "key_conflict_a") }
     let!(:payout_conflict_b) { Payout.create!(policy_id: policy_conflict_b.id, observation_id: obs_conflict.id, payout_status_id: payout_status.id, payout_tier_id: payout_tier.id, idempotency_key: "key_conflict_b") }
     let!(:notification_conflict_a) { Notification.create!(user_id: user.id, policy_id: policy_conflict_a.id, payout_id: payout_conflict_a.id, kind: "payout", message: "test") }
     let!(:survey_response_conflict_a) { SurveyResponse.create!(user_id: user.id, payout_id: payout_conflict_a.id, response_data: { "q1" => "yes" }) }

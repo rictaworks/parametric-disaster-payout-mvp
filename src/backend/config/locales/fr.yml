@@ -7,6 +7,11 @@ fr:
   admin_api:
     payouts:
       invalid_status_transition: "Transition d'état invalide"
+  api:
+    policies:
+      only_pending_can_be_activated: "Seuls les contrats en attente peuvent être activés"
+    survey_responses:
+      payout_must_be_completed: "Le questionnaire ne peut être envoyé que pour des versements finalisés"
   errors:
     messages:
       blank: "ne peut pas être vide"
@@ -36,3 +41,4 @@ fr:
           immutable_once_created: "ne peut pas être modifié une fois créé"
         survey_response:
           must_be_policy_owner: "doit être le propriétaire du versement du contrat"
+          must_be_completed_to_accept_survey: "doit être complété pour accepter la réponse au questionnaire"

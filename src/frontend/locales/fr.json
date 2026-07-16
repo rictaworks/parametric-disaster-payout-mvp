@@ -174,6 +174,55 @@
     "applicationsHeading": "Vos contrats",
     "loading": "Chargement...",
     "loadFailed": "Échec du chargement de vos contrats. Veuillez réessayer plus tard.",
-    "unauthenticated": "Connectez-vous pour consulter vos contrats."
+    "unauthenticated": "Connectez-vous pour consulter vos contrats.",
+    "survey": {
+      "requestTitle": "Demande de questionnaire",
+      "requestDescription": "Veuillez coopérer avec le questionnaire après le versement simulé.",
+      "targetPayoutPrefix": "ID du versement ciblé : ",
+      "feedbackLabel": "Contenu des réponses",
+      "submitting": "Envoi...",
+      "submit": "Envoyer le questionnaire",
+      "defaultFeedback": "Merci de partager votre avis sur cette expérience de versement simulé.",
+      "forbidden": "Vous ne pouvez pas envoyer ce questionnaire.",
+      "submitFailed": "Échec de l'envoi du questionnaire.",
+      "savedPrefix": "Questionnaire enregistré. (ID du versement : ",
+      "savedSuffix": ")"
+    },
+    "status": {
+      "forbidden": "Vous ne pouvez pas effectuer cette action sur ce contrat.",
+      "updateFailed": "Échec de la mise à jour du contrat.",
+      "updated": "Contrat mis à jour."
+    },
+    "countdown": {
+      "elapsed": "Période d'attente écoulée",
+      "remainingPrefix": "dans "
+    },
+    "policiesHeading": "Liste des contrats",
+    "countdownLabel": "Temps avant activation : ",
+    "terminatedAt": "Date d'annulation",
+    "actions": {
+      "forceWaitingPeriod": "[Action Prototype] Forcer l'écoulement de la période d'attente",
+      "cancel": "Résilier"
+    },
+    "notificationsHeading": "Liste des notifications",
+    "emptyNotifications": "Aucune notification pour le moment.",
+    "notificationTable": {
+      "kind": "Type",
+      "message": "Contenu",
+      "receivedAt": "Date de réception"
+    },
+    "payoutsHeading": "Historique des versements",
+    "emptyPayouts": "Aucun historique de versement pour le moment.",
+    "payoutTable": {
+      "date": "Date de versement",
+      "policy": "Contrat",
+      "tier": "Niveau de versement",
+      "status": "Statut",
+      "survey": "Questionnaire"
+    },
+    "surveyStatus": {
+      "submitted": "Répondu",
+      "pending": "Non répondu"
+    }
   }
 }

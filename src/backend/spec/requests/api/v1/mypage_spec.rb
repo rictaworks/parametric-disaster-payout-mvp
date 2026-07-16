@@ -445,4 +445,53 @@ RSpec.describe "POST /api/v1/survey_responses", type: :request do
     expect(response).to have_http_status(:forbidden)
     expect(SurveyResponse.count).to eq(0)
   end
+
+  it "returns 422 when the payout is not completed_simulated" do
+    ordered_status = PayoutStatus.find_or_create_by!(code: "ordered", sort_order: 0, label_ja: "指示済", label_en: "Ordered", label_fr: "Ordered", label_zh: "Ordered", label_ru: "Ordered", label_es: "Ordered", label_ar: "Ordered")
+    policy = Policy.create!(
+      user: user,
+      plan: plan,
+      station: station,
+      payout_tier: payout_tier,
+      policy_status: active_status,
+      threshold: "5弱"
+    ).tap do |created_policy|
+      created_policy.update_columns(waiting_until: Time.current - 1.hour, expires_at: Time.current + 1.year)
+    end
+    payout = Payout.create!(
+      policy: policy,
+      payout_tier: payout_tier,
+      payout_status: ordered_status,
+      observation: Observation.create!(
+        station: station,
+        event_id: "event-ordered-survey",
+        observed_at: Time.current,
+        seismic_intensity_level: SeismicIntensityLevel.find_or_create_by!(
+          code: "level-ordered-survey",
+          sort_order: 5,
+          label_ja: "5弱",
+          label_en: "5 weak",
+          label_fr: "5 weak",
+          label_zh: "5 weak",
+          label_ru: "5 weak",
+          label_es: "5 weak",
+          label_ar: "5 weak"
+        ),
+        max_value: 5,
+        simulated: false
+      ),
+      idempotency_key: "policy_#{policy.id}_event-ordered-survey",
+      decided_at: Time.current
+    )
+
+    post "/api/v1/survey_responses",
+      params: {
+        payout_id: payout.id,
+        response_data: { feedback: "よかったです" }
+      }.to_json,
+      headers: headers
+
+    expect(response).to have_http_status(:unprocessable_entity)
+    expect(SurveyResponse.count).to eq(0)
+  end
 end

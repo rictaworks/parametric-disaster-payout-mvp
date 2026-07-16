@@ -6,8 +6,13 @@ module Api
       before_action :authenticate_internal_session!
 
       def create
-        payout = Payout.includes(:policy).find(survey_response_params[:payout_id])
+        payout = Payout.includes(:policy, :payout_status).find(survey_response_params[:payout_id])
         return head :forbidden unless payout.policy.user_id == current_user.id
+
+        unless payout.payout_status.code == "completed_simulated"
+          render json: { error: [ I18n.t("api.survey_responses.payout_must_be_completed") ] }, status: :unprocessable_entity
+          return
+        end
 
         survey_response = current_user.survey_responses.create!(
           payout: payout,

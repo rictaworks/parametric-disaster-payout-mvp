@@ -75,6 +75,7 @@ class Policy < ApplicationRecord
   def waiting_until_cannot_be_moved_forward
     return unless waiting_until_changed?
     return if waiting_until_was.nil? || waiting_until.nil?
+    return if policy_status_id_changed? && policy_status&.code == "active"
 
     if waiting_until < waiting_until_was
       errors.add(:waiting_until, :cannot_be_moved_forward)

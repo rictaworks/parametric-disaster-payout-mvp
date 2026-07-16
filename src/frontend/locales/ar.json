@@ -174,6 +174,55 @@
     "applicationsHeading": "وثائقك",
     "loading": "جارٍ التحميل...",
     "loadFailed": "تعذّر تحميل وثائقك. يرجى المحاولة لاحقًا.",
-    "unauthenticated": "سجّل الدخول لعرض وثائقك."
+    "unauthenticated": "سجّل الدخول لعرض وثائقك.",
+    "survey": {
+      "requestTitle": "طلب استطلاع",
+      "requestDescription": "يرجى التعاون في الاستطلاع بعد اكتمال المدفوعات التجريبية.",
+      "targetPayoutPrefix": "معرّف المدفوعات المستهدف: ",
+      "feedbackLabel": "محتوى الإجابة",
+      "submitting": "جاري الإرسال...",
+      "submit": "إرسال الاستطلاع",
+      "defaultFeedback": "يرجى مشاركة رأيك حول تجربة هذا الدفع التجريبي.",
+      "forbidden": "لا يمكنك إرسال هذا الاستطلاع.",
+      "submitFailed": "فشل إرسال الاستطلاع.",
+      "savedPrefix": "تم حفظ الاستطلاع. (معرّف الدفع: ",
+      "savedSuffix": ")"
+    },
+    "status": {
+      "forbidden": "لا يمكنك تنفيذ هذا الإجراء على هذا العقد.",
+      "updateFailed": "فشل تحديث العقد.",
+      "updated": "تم تحديث العقد."
+    },
+    "countdown": {
+      "elapsed": "انتهت فترة الانتظار",
+      "remainingPrefix": "متبقي "
+    },
+    "policiesHeading": "قائمة العقود",
+    "countdownLabel": "الوقت المتبقي للتفعيل: ",
+    "terminatedAt": "تاريخ الإلغاء",
+    "actions": {
+      "forceWaitingPeriod": "[إجراء تجريبي] فرض انتهاء فترة الانتظار فورًا",
+      "cancel": "إلغاء العقد"
+    },
+    "notificationsHeading": "قائمة الإشعارات",
+    "emptyNotifications": "لا توجد إشعارات بعد.",
+    "notificationTable": {
+      "kind": "النوع",
+      "message": "المحتوى",
+      "receivedAt": "وقت الاستلام"
+    },
+    "payoutsHeading": "سجل المدفوعات",
+    "emptyPayouts": "لا يوجد سجل مدفوعات بعد.",
+    "payoutTable": {
+      "date": "تاريخ الدفع",
+      "policy": "العقد",
+      "tier": "فئة المدفوعات",
+      "status": "الحالة",
+      "survey": "الاستطلاع"
+    },
+    "surveyStatus": {
+      "submitted": "تمت الإجابة",
+      "pending": "لم تتم الإجابة"
+    }
   }
 }

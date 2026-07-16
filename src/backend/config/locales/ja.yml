@@ -7,6 +7,11 @@ ja:
   admin_api:
     payouts:
       invalid_status_transition: "無効な状態遷移です"
+  api:
+    policies:
+      only_pending_can_be_activated: "待機中の契約のみ有効化できます"
+    survey_responses:
+      payout_must_be_completed: "支払完了（模擬）の支払のみアンケートを送信できます"
   errors:
     messages:
       blank: "を入力してください"
@@ -36,3 +41,4 @@ ja:
           immutable_once_created: "作成後は変更できません"
         survey_response:
           must_be_policy_owner: "保険契約の所有者である必要があります"
+          must_be_completed_to_accept_survey: "支払が完了している必要があります"

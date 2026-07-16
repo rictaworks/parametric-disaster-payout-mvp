@@ -494,4 +494,21 @@ RSpec.describe "PATCH /api/v1/policies/:id/force_waiting_period_elapsed", type: 
 
     expect(response).to have_http_status(:forbidden)
   end
+
+  it "returns 422 when the policy status is not pending" do
+    cancelled_status = PolicyStatus.find_or_create_by!(code: "cancelled", sort_order: 2, label_ja: "解約済", label_en: "Cancelled", label_fr: "Cancelled", label_zh: "Cancelled", label_ru: "Cancelled", label_es: "Cancelled", label_ar: "Cancelled")
+    policy = Policy.create!(
+      user: user,
+      plan: plan,
+      station: station,
+      payout_tier: payout_tier,
+      policy_status: cancelled_status,
+      threshold: "5弱"
+    )
+
+    patch "/api/v1/policies/#{policy.id}/force_waiting_period_elapsed", headers: headers
+
+    expect(response).to have_http_status(:unprocessable_entity)
+    expect(policy.reload.policy_status).to eq(cancelled_status)
+  end
 end
