@@ -1,6 +1,10 @@
 module Admin
   module Api
     class PayoutsController < ApplicationController
+      include ActionController::RequestForgeryProtection
+      self.allow_forgery_protection = ActionController::Base.allow_forgery_protection
+      protect_from_forgery with: :exception
+
       include Admin::Authentication
 
       def complete
@@ -32,12 +36,16 @@ module Admin
       end
 
       def invalidate_payout(payout)
-        return Result.new(payout: payout, status: :ok) if payout.payout_status.code == "invalid"
-        return Result.new(payout: payout, status: :unprocessable_entity) unless payout.payout_status.code == "ordered"
+        payout.with_lock do
+          return Result.new(payout: payout, status: :ok) if payout.payout_status.code == "invalid"
+          return Result.new(payout: payout, status: :unprocessable_entity) unless payout.payout_status.code == "ordered"
 
-        invalid_status = PayoutStatus.find_by!(code: "invalid")
-        payout.update!(payout_status: invalid_status)
-        Result.new(payout: payout.reload, status: :ok)
+          invalid_status = PayoutStatus.find_by!(code: "invalid")
+          ActiveRecord::Base.transaction do
+            payout.update!(payout_status: invalid_status)
+          end
+          Result.new(payout: payout.reload, status: :ok)
+        end
       end
 
       def render_transition_response(result)

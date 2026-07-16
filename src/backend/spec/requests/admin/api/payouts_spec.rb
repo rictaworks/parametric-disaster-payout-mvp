@@ -187,4 +187,46 @@ RSpec.describe "PATCH /admin/api/payouts/:id/complete", type: :request do
     expect(response).to have_http_status(:unprocessable_entity)
     expect(payout.reload.payout_status).to eq(completed_payout_status)
   end
+
+  describe "CSRF protection" do
+    around do |example|
+      orig_base = ActionController::Base.allow_forgery_protection
+      orig_api = Admin::Api::PayoutsController.allow_forgery_protection
+      begin
+        ActionController::Base.allow_forgery_protection = true
+        Admin::Api::PayoutsController.allow_forgery_protection = true
+        example.run
+      ensure
+        ActionController::Base.allow_forgery_protection = orig_base
+        Admin::Api::PayoutsController.allow_forgery_protection = orig_api
+      end
+    end
+
+    it "rejects complete request without CSRF token" do
+      patch "/admin/api/payouts/#{payout.id}/complete", headers: auth_headers
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+
+    it "rejects invalidate request without CSRF token" do
+      patch "/admin/api/payouts/#{payout.id}/invalidate", headers: auth_headers
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+  end
+
+  describe "Race conditions" do
+    it "prevents overwriting completed payouts when invalidating concurrently" do
+      allow_any_instance_of(Payout).to receive(:reload).and_wrap_original do |original_method, *args|
+        unless @already_updated
+          @already_updated = true
+          payout.class.where(id: payout.id).update_all(payout_status_id: completed_payout_status.id)
+        end
+        original_method.call(*args)
+      end
+
+      patch "/admin/api/payouts/#{payout.id}/invalidate", headers: auth_headers
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(payout.reload.payout_status).to eq(completed_payout_status)
+    end
+  end
 end
