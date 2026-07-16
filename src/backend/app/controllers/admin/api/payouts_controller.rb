@@ -42,7 +42,7 @@ module Admin
 
       def render_transition_response(result)
         if result.success?
-          return_to = params[:return_to].presence
+          return_to = safe_return_to
 
           if return_to.present?
             redirect_to return_to, status: :see_other
@@ -52,6 +52,13 @@ module Admin
         else
           render json: { error: I18n.t("admin_api.payouts.invalid_status_transition") }, status: result.status
         end
+      end
+
+      def safe_return_to
+        return_to = params[:return_to].presence
+        return nil unless return_to&.start_with?("/admin")
+
+        return_to
       end
     end
   end
