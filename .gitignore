@@ -16,7 +16,7 @@ src/backend/config/master.key
 src/backend/config/credentials/*.key
 src/backend/.github/
 src/backend/storage/*.sqlite3*
-src/backend/log/*.log
+src/backend/log/*.log*
 src/backend/tmp/
 src/backend/.bundle/
 src/backend/vendor/bundle/

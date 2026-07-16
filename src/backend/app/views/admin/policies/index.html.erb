@@ -1,0 +1,30 @@
+<section class="card">
+  <h2><%= t("admin_ui.policies.index.title") %></h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th><%= t("admin_ui.policies.index.columns.user") %></th>
+        <th><%= t("admin_ui.policies.index.columns.plan") %></th>
+        <th><%= t("admin_ui.policies.index.columns.station") %></th>
+        <th><%= t("admin_ui.policies.index.columns.threshold") %></th>
+        <th><%= t("admin_ui.policies.index.columns.status") %></th>
+        <th><%= t("admin_ui.policies.index.columns.annual_payout_count") %></th>
+        <th><%= t("admin_ui.policies.index.columns.waiting_until") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @policies.each do |policy| %>
+        <tr>
+          <td><%= policy.user.google_sub %></td>
+          <td><%= policy.plan.code %></td>
+          <td><%= policy.station&.code || "—" %></td>
+          <td><%= policy.threshold %></td>
+          <td><%= policy.policy_status.code %></td>
+          <td><%= @annual_payout_counts.fetch(policy.id, 0) %></td>
+          <td><%= policy.waiting_until&.strftime("%Y-%m-%d %H:%M") || "—" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</section>

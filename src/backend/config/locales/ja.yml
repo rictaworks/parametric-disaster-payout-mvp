@@ -7,6 +7,40 @@ ja:
   admin_api:
     payouts:
       invalid_status_transition: "無効な状態遷移です"
+  admin_ui:
+    layout:
+      title: "保険（デモ）管理画面"
+      subtitle: "模擬支払の運用確認用画面です。"
+      tabs:
+        policies: "契約一覧"
+        payouts: "支払一覧"
+    policies:
+      index:
+        title: "契約一覧"
+        columns:
+          user: "ユーザー"
+          plan: "プラン"
+          station: "観測点"
+          threshold: "閾値"
+          status: "状態"
+          annual_payout_count: "年間支払回数"
+          waiting_until: "免責明け時刻"
+    payouts:
+      index:
+        title: "支払一覧"
+        columns:
+          id: "ID"
+          user: "ユーザー"
+          plan: "プラン"
+          station: "観測点"
+          threshold: "閾値"
+          status: "状態"
+          decided_at: "判定時刻"
+          actions: "操作"
+        actions:
+          complete: "支払完了（模擬）にする"
+          invalidate: "無効化"
+          done: "操作済み"
   api:
     policies:
       only_pending_can_be_activated: "待機中の契約のみ有効化できます"

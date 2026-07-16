@@ -1,0 +1,41 @@
+<section class="card">
+  <h2><%= t("admin_ui.payouts.index.title") %></h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th><%= t("admin_ui.payouts.index.columns.id") %></th>
+        <th><%= t("admin_ui.payouts.index.columns.user") %></th>
+        <th><%= t("admin_ui.payouts.index.columns.plan") %></th>
+        <th><%= t("admin_ui.payouts.index.columns.station") %></th>
+        <th><%= t("admin_ui.payouts.index.columns.threshold") %></th>
+        <th><%= t("admin_ui.payouts.index.columns.status") %></th>
+        <th><%= t("admin_ui.payouts.index.columns.decided_at") %></th>
+        <th><%= t("admin_ui.payouts.index.columns.actions") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @payouts.each do |payout| %>
+        <tr>
+          <td><%= payout.id %></td>
+          <td><%= payout.policy.user.google_sub %></td>
+          <td><%= payout.policy.plan.code %></td>
+          <td><%= payout.policy.station&.code || "—" %></td>
+          <td><%= payout.policy.threshold %></td>
+          <td><%= payout.payout_status.code %></td>
+          <td><%= payout.decided_at&.strftime("%Y-%m-%d %H:%M") || "—" %></td>
+          <td>
+            <div class="actions">
+              <% if payout.payout_status.code == "ordered" %>
+                <%= button_to t("admin_ui.payouts.index.actions.complete"), "/admin/api/payouts/#{payout.id}/complete", method: :patch, params: { return_to_admin_payouts: "1" }, class: "primary" %>
+                <%= button_to t("admin_ui.payouts.index.actions.invalidate"), "/admin/api/payouts/#{payout.id}/invalidate", method: :patch, params: { return_to_admin_payouts: "1" }, class: "danger" %>
+              <% else %>
+                <span class="muted"><%= t("admin_ui.payouts.index.actions.done") %></span>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</section>

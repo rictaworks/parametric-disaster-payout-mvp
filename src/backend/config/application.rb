@@ -40,5 +40,17 @@ module Backend
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # 管理画面（/admin）のCSRF保護にのみセッションCookieを使用する。
+    # メインのJSON API（Next.js BFF向け）はGoogleログイン＋opaqueなsubのみで
+    # 認証しており、セッションCookieを必要としないため、path指定でスコープを
+    # /admin配下に限定し、ブラウザが他経路にこのCookieを送らないようにする
+    config.session_store :cookie_store, key: "_backend_admin_session", path: "/admin", same_site: :strict
+    config.middleware.use ActionDispatch::Cookies
+    # config.api_only = true の場合、Railsは config.session_store の設定を
+    # ミドルウェアへ自動で渡さないため、config.session_store / config.session_options を
+    # 明示的に渡す（引数なしで ActionDispatch::Session::CookieStore を use すると
+    # key・path・same_site が既定値（_session_id・Path=/）にフォールバックしてしまう）
+    config.middleware.use config.session_store, config.session_options
   end
 end
