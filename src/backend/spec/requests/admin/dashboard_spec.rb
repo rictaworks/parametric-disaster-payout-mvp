@@ -141,6 +141,14 @@ RSpec.describe "Admin dashboard", type: :request do
     expect(response.body).to include(completed_payout.payout_status.code)
   end
 
+  it "renders the simulated event injection tab" do
+    get "/admin/simulated_events", headers: auth_headers
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("模擬イベント注入")
+    expect(response.body).to include("既存イベント一覧")
+  end
+
   describe "session cookie scope" do
     around do |example|
       orig = ActionController::Base.allow_forgery_protection

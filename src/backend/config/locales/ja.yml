@@ -14,6 +14,7 @@ ja:
       tabs:
         policies: "契約一覧"
         payouts: "支払一覧"
+        simulated_events: "模擬イベント注入"
     policies:
       index:
         title: "契約一覧"
@@ -41,6 +42,36 @@ ja:
           complete: "支払完了（模擬）にする"
           invalidate: "無効化"
           done: "操作済み"
+    simulated_events:
+      index:
+        title: "模擬イベント注入"
+        description: "観測点を選択し、震度または降雨の模擬観測をF2と同じ経路へ投入します。"
+        controls:
+          station: "観測点"
+          event_mode: "イベント種別"
+          existing_observation: "既存イベント"
+          seismic_level: "震度値"
+          rainfall_mm: "降雨値（mm）"
+          inject: "注入"
+        modes:
+          new: "新規イベント"
+          follow_up: "既存イベントへの続報"
+        hints:
+          seismic: "震度観測点では震度値を、雨量観測点では降雨値を入力してください。"
+          rainfall: "降雨値は小数も入力できます。"
+        empty: "まだ既存イベントはありません。"
+        recent_title: "既存イベント一覧"
+        columns:
+          id: "ID"
+          station: "観測点"
+          kind: "種別"
+          value: "値"
+          observed_at: "発生時刻"
+          simulated: "模擬"
+          event_id: "イベントID"
+        create:
+          success: "模擬イベントを注入しました。"
+          failure: "模擬イベントの注入に失敗しました。入力内容をご確認ください。"
   api:
     policies:
       only_pending_can_be_activated: "待機中の契約のみ有効化できます"
