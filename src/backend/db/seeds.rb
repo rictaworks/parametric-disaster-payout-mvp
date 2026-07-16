@@ -10,9 +10,9 @@
 
 def seed_master_records(model, records)
   records.each do |attributes|
-    model.find_or_create_by!(code: attributes.fetch(:code)) do |record|
-      record.assign_attributes(attributes)
-    end
+    record = model.find_or_initialize_by(code: attributes.fetch(:code))
+    record.assign_attributes(attributes)
+    record.save!
   end
 end
 
@@ -78,6 +78,7 @@ seed_master_records(
     {
       code: "seismic_tokyo",
       measurement_type: "seismic",
+      jma_code: "1310130",
       label_ja: "東京震度観測点",
       label_en: "Tokyo seismic station",
       label_fr: "Station sismique de Tokyo",
@@ -89,6 +90,7 @@ seed_master_records(
     {
       code: "seismic_osaka",
       measurement_type: "seismic",
+      jma_code: "2712830",
       label_ja: "大阪震度観測点",
       label_en: "Osaka seismic station",
       label_fr: "Station sismique d'Osaka",
@@ -100,6 +102,7 @@ seed_master_records(
     {
       code: "rainfall_tokyo",
       measurement_type: "rainfall",
+      jma_code: "44132",
       label_ja: "東京雨量観測点",
       label_en: "Tokyo rainfall station",
       label_fr: "Station pluviométrique de Tokyo",

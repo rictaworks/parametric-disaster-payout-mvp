@@ -99,10 +99,24 @@ class IngestObservationEvent
   end
 
   def find_station
-    station_identifier = payload[:station_id] || payload[:station_code] || payload[:station]
-    return station_identifier if station_identifier.is_a?(Station)
+    if payload[:station_id].is_a?(Station)
+      return payload[:station_id]
+    elsif payload[:station_code].is_a?(Station)
+      return payload[:station_code]
+    elsif payload[:station].is_a?(Station)
+      return payload[:station]
+    end
 
-    Station.find_by(id: station_identifier) || Station.find_by(code: station_identifier)
+    if payload[:station_id].present?
+      station = Station.find_by(id: payload[:station_id])
+      return station if station.present?
+    end
+
+    identifier = payload[:station_code] || payload[:station] || payload[:station_id]
+    return nil if identifier.blank?
+
+    Station.find_by(code: identifier) ||
+      Station.find_by(jma_code: identifier.to_s)
   end
 
   def occurred_at

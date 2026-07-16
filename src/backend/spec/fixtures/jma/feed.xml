@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <id>urn:uuid:eq-entry-1</id>
+    <link type="application/xml" href="https://xml.data.jma.go.jp/data/seismic_sample.xml"/>
+  </entry>
+  <entry>
+    <id>urn:uuid:eq-entry-duplicate</id>
+    <link type="application/xml" href="https://xml.data.jma.go.jp/data/seismic_sample.xml"/>
+  </entry>
+  <entry>
+    <id>urn:uuid:eq-entry-unsafe</id>
+    <link type="application/xml" href="http://unsafe.example.com/malicious.xml"/>
+  </entry>
+</feed>
