@@ -10,6 +10,11 @@ Rails.application.routes.draw do
       post "session", to: "sessions#create"
       get "policies", to: "policies#index"
       post "policies", to: "policies#create"
+      patch "policies/:id/cancel", to: "policies#cancel"
+      patch "policies/:id/force_waiting_period_elapsed", to: "policies#force_waiting_period_elapsed"
+      get "payouts", to: "payouts#index"
+      get "notifications", to: "notifications#index"
+      post "survey_responses", to: "survey_responses#create"
       get "masters", to: "masters#index"
     end
   end

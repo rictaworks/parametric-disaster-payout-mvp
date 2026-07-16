@@ -314,3 +314,184 @@ RSpec.describe "GET /api/v1/policies", type: :request do
     expect(response).to have_http_status(:forbidden)
   end
 end
+
+RSpec.describe "PATCH /api/v1/policies/:id/cancel", type: :request do
+  let(:user) { User.create!(google_sub: "google-sub-policy-cancel") }
+  let(:other_user) { User.create!(google_sub: "google-sub-policy-cancel-other") }
+  let(:internal_api_secret) { "shared-secret" }
+  let(:headers) do
+    {
+      "X-Internal-API-Secret" => internal_api_secret,
+      "X-Internal-Session-Token" => user.internal_session_token
+    }
+  end
+  let(:plan) do
+    Plan.create!(
+      code: "seismic_policy_cancel",
+      trigger_type: "seismic",
+      label_ja: "震度連動",
+      label_en: "Seismic-linked",
+      label_fr: "Seismic-linked",
+      label_zh: "Seismic-linked",
+      label_ru: "Seismic-linked",
+      label_es: "Seismic-linked",
+      label_ar: "Seismic-linked"
+    )
+  end
+  let(:station) do
+    Station.create!(
+      code: "seismic_tokyo_policy_cancel",
+      measurement_type: "seismic",
+      label_ja: "東京震度観測点",
+      label_en: "Tokyo seismic station",
+      label_fr: "Tokyo seismic station",
+      label_zh: "Tokyo seismic station",
+      label_ru: "Tokyo seismic station",
+      label_es: "Tokyo seismic station",
+      label_ar: "Tokyo seismic station"
+    )
+  end
+  let(:payout_tier) do
+    PayoutTier.create!(
+      code: "ten_thousand_policy_cancel",
+      amount_yen: 10_000,
+      label_ja: "1万円相当（模擬）",
+      label_en: "Equivalent to JPY 10,000 (simulated)",
+      label_fr: "Equivalent to JPY 10,000 (simulated)",
+      label_zh: "Equivalent to JPY 10,000 (simulated)",
+      label_ru: "Equivalent to JPY 10,000 (simulated)",
+      label_es: "Equivalent to JPY 10,000 (simulated)",
+      label_ar: "Equivalent to JPY 10,000 (simulated)"
+    )
+  end
+  let!(:pending_status) { PolicyStatus.find_or_create_by!(code: "pending", sort_order: 0, label_ja: "待機中", label_en: "Pending", label_fr: "Pending", label_zh: "Pending", label_ru: "Pending", label_es: "Pending", label_ar: "Pending") }
+  let!(:active_status) { PolicyStatus.find_or_create_by!(code: "active", sort_order: 1, label_ja: "有効", label_en: "Active", label_fr: "Active", label_zh: "Active", label_ru: "Active", label_es: "Active", label_ar: "Active") }
+  let!(:cancelled_status) { PolicyStatus.find_or_create_by!(code: "cancelled", sort_order: 4, label_ja: "解約", label_en: "Cancelled", label_fr: "Cancelled", label_zh: "Cancelled", label_ru: "Cancelled", label_es: "Cancelled", label_ar: "Cancelled") }
+
+  before do
+    allow(ENV).to receive(:[]).and_call_original
+    allow(ENV).to receive(:[]).with("INTERNAL_API_SECRET").and_return(internal_api_secret)
+  end
+
+  it "cancels the authenticated user's own policy" do
+    policy = Policy.create!(
+      user: user,
+      plan: plan,
+      station: station,
+      payout_tier: payout_tier,
+      policy_status: active_status,
+      threshold: "5弱"
+    )
+
+    patch "/api/v1/policies/#{policy.id}/cancel", headers: headers
+
+    expect(response).to have_http_status(:ok)
+    expect(policy.reload.policy_status).to eq(cancelled_status)
+    expect(policy.terminated_at).to be_present
+  end
+
+  it "returns 403 when another user's policy is targeted" do
+    policy = Policy.create!(
+      user: other_user,
+      plan: plan,
+      station: station,
+      payout_tier: payout_tier,
+      policy_status: pending_status,
+      threshold: "5弱"
+    )
+
+    patch "/api/v1/policies/#{policy.id}/cancel", headers: headers
+
+    expect(response).to have_http_status(:forbidden)
+  end
+end
+
+RSpec.describe "PATCH /api/v1/policies/:id/force_waiting_period_elapsed", type: :request do
+  let(:user) { User.create!(google_sub: "google-sub-policy-force") }
+  let(:other_user) { User.create!(google_sub: "google-sub-policy-force-other") }
+  let(:internal_api_secret) { "shared-secret" }
+  let(:headers) do
+    {
+      "X-Internal-API-Secret" => internal_api_secret,
+      "X-Internal-Session-Token" => user.internal_session_token
+    }
+  end
+  let(:plan) do
+    Plan.create!(
+      code: "seismic_policy_force",
+      trigger_type: "seismic",
+      label_ja: "震度連動",
+      label_en: "Seismic-linked",
+      label_fr: "Seismic-linked",
+      label_zh: "Seismic-linked",
+      label_ru: "Seismic-linked",
+      label_es: "Seismic-linked",
+      label_ar: "Seismic-linked"
+    )
+  end
+  let(:station) do
+    Station.create!(
+      code: "seismic_tokyo_policy_force",
+      measurement_type: "seismic",
+      label_ja: "東京震度観測点",
+      label_en: "Tokyo seismic station",
+      label_fr: "Tokyo seismic station",
+      label_zh: "Tokyo seismic station",
+      label_ru: "Tokyo seismic station",
+      label_es: "Tokyo seismic station",
+      label_ar: "Tokyo seismic station"
+    )
+  end
+  let(:payout_tier) do
+    PayoutTier.create!(
+      code: "ten_thousand_policy_force",
+      amount_yen: 10_000,
+      label_ja: "1万円相当（模擬）",
+      label_en: "Equivalent to JPY 10,000 (simulated)",
+      label_fr: "Equivalent to JPY 10,000 (simulated)",
+      label_zh: "Equivalent to JPY 10,000 (simulated)",
+      label_ru: "Equivalent to JPY 10,000 (simulated)",
+      label_es: "Equivalent to JPY 10,000 (simulated)",
+      label_ar: "Equivalent to JPY 10,000 (simulated)"
+    )
+  end
+  let!(:pending_status) { PolicyStatus.find_or_create_by!(code: "pending", sort_order: 0, label_ja: "待機中", label_en: "Pending", label_fr: "Pending", label_zh: "Pending", label_ru: "Pending", label_es: "Pending", label_ar: "Pending") }
+  let!(:active_status) { PolicyStatus.find_or_create_by!(code: "active", sort_order: 1, label_ja: "有効", label_en: "Active", label_fr: "Active", label_zh: "Active", label_ru: "Active", label_es: "Active", label_ar: "Active") }
+
+  before do
+    allow(ENV).to receive(:[]).and_call_original
+    allow(ENV).to receive(:[]).with("INTERNAL_API_SECRET").and_return(internal_api_secret)
+  end
+
+  it "marks the authenticated user's policy active once the waiting period is forced to elapse" do
+    policy = Policy.create!(
+      user: user,
+      plan: plan,
+      station: station,
+      payout_tier: payout_tier,
+      policy_status: pending_status,
+      threshold: "5弱"
+    )
+
+    patch "/api/v1/policies/#{policy.id}/force_waiting_period_elapsed", headers: headers
+
+    expect(response).to have_http_status(:ok)
+    expect(policy.reload.policy_status).to eq(active_status)
+    expect(policy.waiting_until).to be_within(5.seconds).of(Time.current)
+  end
+
+  it "returns 403 when another user's policy is targeted" do
+    policy = Policy.create!(
+      user: other_user,
+      plan: plan,
+      station: station,
+      payout_tier: payout_tier,
+      policy_status: pending_status,
+      threshold: "5弱"
+    )
+
+    patch "/api/v1/policies/#{policy.id}/force_waiting_period_elapsed", headers: headers
+
+    expect(response).to have_http_status(:forbidden)
+  end
+end
