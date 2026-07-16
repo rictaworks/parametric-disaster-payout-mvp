@@ -20,8 +20,12 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
+    root to: "policies#index"
+    get "payouts", to: "payouts#index"
+
     namespace :api do
       patch "payouts/:id/complete", to: "payouts#complete"
+      patch "payouts/:id/invalidate", to: "payouts#invalidate"
     end
   end
 

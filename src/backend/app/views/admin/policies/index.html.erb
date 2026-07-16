@@ -1,0 +1,30 @@
+<section class="card">
+  <h2>契約一覧</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ユーザー</th>
+        <th>プラン</th>
+        <th>観測点</th>
+        <th>閾値</th>
+        <th>状態</th>
+        <th>年間支払回数</th>
+        <th>免責明け時刻</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @policies.each do |policy| %>
+        <tr>
+          <td><%= policy.user.google_sub %></td>
+          <td><%= policy.plan.code %></td>
+          <td><%= policy.station&.code || "—" %></td>
+          <td><%= policy.threshold %></td>
+          <td><%= policy.policy_status.code %></td>
+          <td><%= @annual_payout_counts.fetch(policy.id, 0) %></td>
+          <td><%= policy.waiting_until&.strftime("%Y-%m-%d %H:%M") || "—" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</section>

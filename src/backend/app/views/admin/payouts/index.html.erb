@@ -1,0 +1,41 @@
+<section class="card">
+  <h2>支払一覧</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>ユーザー</th>
+        <th>プラン</th>
+        <th>観測点</th>
+        <th>閾値</th>
+        <th>状態</th>
+        <th>判定時刻</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @payouts.each do |payout| %>
+        <tr>
+          <td><%= payout.id %></td>
+          <td><%= payout.policy.user.google_sub %></td>
+          <td><%= payout.policy.plan.code %></td>
+          <td><%= payout.policy.station&.code || "—" %></td>
+          <td><%= payout.policy.threshold %></td>
+          <td><%= payout.payout_status.code %></td>
+          <td><%= payout.decided_at&.strftime("%Y-%m-%d %H:%M") || "—" %></td>
+          <td>
+            <div class="actions">
+              <% if payout.payout_status.code == "ordered" %>
+                <%= button_to "支払完了（模擬）にする", "/admin/api/payouts/#{payout.id}/complete", method: :patch, params: { return_to: admin_payouts_path }, class: "primary" %>
+                <%= button_to "無効化", "/admin/api/payouts/#{payout.id}/invalidate", method: :patch, params: { return_to: admin_payouts_path }, class: "danger" %>
+              <% else %>
+                <span class="muted">操作済み</span>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</section>

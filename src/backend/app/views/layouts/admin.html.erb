@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>保険（デモ）管理画面</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; background: #f7f7f7; color: #222; }
+      header, main { max-width: 1200px; margin: 0 auto; padding: 24px; }
+      header { padding-bottom: 8px; }
+      .tabs { display: flex; gap: 12px; margin: 16px 0 24px; }
+      .tab { padding: 10px 14px; border-radius: 8px; background: #fff; text-decoration: none; color: #444; border: 1px solid #ddd; }
+      .tab.is-active { background: #1f4b99; color: #fff; border-color: #1f4b99; }
+      .card { background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 16px; overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; min-width: 900px; }
+      th, td { border-bottom: 1px solid #eee; text-align: left; vertical-align: top; padding: 10px 8px; }
+      th { background: #fafafa; }
+      .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+      .actions form { display: inline; }
+      .actions input, .actions button { border: 0; border-radius: 999px; padding: 8px 12px; cursor: pointer; }
+      .primary { background: #1f4b99; color: #fff; }
+      .danger { background: #b91c1c; color: #fff; }
+      .muted { color: #666; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>保険（デモ）管理画面</h1>
+      <p class="muted">模擬支払の運用確認用画面です。</p>
+      <nav class="tabs" aria-label="管理画面タブ">
+        <%= link_to "契約一覧", admin_root_path, class: "tab #{current_page?(admin_root_path) ? "is-active" : ""}" %>
+        <%= link_to "支払一覧", admin_payouts_path, class: "tab #{current_page?(admin_payouts_path) ? "is-active" : ""}" %>
+      </nav>
+    </header>
+    <main>
+      <%= yield %>
+    </main>
+  </body>
+</html>
