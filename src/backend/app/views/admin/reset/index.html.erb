@@ -1,0 +1,55 @@
+<section class="card stack">
+  <h2><%= t("admin_ui.reset.index.title") %></h2>
+  <p class="muted"><%= t("admin_ui.reset.index.description") %></p>
+
+  <div class="card stack" style="background:#fff7ed;border-color:#fdba74;">
+    <strong><%= t("admin_ui.reset.index.warning") %></strong>
+    <ul>
+      <li><%= t("admin_ui.reset.index.summary.policies", count: @record_counts[:policies]) %></li>
+      <li><%= t("admin_ui.reset.index.summary.observations", count: @record_counts[:observations]) %></li>
+      <li><%= t("admin_ui.reset.index.summary.payouts", count: @record_counts[:payouts]) %></li>
+      <li><%= t("admin_ui.reset.index.summary.notifications", count: @record_counts[:notifications]) %></li>
+      <li><%= t("admin_ui.reset.index.summary.survey_responses", count: @record_counts[:survey_responses]) %></li>
+      <li><%= t("admin_ui.reset.index.summary.users", count: @record_counts[:users]) %></li>
+      <li><%= t("admin_ui.reset.index.summary.masters", count: @record_counts[:masters]) %></li>
+    </ul>
+  </div>
+
+  <p><%= t("admin_ui.reset.index.confirmation_hint", phrase: ResetDemoData::CONFIRMATION_TEXT) %></p>
+
+  <button type="button" class="danger" id="open-reset-modal"><%= t("admin_ui.reset.index.open_modal") %></button>
+
+  <dialog id="reset-modal">
+    <%= form_with url: admin_reset_path, method: :post, local: true do %>
+      <h3><%= t("admin_ui.reset.index.modal.title") %></h3>
+      <p><%= t("admin_ui.reset.index.modal.description") %></p>
+      <div class="field">
+        <label for="confirmation_text"><%= t("admin_ui.reset.index.modal.confirmation_label") %></label>
+        <input
+          id="confirmation_text"
+          name="confirmation_text"
+          type="text"
+          autocomplete="off"
+          placeholder="<%= ResetDemoData::CONFIRMATION_TEXT %>"
+          required
+        >
+      </div>
+
+      <div class="actions">
+        <button type="button" id="close-reset-modal"><%= t("admin_ui.reset.index.modal.cancel") %></button>
+        <%= submit_tag t("admin_ui.reset.index.modal.submit"), class: "danger" %>
+      </div>
+    <% end %>
+  </dialog>
+</section>
+
+<script>
+  (() => {
+    const modal = document.getElementById("reset-modal");
+    const openButton = document.getElementById("open-reset-modal");
+    const closeButton = document.getElementById("close-reset-modal");
+
+    openButton?.addEventListener("click", () => modal?.showModal());
+    closeButton?.addEventListener("click", () => modal?.close());
+  })();
+</script>

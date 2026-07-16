@@ -15,6 +15,7 @@ ja:
         policies: "契約一覧"
         payouts: "支払一覧"
         simulated_events: "模擬イベント注入"
+        reset: "リセット"
     policies:
       index:
         title: "契約一覧"
@@ -72,6 +73,29 @@ ja:
         create:
           success: "模擬イベントを注入しました。"
           failure: "模擬イベントの注入に失敗しました。入力内容をご確認ください。"
+    reset:
+      index:
+        title: "リセット"
+        description: "デモを繰り返すため、取引データだけを初期化します。"
+        warning: "⚠️ この操作は元に戻せません。"
+        confirmation_hint: "実行するには確認欄に「%{phrase}」と入力してください。"
+        open_modal: "リセットモーダルを開く"
+        summary:
+          policies: "Policies: %{count}件"
+          observations: "Observations: %{count}件"
+          payouts: "Payouts: %{count}件"
+          notifications: "Notifications: %{count}件"
+          survey_responses: "SurveyResponses: %{count}件"
+          users: "Users: %{count}件"
+          masters: "マスタ: %{count}件"
+        modal:
+          title: "リセット確認"
+          description: "確認文字列を入力した場合のみ、データ初期化を実行します。"
+          confirmation_label: "確認文字列"
+          cancel: "キャンセル"
+          submit: "データを初期化する"
+        success: "デモデータを初期化しました。"
+        failure: "データ初期化に失敗しました。入力内容をご確認ください。"
   api:
     policies:
       only_pending_can_be_activated: "待機中の契約のみ有効化できます"
