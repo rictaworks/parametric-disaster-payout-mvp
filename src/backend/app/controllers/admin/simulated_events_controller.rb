@@ -66,6 +66,7 @@ module Admin
     def build_rainfall_payload(station, follow_up_observation)
       rainfall_mm = params[:rainfall_mm].presence
       return nil if rainfall_mm.nil?
+      return nil unless valid_rainfall_mm?(rainfall_mm)
 
       {
         station_id: station.id,
@@ -77,6 +78,13 @@ module Admin
 
     def follow_up?
       params[:event_mode] == "follow_up"
+    end
+
+    def valid_rainfall_mm?(rainfall_mm)
+      value = BigDecimal(rainfall_mm.to_s)
+      value >= 0
+    rescue ArgumentError
+      false
     end
 
     def simulated_event_id(station)
@@ -91,7 +99,7 @@ module Admin
           observation.rainfall_mm
         end
 
-      "#{observation.station.code} / #{observation.observed_at.strftime("%Y-%m-%d %H:%M")} / #{value} / #{observation.simulated? ? 'simulated' : 'real'}"
+      "#{observation.station.code} / #{observation.observed_at.strftime("%Y-%m-%d %H:%M")} / #{value}"
     end
   end
 end

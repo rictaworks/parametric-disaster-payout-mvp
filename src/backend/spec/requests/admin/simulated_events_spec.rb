@@ -181,6 +181,55 @@ RSpec.describe "Admin simulated events", type: :request do
     expect(Payout.count).to eq(initial_payout_count)
   end
 
+  it "rejects follow-up requests when the observation belongs to a different station" do
+    other_seismic_station = Station.create!(
+      code: "seismic_osaka_admin_simulated_events",
+      measurement_type: "seismic",
+      label_ja: "大阪震度観測点",
+      label_en: "Osaka seismic station",
+      label_fr: "Osaka seismic station",
+      label_zh: "Osaka seismic station",
+      label_ru: "Osaka seismic station",
+      label_es: "Osaka seismic station",
+      label_ar: "Osaka seismic station"
+    )
+    simulated_observation = Observation.create!(
+      station: other_seismic_station,
+      event_id: "seed-event-other-station",
+      observed_at: Time.zone.parse("2026-07-15 09:00:00"),
+      seismic_intensity_level: seismic_level_4,
+      max_value: seismic_level_4.sort_order,
+      simulated: true
+    )
+
+    initial_max_value = simulated_observation.max_value
+
+    post "/admin/simulated_events",
+      headers: auth_headers,
+      params: {
+        station_id: seismic_station.id,
+        event_mode: "follow_up",
+        observation_id: simulated_observation.id,
+        seismic_intensity_level_id: seismic_level_5_weak.id
+      }
+
+    expect(response).to have_http_status(:unprocessable_entity)
+    expect(simulated_observation.reload.max_value).to eq(initial_max_value)
+  end
+
+  it "rejects negative rainfall values with 422 and does not create an observation" do
+    post "/admin/simulated_events",
+      headers: auth_headers,
+      params: {
+        station_id: rainfall_station.id,
+        event_mode: "new",
+        rainfall_mm: "-1"
+      }
+
+    expect(response).to have_http_status(:unprocessable_entity)
+    expect(Observation.exists?(station: rainfall_station)).to be(false)
+  end
+
   it "injects a seismic event, updates the max only when the new value is higher, and exposes the notification in mypage APIs" do
     post "/admin/simulated_events",
       headers: auth_headers,
