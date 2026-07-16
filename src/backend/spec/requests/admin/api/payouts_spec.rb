@@ -146,7 +146,7 @@ RSpec.describe "PATCH /admin/api/payouts/:id/complete", type: :request do
   end
 
   it "redirects back to the admin page when a return_to parameter is provided" do
-    patch "/admin/api/payouts/#{payout.id}/complete", headers: auth_headers, params: { return_to: "/admin/payouts" }
+    patch "/admin/api/payouts/#{payout.id}/complete", headers: auth_headers, params: { return_to_admin_payouts: "1" }
 
     expect(response).to have_http_status(:see_other)
     expect(response).to redirect_to("/admin/payouts")

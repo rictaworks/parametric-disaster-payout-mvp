@@ -27,8 +27,8 @@
           <td>
             <div class="actions">
               <% if payout.payout_status.code == "ordered" %>
-                <%= button_to "支払完了（模擬）にする", "/admin/api/payouts/#{payout.id}/complete", method: :patch, params: { return_to: admin_payouts_path }, class: "primary" %>
-                <%= button_to "無効化", "/admin/api/payouts/#{payout.id}/invalidate", method: :patch, params: { return_to: admin_payouts_path }, class: "danger" %>
+                <%= button_to "支払完了（模擬）にする", "/admin/api/payouts/#{payout.id}/complete", method: :patch, params: { return_to_admin_payouts: "1" }, class: "primary" %>
+                <%= button_to "無効化", "/admin/api/payouts/#{payout.id}/invalidate", method: :patch, params: { return_to_admin_payouts: "1" }, class: "danger" %>
               <% else %>
                 <span class="muted">操作済み</span>
               <% end %>
