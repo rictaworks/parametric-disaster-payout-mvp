@@ -1,0 +1,91 @@
+<section class="card stack">
+  <h2><%= t("admin_ui.simulated_events.index.title") %></h2>
+  <p class="muted"><%= t("admin_ui.simulated_events.index.description") %></p>
+
+  <%= form_with url: admin_simulated_events_path, method: :post, local: true do %>
+    <div class="form-grid">
+      <div class="field">
+        <label for="station_id"><%= t("admin_ui.simulated_events.index.controls.station") %></label>
+        <%= select_tag :station_id, options_for_select(@stations.map { |station| ["#{station.label_ja} (#{station.code}, #{station.measurement_type})", station.id] }, params[:station_id]), include_blank: true %>
+      </div>
+
+      <div class="field">
+        <label for="observation_id"><%= t("admin_ui.simulated_events.index.controls.existing_observation") %></label>
+        <%= select_tag :observation_id, options_for_select(@recent_observation_options, params[:observation_id]), include_blank: true %>
+      </div>
+    </div>
+
+    <fieldset class="fieldset">
+      <legend><%= t("admin_ui.simulated_events.index.controls.event_mode") %></legend>
+      <div class="choice-grid">
+        <label>
+          <%= radio_button_tag :event_mode, "new", params[:event_mode].blank? || params[:event_mode] == "new" %>
+          <span><%= t("admin_ui.simulated_events.index.modes.new") %></span>
+        </label>
+        <label>
+          <%= radio_button_tag :event_mode, "follow_up", params[:event_mode] == "follow_up" %>
+          <span><%= t("admin_ui.simulated_events.index.modes.follow_up") %></span>
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="fieldset">
+      <legend><%= t("admin_ui.simulated_events.index.controls.seismic_level") %></legend>
+      <div class="choice-grid">
+        <% @seismic_intensity_levels.each do |level| %>
+          <label>
+            <%= radio_button_tag :seismic_intensity_level_id, level.id, params[:seismic_intensity_level_id].to_s == level.id.to_s %>
+            <span><%= level.label_ja %></span>
+          </label>
+        <% end %>
+      </div>
+    </fieldset>
+
+    <div class="field">
+      <label for="rainfall_mm"><%= t("admin_ui.simulated_events.index.controls.rainfall_mm") %></label>
+      <%= number_field_tag :rainfall_mm, params[:rainfall_mm], step: "0.1", min: 0 %>
+    </div>
+
+    <p class="muted"><%= t("admin_ui.simulated_events.index.hints.seismic") %></p>
+    <p class="muted"><%= t("admin_ui.simulated_events.index.hints.rainfall") %></p>
+
+    <%= submit_tag t("admin_ui.simulated_events.index.controls.inject"), class: "primary" %>
+  <% end %>
+</section>
+
+<section class="card stack">
+  <h2><%= t("admin_ui.simulated_events.index.recent_title") %></h2>
+
+  <% if @recent_observations.any? %>
+    <table>
+      <thead>
+        <tr>
+          <th><%= t("admin_ui.simulated_events.index.columns.id") %></th>
+          <th><%= t("admin_ui.simulated_events.index.columns.station") %></th>
+          <th><%= t("admin_ui.simulated_events.index.columns.kind") %></th>
+          <th><%= t("admin_ui.simulated_events.index.columns.value") %></th>
+          <th><%= t("admin_ui.simulated_events.index.columns.observed_at") %></th>
+          <th><%= t("admin_ui.simulated_events.index.columns.event_id") %></th>
+          <th><%= t("admin_ui.simulated_events.index.columns.simulated") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @recent_observations.each do |observation| %>
+          <tr>
+            <td><%= observation.id %></td>
+            <td><%= "#{observation.station.label_ja} (#{observation.station.code})" %></td>
+            <td><%= observation.station.measurement_type %></td>
+            <td>
+              <%= observation.station.measurement_type == "seismic" ? (observation.seismic_intensity_level&.label_ja || observation.max_value) : observation.rainfall_mm %>
+            </td>
+            <td><%= observation.observed_at&.strftime("%Y-%m-%d %H:%M") %></td>
+            <td><%= observation.event_id || "—" %></td>
+            <td><%= observation.simulated? ? "true" : "false" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="muted"><%= t("admin_ui.simulated_events.index.empty") %></p>
+  <% end %>
+</section>

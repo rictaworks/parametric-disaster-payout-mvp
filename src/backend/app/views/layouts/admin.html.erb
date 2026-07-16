@@ -12,6 +12,18 @@
       .tab { padding: 10px 14px; border-radius: 8px; background: #fff; text-decoration: none; color: #444; border: 1px solid #ddd; }
       .tab.is-active { background: #1f4b99; color: #fff; border-color: #1f4b99; }
       .card { background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 16px; overflow-x: auto; }
+      .flash { border-radius: 10px; padding: 12px 14px; margin: 0 0 16px; }
+      .flash.notice { background: #eaf5ff; border: 1px solid #b6d4fe; color: #0f4c81; }
+      .flash.alert { background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239; }
+      .form-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+      .field label { display: block; margin-bottom: 6px; font-weight: 600; }
+      .field select, .field input { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #ccc; border-radius: 8px; }
+      .fieldset { border: 1px solid #ddd; border-radius: 12px; padding: 12px; }
+      .fieldset legend { padding: 0 6px; font-weight: 700; }
+      .choice-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+      .choice-grid label { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #ddd; border-radius: 999px; padding: 8px 12px; background: #fff; }
+      .choice-grid input { width: auto; }
+      .stack { display: grid; gap: 12px; }
       table { width: 100%; border-collapse: collapse; min-width: 900px; }
       th, td { border-bottom: 1px solid #eee; text-align: left; vertical-align: top; padding: 10px 8px; }
       th { background: #fafafa; }
@@ -30,9 +42,13 @@
       <nav class="tabs" aria-label="管理画面タブ">
         <%= link_to t("admin_ui.layout.tabs.policies"), admin_root_path, class: "tab #{current_page?(admin_root_path) ? "is-active" : ""}" %>
         <%= link_to t("admin_ui.layout.tabs.payouts"), admin_payouts_path, class: "tab #{current_page?(admin_payouts_path) ? "is-active" : ""}" %>
+        <%= link_to t("admin_ui.layout.tabs.simulated_events"), admin_simulated_events_path, class: "tab #{current_page?(admin_simulated_events_path) ? "is-active" : ""}" %>
       </nav>
     </header>
     <main>
+      <% flash.each do |type, message| %>
+        <div class="flash <%= type %>"><%= message %></div>
+      <% end %>
       <%= yield %>
     </main>
   </body>
