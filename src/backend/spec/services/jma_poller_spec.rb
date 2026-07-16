@@ -185,7 +185,7 @@ RSpec.describe JmaPoller do
       allow(http_double).to receive(:get).with(indiv_uri.request_uri).and_return(error_response)
 
       poller = described_class.new(feed_url: feed_uri.to_s, rainfall_feed_url: nil)
-      
+
       expect {
         poller.call
       }.not_to change { ProcessedJmaEntry.count }
@@ -384,7 +384,7 @@ RSpec.describe JmaPoller do
       expect(ingest_service).to receive(:call).twice
 
       poller = described_class.new(feed_url: feed_uri_seismic.to_s, rainfall_feed_url: feed_uri_rainfall.to_s)
-      
+
       expect {
         poller.call
       }.to change { ProcessedJmaEntry.count }.by(2)
