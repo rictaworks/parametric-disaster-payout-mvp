@@ -44,12 +44,12 @@ RSpec.describe ExpirePolicies do
     )
   end
 
-  let!(:pending_status) { PolicyStatus.create!(code: "pending", sort_order: 0, label_ja: "待機中", label_en: "Pending", label_fr: "Pending", label_zh: "Pending", label_ru: "Pending", label_es: "Pending", label_ar: "Pending") }
-  let!(:active_status) { PolicyStatus.create!(code: "active", sort_order: 1, label_ja: "有効", label_en: "Active", label_fr: "Active", label_zh: "Active", label_ru: "Active", label_es: "Active", label_ar: "Active") }
-  let!(:processing_status) { PolicyStatus.create!(code: "processing", sort_order: 2, label_ja: "支払処理中", label_en: "Processing", label_fr: "Processing", label_zh: "Processing", label_ru: "Processing", label_es: "Processing", label_ar: "Processing") }
-  let!(:cap_reached_status) { PolicyStatus.create!(code: "cap_reached", sort_order: 3, label_ja: "上限到達", label_en: "Cap reached", label_fr: "Cap reached", label_zh: "Cap reached", label_ru: "Cap reached", label_es: "Cap reached", label_ar: "Cap reached") }
-  let!(:cancelled_status) { PolicyStatus.create!(code: "cancelled", sort_order: 4, label_ja: "解約", label_en: "Cancelled", label_fr: "Cancelled", label_zh: "Cancelled", label_ru: "Cancelled", label_es: "Cancelled", label_ar: "Cancelled") }
-  let!(:expired_status) { PolicyStatus.create!(code: "expired", sort_order: 5, label_ja: "失効", label_en: "Expired", label_fr: "Expired", label_zh: "Expired", label_ru: "Expired", label_es: "Expired", label_ar: "Expired") }
+  let!(:pending_status) { PolicyStatus.find_or_create_by!(code: "pending", sort_order: 0, label_ja: "待機中", label_en: "Pending", label_fr: "Pending", label_zh: "Pending", label_ru: "Pending", label_es: "Pending", label_ar: "Pending") }
+  let!(:active_status) { PolicyStatus.find_or_create_by!(code: "active", sort_order: 1, label_ja: "有効", label_en: "Active", label_fr: "Active", label_zh: "Active", label_ru: "Active", label_es: "Active", label_ar: "Active") }
+  let!(:processing_status) { PolicyStatus.find_or_create_by!(code: "processing", sort_order: 2, label_ja: "支払処理中", label_en: "Processing", label_fr: "Processing", label_zh: "Processing", label_ru: "Processing", label_es: "Processing", label_ar: "Processing") }
+  let!(:cap_reached_status) { PolicyStatus.find_or_create_by!(code: "cap_reached", sort_order: 3, label_ja: "上限到達", label_en: "Cap reached", label_fr: "Cap reached", label_zh: "Cap reached", label_ru: "Cap reached", label_es: "Cap reached", label_ar: "Cap reached") }
+  let!(:cancelled_status) { PolicyStatus.find_or_create_by!(code: "cancelled", sort_order: 4, label_ja: "解約", label_en: "Cancelled", label_fr: "Cancelled", label_zh: "Cancelled", label_ru: "Cancelled", label_es: "Cancelled", label_ar: "Cancelled") }
+  let!(:expired_status) { PolicyStatus.find_or_create_by!(code: "expired", sort_order: 5, label_ja: "失効", label_en: "Expired", label_fr: "Expired", label_zh: "Expired", label_ru: "Expired", label_es: "Expired", label_ar: "Expired") }
 
   let(:service_now) { Time.zone.parse("2026-07-16 10:00:00") }
 
