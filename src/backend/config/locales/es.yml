@@ -1,5 +1,7 @@
 es:
   hello: "Hola mundo"
+  notifications:
+    payout_ordered: "Se ha ordenado un pago simulado. Consulte sus pólizas e historial de pagos en Mi Página."
   errors:
     messages:
       blank: "no puede estar en blanco"

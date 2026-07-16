@@ -29,6 +29,8 @@
 
 en:
   hello: "Hello world"
+  notifications:
+    payout_ordered: "A simulated payout has been ordered. Please check your contracts and payout history on My Page."
   errors:
     messages:
       blank: "can't be blank"

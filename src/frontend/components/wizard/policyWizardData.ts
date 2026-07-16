@@ -35,6 +35,32 @@ export const POLICY_THRESHOLD_OPTIONS = {
   ],
 } as const satisfies Record<PolicyPlanKey, readonly { value: string; key: string }[]>;
 
+// バックエンド（ValidateAndCreatePolicy）は降雨閾値を "10 mm" のような単位付き文字列から
+// 単位なしの正規化された数値文字列（例: "10.0"）へ変換して保存する。そのため保存済みの
+// policy.threshold をこの選択肢一覧と照合する際は、値をそのまま文字列比較せず、
+// 数値部分だけを取り出して比較する必要がある（震度は元の表記のまま保存されるため対象外）
+function parseRainfallThresholdValue(value: string): number | null {
+  const match = /^(-?\d+(?:\.\d+)?)(?:\s*mm)?$/i.exec(value.trim());
+  if (!match) {
+    return null;
+  }
+  return Number(match[1]);
+}
+
+export function findThresholdOption(planKey: PolicyPlanKey, value: string) {
+  const options = POLICY_THRESHOLD_OPTIONS[planKey];
+
+  if (planKey === "rainfall") {
+    const numericValue = parseRainfallThresholdValue(value);
+    if (numericValue === null) {
+      return undefined;
+    }
+    return options.find((option) => parseRainfallThresholdValue(option.value) === numericValue);
+  }
+
+  return options.find((option) => option.value === value);
+}
+
 export const POLICY_PAYOUT_TIER_OPTIONS = [
   { code: "ten_thousand", key: "ten_thousand" },
   { code: "thirty_thousand", key: "thirty_thousand" },

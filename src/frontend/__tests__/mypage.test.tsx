@@ -37,6 +37,34 @@ describe("My page", () => {
     expect(global.fetch).toHaveBeenCalledWith("/api/v1/policies");
   });
 
+  it("shows a localized, unit-suffixed rainfall threshold label even though the backend normalizes the stored value (e.g. \"10.0\" instead of \"10 mm\")", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        policies: [
+          {
+            id: 456,
+            plan_code: "rainfall",
+            station_code: "rainfall_tokyo",
+            payout_tier_code: "ten_thousand",
+            policy_status_code: "active",
+            threshold: "10.0",
+          },
+        ],
+      }),
+    });
+
+    render(
+      <AppShell>
+        <MyPage />
+      </AppShell>
+    );
+
+    expect(await screen.findByText("10 mm")).toBeInTheDocument();
+    expect(screen.queryByText("10.0")).not.toBeInTheDocument();
+  });
+
   it("shows an empty state when the user has no policies yet", async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,

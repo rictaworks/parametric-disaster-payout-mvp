@@ -13,7 +13,56 @@ class Payout < ApplicationRecord
   validate :observation_must_be_after_policy_waiting_until
   validate :policy_and_observation_cannot_be_changed, on: :update
 
+  after_save :update_policy_status_on_state_change, if: :saved_change_to_payout_status_id?
+
   private
+
+  TERMINAL_POLICY_STATUS_CODES = %w[cancelled expired].freeze
+
+  def update_policy_status_on_state_change
+    completed_status = PayoutStatus.find_by(code: "completed_simulated")
+    invalid_status = PayoutStatus.find_by(code: "invalid")
+    ordered_status = PayoutStatus.find_by(code: "ordered")
+
+    return unless payout_status == completed_status || payout_status == invalid_status
+
+    policy.with_lock do
+      # 支払指図後に契約が解約・失効していた場合、終端状態を支払確定処理で上書きしない
+      next if TERMINAL_POLICY_STATUS_CODES.include?(policy.policy_status.code)
+
+      # processing のまま契約期間（expires_at）を過ぎていた場合、通常の active/cap_reached への
+      # 復帰は行わず先に失効させる。満期チェックを行わないステータスコードのみの判定だと、
+      # 満了後に支払が確定した瞬間だけ一時的に「有効」と誤表示されてしまう
+      if policy.expires_at <= Time.current
+        policy.update!(policy_status: PolicyStatus.find_by!(code: "expired"))
+        next
+      end
+
+      # 同一契約に未処理（ordered）の支払が他に残っている間は processing を維持し、
+      # 全ての支払が確定（完了または無効化）してから active / cap_reached を確定する
+      next if policy.payouts.where(payout_status: ordered_status).exists?
+
+      next_status_code = annual_payout_count_at_or_above_limit?(invalid_status) ? "cap_reached" : "active"
+      policy.update!(policy_status: PolicyStatus.find_by!(code: next_status_code))
+    end
+  end
+
+  # 契約の現在の利用可否を判定するための年間支払回数なので、確定させた支払が紐づく
+  # 観測の年ではなく、現在時刻の年（Time.current.year）を基準に集計する。
+  # 年をまたいだ前年分の ordered 支払が最後に確定した場合でも、当年の実績で判定されるようにする
+  def annual_payout_count_at_or_above_limit?(invalid_status)
+    year = Time.current.year
+    start_of_year = Time.zone.local(year, 1, 1).beginning_of_day
+    end_of_year = Time.zone.local(year, 12, 31).end_of_day
+
+    payout_count = policy.payouts
+                         .joins(:observation)
+                         .where(observations: { observed_at: start_of_year..end_of_year })
+                         .where.not(payout_status: invalid_status)
+                         .count
+
+    payout_count >= 2
+  end
 
   def payout_tier_matches_policy
     return if policy.blank? || payout_tier.blank?
