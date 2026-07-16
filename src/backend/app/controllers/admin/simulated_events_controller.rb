@@ -31,7 +31,7 @@ module Admin
     def load_form_data
       @stations = Station.order(:measurement_type, :code)
       @seismic_intensity_levels = SeismicIntensityLevel.order(:sort_order)
-      @recent_observations = Observation.includes(:station, :seismic_intensity_level).order(created_at: :desc).limit(50)
+      @recent_observations = Observation.where(simulated: true).includes(:station, :seismic_intensity_level).order(created_at: :desc).limit(50)
       @recent_observation_options = @recent_observations.map { |observation| [ observation_option_label(observation), observation.id ] }
     end
 
@@ -39,7 +39,7 @@ module Admin
       station = Station.find_by(id: params[:station_id])
       return nil if station.nil?
 
-      follow_up_observation = follow_up? ? Observation.includes(:station, :seismic_intensity_level).find_by(id: params[:observation_id]) : nil
+      follow_up_observation = follow_up? ? Observation.where(simulated: true).includes(:station, :seismic_intensity_level).find_by(id: params[:observation_id]) : nil
       return nil if follow_up? && follow_up_observation.nil?
       return nil if follow_up_observation.present? && follow_up_observation.station_id != station.id
 

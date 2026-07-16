@@ -125,14 +125,22 @@ RSpec.describe "Admin simulated events", type: :request do
     end
   end
 
-  it "renders the injection UI and existing event list" do
+  it "renders the injection UI and only displays simulated events" do
     Observation.create!(
       station: seismic_station,
-      event_id: "seed-event",
+      event_id: "seed-event-real",
       observed_at: Time.zone.parse("2026-07-15 09:00:00"),
       seismic_intensity_level: seismic_level_4,
       max_value: seismic_level_4.sort_order,
       simulated: false
+    )
+    Observation.create!(
+      station: seismic_station,
+      event_id: "seed-event-simulated",
+      observed_at: Time.zone.parse("2026-07-15 10:00:00"),
+      seismic_intensity_level: seismic_level_4,
+      max_value: seismic_level_4.sort_order,
+      simulated: true
     )
 
     get "/admin/simulated_events", headers: auth_headers
@@ -142,7 +150,35 @@ RSpec.describe "Admin simulated events", type: :request do
     expect(response.body).to include("新規イベント")
     expect(response.body).to include("既存イベントへの続報")
     expect(response.body).to include("東京震度観測点 (seismic_tokyo_admin_simulated_events)")
-    expect(response.body).to include("seed-event")
+    expect(response.body).to include("seed-event-simulated")
+    expect(response.body).not_to include("seed-event-real")
+  end
+
+  it "rejects follow-up requests on real (simulated=false) observations with 422 and does not modify the observation or payouts" do
+    real_observation = Observation.create!(
+      station: seismic_station,
+      event_id: "real-event",
+      observed_at: Time.zone.parse("2026-07-15 09:00:00"),
+      seismic_intensity_level: seismic_level_4,
+      max_value: seismic_level_4.sort_order,
+      simulated: false
+    )
+
+    initial_max_value = real_observation.max_value
+    initial_payout_count = Payout.count
+
+    post "/admin/simulated_events",
+      headers: auth_headers,
+      params: {
+        station_id: seismic_station.id,
+        event_mode: "follow_up",
+        observation_id: real_observation.id,
+        seismic_intensity_level_id: seismic_level_5_weak.id
+      }
+
+    expect(response).to have_http_status(:unprocessable_entity)
+    expect(real_observation.reload.max_value).to eq(initial_max_value)
+    expect(Payout.count).to eq(initial_payout_count)
   end
 
   it "injects a seismic event, updates the max only when the new value is higher, and exposes the notification in mypage APIs" do
