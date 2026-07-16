@@ -6,9 +6,16 @@ module Admin
 
     included do
       before_action :authenticate_admin!
+      around_action :use_japanese_locale
     end
 
     private
+
+    # 開発者用の管理画面は日本語のみ対応のため、アプリ全体のデフォルトロケールに
+    # 依存せずこのnamespace配下では常に:jaへ固定する
+    def use_japanese_locale(&block)
+      I18n.with_locale(:ja, &block)
+    end
 
     def authenticate_admin!
       authenticate_or_request_with_http_basic do |username, password|

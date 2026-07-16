@@ -1,16 +1,16 @@
 <section class="card">
-  <h2>契約一覧</h2>
+  <h2><%= t("admin_ui.policies.index.title") %></h2>
 
   <table>
     <thead>
       <tr>
-        <th>ユーザー</th>
-        <th>プラン</th>
-        <th>観測点</th>
-        <th>閾値</th>
-        <th>状態</th>
-        <th>年間支払回数</th>
-        <th>免責明け時刻</th>
+        <th><%= t("admin_ui.policies.index.columns.user") %></th>
+        <th><%= t("admin_ui.policies.index.columns.plan") %></th>
+        <th><%= t("admin_ui.policies.index.columns.station") %></th>
+        <th><%= t("admin_ui.policies.index.columns.threshold") %></th>
+        <th><%= t("admin_ui.policies.index.columns.status") %></th>
+        <th><%= t("admin_ui.policies.index.columns.annual_payout_count") %></th>
+        <th><%= t("admin_ui.policies.index.columns.waiting_until") %></th>
       </tr>
     </thead>
     <tbody>

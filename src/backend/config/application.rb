@@ -41,6 +41,11 @@ module Backend
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
+    # 管理画面（/admin）のCSRF保護にのみセッションCookieを使用する。
+    # メインのJSON API（Next.js BFF向け）はGoogleログイン＋opaqueなsubのみで
+    # 認証しており、セッションCookieを必要としないため、path指定でスコープを
+    # /admin配下に限定し、ブラウザが他経路にこのCookieを送らないようにする
+    config.session_store :cookie_store, key: "_backend_admin_session", path: "/admin", same_site: :strict
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use ActionDispatch::Session::CookieStore
   end

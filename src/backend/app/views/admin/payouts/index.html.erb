@@ -1,17 +1,17 @@
 <section class="card">
-  <h2>支払一覧</h2>
+  <h2><%= t("admin_ui.payouts.index.title") %></h2>
 
   <table>
     <thead>
       <tr>
-        <th>ID</th>
-        <th>ユーザー</th>
-        <th>プラン</th>
-        <th>観測点</th>
-        <th>閾値</th>
-        <th>状態</th>
-        <th>判定時刻</th>
-        <th>操作</th>
+        <th><%= t("admin_ui.payouts.index.columns.id") %></th>
+        <th><%= t("admin_ui.payouts.index.columns.user") %></th>
+        <th><%= t("admin_ui.payouts.index.columns.plan") %></th>
+        <th><%= t("admin_ui.payouts.index.columns.station") %></th>
+        <th><%= t("admin_ui.payouts.index.columns.threshold") %></th>
+        <th><%= t("admin_ui.payouts.index.columns.status") %></th>
+        <th><%= t("admin_ui.payouts.index.columns.decided_at") %></th>
+        <th><%= t("admin_ui.payouts.index.columns.actions") %></th>
       </tr>
     </thead>
     <tbody>
@@ -27,10 +27,10 @@
           <td>
             <div class="actions">
               <% if payout.payout_status.code == "ordered" %>
-                <%= button_to "支払完了（模擬）にする", "/admin/api/payouts/#{payout.id}/complete", method: :patch, params: { return_to_admin_payouts: "1" }, class: "primary" %>
-                <%= button_to "無効化", "/admin/api/payouts/#{payout.id}/invalidate", method: :patch, params: { return_to_admin_payouts: "1" }, class: "danger" %>
+                <%= button_to t("admin_ui.payouts.index.actions.complete"), "/admin/api/payouts/#{payout.id}/complete", method: :patch, params: { return_to_admin_payouts: "1" }, class: "primary" %>
+                <%= button_to t("admin_ui.payouts.index.actions.invalidate"), "/admin/api/payouts/#{payout.id}/invalidate", method: :patch, params: { return_to_admin_payouts: "1" }, class: "danger" %>
               <% else %>
-                <span class="muted">操作済み</span>
+                <span class="muted"><%= t("admin_ui.payouts.index.actions.done") %></span>
               <% end %>
             </div>
           </td>

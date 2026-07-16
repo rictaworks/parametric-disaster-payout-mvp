@@ -8,6 +8,20 @@ class Payout < ApplicationRecord
 
   validates :idempotency_key, presence: true, uniqueness: true
 
+  # 契約の現在の利用可否を判定するための年間支払回数なので、確定させた支払が紐づく
+  # 観測の年ではなく、現在時刻の年（Time.current.year）を基準に集計する。
+  # 管理画面の一覧表示（Admin::PoliciesController）とトリガー判定後の状態更新の
+  # 双方から参照する共通ロジックとして、ここに一本化する
+  def self.annual_completed_counts(policy_ids: nil, year: Time.current.year)
+    invalid_status = PayoutStatus.find_by(code: "invalid")
+    year_range = Time.zone.local(year, 1, 1).beginning_of_day..Time.zone.local(year, 12, 31).end_of_day
+
+    scope = joins(:observation).where(observations: { observed_at: year_range })
+    scope = scope.where.not(payout_status: invalid_status) if invalid_status.present?
+    scope = scope.where(policy_id: policy_ids) if policy_ids
+    scope.group(:policy_id).count
+  end
+
   validate :payout_tier_matches_policy
   validate :observation_matches_policy_station
   validate :observation_must_be_after_policy_waiting_until
@@ -42,26 +56,14 @@ class Payout < ApplicationRecord
       # 全ての支払が確定（完了または無効化）してから active / cap_reached を確定する
       next if policy.payouts.where(payout_status: ordered_status).exists?
 
-      next_status_code = annual_payout_count_at_or_above_limit?(invalid_status) ? "cap_reached" : "active"
+      next_status_code = annual_payout_count_at_or_above_limit? ? "cap_reached" : "active"
       policy.update!(policy_status: PolicyStatus.find_by!(code: next_status_code))
     end
   end
 
-  # 契約の現在の利用可否を判定するための年間支払回数なので、確定させた支払が紐づく
-  # 観測の年ではなく、現在時刻の年（Time.current.year）を基準に集計する。
   # 年をまたいだ前年分の ordered 支払が最後に確定した場合でも、当年の実績で判定されるようにする
-  def annual_payout_count_at_or_above_limit?(invalid_status)
-    year = Time.current.year
-    start_of_year = Time.zone.local(year, 1, 1).beginning_of_day
-    end_of_year = Time.zone.local(year, 12, 31).end_of_day
-
-    payout_count = policy.payouts
-                         .joins(:observation)
-                         .where(observations: { observed_at: start_of_year..end_of_year })
-                         .where.not(payout_status: invalid_status)
-                         .count
-
-    payout_count >= 2
+  def annual_payout_count_at_or_above_limit?
+    self.class.annual_completed_counts(policy_ids: [ policy_id ]).fetch(policy_id, 0) >= 2
   end
 
   def payout_tier_matches_policy
