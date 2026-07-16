@@ -174,6 +174,55 @@
     "applicationsHeading": "Tus pólizas",
     "loading": "Cargando...",
     "loadFailed": "No se pudieron cargar tus pólizas. Inténtalo de nuevo más tarde.",
-    "unauthenticated": "Inicia sesión para ver tus pólizas."
+    "unauthenticated": "Inicia sesión para ver tus pólizas.",
+    "survey": {
+      "requestTitle": "Solicitud de encuesta",
+      "requestDescription": "Por favor, colabore con la encuesta después de completar el pago simulado.",
+      "targetPayoutPrefix": "ID de pago objetivo: ",
+      "feedbackLabel": "Contenido de la respuesta",
+      "submitting": "Enviando...",
+      "submit": "Enviar encuesta",
+      "defaultFeedback": "Comparta sus comentarios sobre esta experiencia de pago simulado.",
+      "forbidden": "No puede enviar esta encuesta.",
+      "submitFailed": "No se pudo enviar la encuesta.",
+      "savedPrefix": "Encuesta guardada. (ID de pago: ",
+      "savedSuffix": ")"
+    },
+    "status": {
+      "forbidden": "No puede realizar esta acción en esta póliza.",
+      "updateFailed": "No se pudo actualizar la póliza.",
+      "updated": "Póliza actualizada."
+    },
+    "countdown": {
+      "elapsed": "Período de espera finalizado",
+      "remainingPrefix": "en "
+    },
+    "policiesHeading": "Lista de pólizas",
+    "countdownLabel": "Tiempo hasta activación: ",
+    "terminatedAt": "Fecha de cancelación",
+    "actions": {
+      "forceWaitingPeriod": "[Acción prototipo] Forzar fin del período de espera",
+      "cancel": "Cancelar"
+    },
+    "notificationsHeading": "Lista de notificaciones",
+    "emptyNotifications": "No hay notificaciones aún.",
+    "notificationTable": {
+      "kind": "Tipo",
+      "message": "Contenido",
+      "receivedAt": "Fecha de recepción"
+    },
+    "payoutsHeading": "Historial de pagos",
+    "emptyPayouts": "No hay historial de pagos aún.",
+    "payoutTable": {
+      "date": "Fecha de pago",
+      "policy": "Póliza",
+      "tier": "Nivel de pago",
+      "status": "Estado",
+      "survey": "Encuesta"
+    },
+    "surveyStatus": {
+      "submitted": "Respondida",
+      "pending": "Pendiente"
+    }
   }
 }

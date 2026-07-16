@@ -36,6 +36,11 @@ en:
   admin_api:
     payouts:
       invalid_status_transition: "Invalid status transition"
+  api:
+    policies:
+      only_pending_can_be_activated: "Only pending policies can be activated"
+    survey_responses:
+      payout_must_be_completed: "Survey responses can only be created for completed payouts"
   errors:
     messages:
       blank: "can't be blank"
@@ -65,3 +70,4 @@ en:
           immutable_once_created: "cannot be changed once created"
         survey_response:
           must_be_policy_owner: "must be the owner of the policy payout"
+          must_be_completed_to_accept_survey: "must be completed to accept survey response"

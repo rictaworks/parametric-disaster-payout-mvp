@@ -174,6 +174,55 @@
     "applicationsHeading": "我的契約",
     "loading": "讀取中...",
     "loadFailed": "契約資料讀取失敗，請稍後再試。",
-    "unauthenticated": "請先登入以查看您的契約。"
+    "unauthenticated": "請先登入以查看您的契約。",
+    "survey": {
+      "requestTitle": "问卷调查",
+      "requestDescription": "请在模拟赔付完成后协助填写问卷。",
+      "targetPayoutPrefix": "目标赔付ID: ",
+      "feedbackLabel": "反馈内容",
+      "submitting": "发送中...",
+      "submit": "提交问卷",
+      "defaultFeedback": "请分享您对本次模拟赔付体验的感想。",
+      "forbidden": "您无法提交此问卷。",
+      "submitFailed": "问卷提交失败。",
+      "savedPrefix": "问卷已保存。（赔付ID: ",
+      "savedSuffix": "）"
+    },
+    "status": {
+      "forbidden": "您无法对此合同执行此操作。",
+      "updateFailed": "合同更新失败。",
+      "updated": "合同已更新。"
+    },
+    "countdown": {
+      "elapsed": "已过免责期",
+      "remainingPrefix": "还剩 "
+    },
+    "policiesHeading": "合同列表",
+    "countdownLabel": "距离免责结束: ",
+    "terminatedAt": "退保时间",
+    "actions": {
+      "forceWaitingPeriod": "【原型操作】立即结束等待期",
+      "cancel": "解约"
+    },
+    "notificationsHeading": "通知列表",
+    "emptyNotifications": "暂无通知。",
+    "notificationTable": {
+      "kind": "类型",
+      "message": "内容",
+      "receivedAt": "接收时间"
+    },
+    "payoutsHeading": "赔付历史",
+    "emptyPayouts": "暂无赔付历史。",
+    "payoutTable": {
+      "date": "赔付日期",
+      "policy": "合同",
+      "tier": "赔付等级",
+      "status": "状态",
+      "survey": "问卷"
+    },
+    "surveyStatus": {
+      "submitted": "已回答",
+      "pending": "未回答"
+    }
   }
 }

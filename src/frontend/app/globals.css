@@ -549,6 +549,50 @@ input {
   color: var(--muted);
 }
 
+.mypage-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mypage-table th,
+.mypage-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.8rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.mypage-table th {
+  color: var(--muted);
+  font-size: 0.84rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mypage-form {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.mypage-form label {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.mypage-form span {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.mypage-form textarea {
+  min-height: 8rem;
+  border: 1px solid var(--border);
+  background: rgba(6, 17, 29, 0.65);
+  color: var(--foreground);
+  padding: 0.9rem 1rem;
+  resize: vertical;
+}
+
 @media (max-width: 900px) {
   .feature-grid {
     grid-template-columns: 1fr;

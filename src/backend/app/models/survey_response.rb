@@ -6,6 +6,7 @@ class SurveyResponse < ApplicationRecord
   validates :payout_id, uniqueness: true
 
   validate :user_matches_payout_user
+  validate :payout_status_must_be_completed
 
   private
 
@@ -14,6 +15,16 @@ class SurveyResponse < ApplicationRecord
 
     if user_id != payout.policy&.user_id
       errors.add(:user, :must_be_policy_owner)
+    end
+  end
+
+  def payout_status_must_be_completed
+    return if payout.blank?
+    return unless Payout.column_names.include?("payout_status_id")
+    return if payout.payout_status.nil?
+
+    if payout.payout_status.code != "completed_simulated"
+      errors.add(:payout, :must_be_completed_to_accept_survey)
     end
   end
 end

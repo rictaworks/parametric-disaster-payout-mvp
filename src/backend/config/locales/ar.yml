@@ -7,6 +7,11 @@ ar:
   admin_api:
     payouts:
       invalid_status_transition: "انتقال حالة غير صالح"
+  api:
+    policies:
+      only_pending_can_be_activated: "يمكن تفعيل العقود قيد الانتظار فقط"
+    survey_responses:
+      payout_must_be_completed: "يمكن إرسال الاستطلاع فقط للمدفوعات المكتملة"
   errors:
     messages:
       blank: "لا يمكن أن يكون فارغًا"
@@ -36,3 +41,4 @@ ar:
           immutable_once_created: "لا يمكن تغييره بعد الإنشاء"
         survey_response:
           must_be_policy_owner: "يجب أن يكون مالك مدفوعات الوثيقة"
+          must_be_completed_to_accept_survey: "يجب أن يكتمل لقبول استجابة الاستطلاع"

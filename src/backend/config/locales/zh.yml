@@ -7,6 +7,11 @@ zh:
   admin_api:
     payouts:
       invalid_status_transition: "无效的状态转换"
+  api:
+    policies:
+      only_pending_can_be_activated: "只有待处理的合同才能被激活"
+    survey_responses:
+      payout_must_be_completed: "只有已完成的赔付才能提交问卷"
   errors:
     messages:
       blank: "不能为空"
@@ -36,3 +41,4 @@ zh:
           immutable_once_created: "创建后无法更改"
         survey_response:
           must_be_policy_owner: "必须是保单赔付的所有者"
+          must_be_completed_to_accept_survey: "必须已完成以接受调查问卷回复"

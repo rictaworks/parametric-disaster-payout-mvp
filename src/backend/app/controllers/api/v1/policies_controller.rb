@@ -28,6 +28,47 @@ module Api
         end
       end
 
+      def cancel
+        policy = Policy.find(params[:id])
+        return head :forbidden unless policy.user_id == current_user.id
+
+        if %w[cancelled expired].include?(policy.policy_status.code)
+          render json: { policy: serialize_policy(policy) }
+          return
+        end
+
+        policy.update!(
+          policy_status: PolicyStatus.find_by!(code: "cancelled"),
+          terminated_at: Time.current
+        )
+
+        render json: { policy: serialize_policy(policy.reload) }
+      rescue ActiveRecord::RecordNotFound
+        head :not_found
+      end
+
+      def force_waiting_period_elapsed
+        policy = Policy.find(params[:id])
+        return head :forbidden unless policy.user_id == current_user.id
+
+        policy.with_lock do
+          unless policy.policy_status.code == "pending"
+            render json: { error: I18n.t("api.policies.only_pending_can_be_activated") }, status: :unprocessable_entity
+            return
+          end
+
+          active_status = PolicyStatus.find_by!(code: "active")
+          policy.update!(
+            waiting_until: Time.current,
+            policy_status: active_status
+          )
+        end
+
+        render json: { policy: serialize_policy(policy.reload) }
+      rescue ActiveRecord::RecordNotFound
+        head :not_found
+      end
+
       private
 
       def policy_params
@@ -47,6 +88,7 @@ module Api
           policy_status_id: policy.policy_status_id,
           policy_status_code: policy.policy_status.code,
           threshold: policy.threshold,
+          terminated_at: policy.terminated_at&.iso8601,
           waiting_until: policy.waiting_until&.iso8601,
           expires_at: policy.expires_at&.iso8601
         }
