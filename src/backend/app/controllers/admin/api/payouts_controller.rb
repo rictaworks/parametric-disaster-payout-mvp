@@ -9,7 +9,11 @@ module Admin
         payout = Payout.find(params[:id])
         result = ExecutePayout.new(payout: payout).call
 
-        render json: { payout: serialize_payout(result.payout) }
+        if result.success?
+          render json: { payout: serialize_payout(result.payout) }
+        else
+          render json: { error: I18n.t("admin_api.payouts.invalid_status_transition") }, status: result.status
+        end
       end
 
       private

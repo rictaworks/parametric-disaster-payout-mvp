@@ -12,6 +12,7 @@ class ExecutePayout
   def call
     payout.with_lock do
       return Result.new(payout: payout, status: :ok) if completed_payout?
+      return Result.new(payout: payout, status: :unprocessable_entity) unless payout.payout_status.code == "ordered"
 
       ActiveRecord::Base.transaction do
         payout.update!(payout_status: completed_status)

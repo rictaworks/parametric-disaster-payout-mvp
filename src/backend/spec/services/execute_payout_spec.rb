@@ -137,5 +137,33 @@ RSpec.describe ExecutePayout do
         expect(policy.reload.policy_status).to eq(cap_reached_status)
       end
     end
+
+    it "returns success when payout is already completed (idempotent)" do
+      payout.update!(payout_status: completed_payout_status)
+      Notification.create!(user: user, policy: policy, payout: payout, kind: Notification::KIND_PAYOUT_COMPLETED, message: "completed")
+      Notification.create!(user: user, policy: policy, payout: payout, kind: Notification::KIND_SURVEY_REQUEST, message: "survey")
+
+      expect {
+        result = described_class.new(payout: payout).call
+        expect(result).to be_success
+        expect(result.status).to eq(:ok)
+      }.not_to change { Notification.count }
+
+      expect(payout.reload.payout_status).to eq(completed_payout_status)
+    end
+
+    it "returns unprocessable_entity and does not process when payout is invalid" do
+      invalid_status = PayoutStatus.find_or_create_by!(code: "invalid", sort_order: 2, label_ja: "無効", label_en: "Invalid", label_fr: "Invalid", label_zh: "Invalid", label_ru: "Invalid", label_es: "Invalid", label_ar: "Invalid")
+      payout.update_columns(payout_status_id: invalid_status.id)
+
+      expect {
+        result = described_class.new(payout: payout).call
+        expect(result).not_to be_success
+        expect(result.status).to eq(:unprocessable_entity)
+      }.not_to change { Notification.count }
+
+      expect(payout.reload.payout_status).to eq(invalid_status)
+      expect(policy.reload.policy_status).to eq(processing_status)
+    end
   end
 end

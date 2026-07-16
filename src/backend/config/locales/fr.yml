@@ -4,6 +4,9 @@ fr:
     payout_ordered: "Un versement simulé a été ordonné. Veuillez consulter vos contrats et l'historique des versements dans Mon Espace."
     payout_completed: "Le versement simulé a été finalisé. Veuillez consulter votre historique des versements dans Mon Espace."
     survey_request: "Merci de répondre au questionnaire après le versement simulé."
+  admin_api:
+    payouts:
+      invalid_status_transition: "Transition d'état invalide"
   errors:
     messages:
       blank: "ne peut pas être vide"

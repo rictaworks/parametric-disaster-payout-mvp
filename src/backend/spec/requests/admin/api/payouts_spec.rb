@@ -126,4 +126,34 @@ RSpec.describe "PATCH /admin/api/payouts/:id/complete", type: :request do
       Notification::KIND_SURVEY_REQUEST
     )
   end
+
+  it "returns 200 and does not change state when payout is already completed" do
+    payout.update!(payout_status: completed_payout_status)
+    Notification.create!(user: user, policy: policy, payout: payout, kind: Notification::KIND_PAYOUT_COMPLETED, message: "completed")
+    Notification.create!(user: user, policy: policy, payout: payout, kind: Notification::KIND_SURVEY_REQUEST, message: "survey")
+
+    expect {
+      patch "/admin/api/payouts/#{payout.id}/complete", headers: auth_headers
+    }.not_to change { Notification.count }
+
+    expect(response).to have_http_status(:ok)
+    body = JSON.parse(response.body)
+    expect(body["payout"]).to include(
+      "id" => payout.id,
+      "payout_status_code" => "completed_simulated"
+    )
+  end
+
+  it "returns 422 and does not process when payout is invalid" do
+    invalid_status = PayoutStatus.find_or_create_by!(code: "invalid", sort_order: 2, label_ja: "無効", label_en: "Invalid", label_fr: "Invalid", label_zh: "Invalid", label_ru: "Invalid", label_es: "Invalid", label_ar: "Invalid")
+    payout.update_columns(payout_status_id: invalid_status.id)
+
+    expect {
+      patch "/admin/api/payouts/#{payout.id}/complete", headers: auth_headers
+    }.not_to change { Notification.count }
+
+    expect(response).to have_http_status(:unprocessable_entity)
+    expect(payout.reload.payout_status).to eq(invalid_status)
+    expect(policy.reload.policy_status.code).to eq("processing")
+  end
 end
