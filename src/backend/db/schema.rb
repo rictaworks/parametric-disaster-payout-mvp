@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_15_080000) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_16_145154) do
   create_table "legacy_payouts", force: :cascade do |t|
     t.integer "policy_id"
     t.integer "payout_tier_id"
@@ -172,6 +172,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_15_080000) do
     t.index ["sort_order"], name: "index_policy_statuses_on_sort_order", unique: true
   end
 
+  create_table "processed_jma_entries", force: :cascade do |t|
+    t.string "entry_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["entry_id"], name: "index_processed_jma_entries_on_entry_id", unique: true
+  end
+
   create_table "seismic_intensity_levels", force: :cascade do |t|
     t.string "code", null: false
     t.integer "sort_order", null: false
@@ -321,7 +328,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_15_080000) do
     t.string "label_ar", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "jma_code"
     t.index ["code"], name: "index_stations_on_code", unique: true
+    t.index ["jma_code"], name: "index_stations_on_jma_code", unique: true
   end
 
   create_table "survey_responses", force: :cascade do |t|

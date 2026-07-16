@@ -300,6 +300,54 @@ RSpec.describe IngestObservationEvent do
       end
     end
 
+    context "when station_code is a numerical JMA code that clashes with another station's ID" do
+      let!(:station_a) do
+        Station.create!(
+          id: 44132,
+          code: "station_a_ingest_spec",
+          measurement_type: "rainfall",
+          label_ja: "観測点A (ID: 44132)",
+          label_en: "Station A",
+          label_fr: "Station A",
+          label_zh: "Station A",
+          label_ru: "Station A",
+          label_es: "Station A",
+          label_ar: "Station A"
+        )
+      end
+      let!(:station_b) do
+        Station.create!(
+          code: "station_b_ingest_spec",
+          jma_code: "44132",
+          measurement_type: "rainfall",
+          label_ja: "観測点B (JMA: 44132)",
+          label_en: "Station B",
+          label_fr: "Station B",
+          label_zh: "Station B",
+          label_ru: "Station B",
+          label_es: "Station B",
+          label_ar: "Station B"
+        )
+      end
+
+      let(:payload) do
+        {
+          station_code: "44132",
+          occurred_at: Time.zone.parse("2026-07-15 10:00:00"),
+          rainfall_mm: "12.50",
+          simulated: true
+        }
+      end
+
+      it "resolves the station by jma_code instead of the conflicting station ID" do
+        result = service.call
+
+        expect(result).to be_success
+        expect(result.observation.station).to eq(station_b)
+        expect(result.observation.station).not_to eq(station_a)
+      end
+    end
+
     context "when the station is unknown" do
       let(:payload) do
         {

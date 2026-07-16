@@ -1,23 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Report>
-  <Head>
-    <ReportDateTime>2026-07-15T10:05:00+09:00</ReportDateTime>
+<Report xmlns="http://xml.kishou.go.jp/jmaxml1/">
+  <Control>
+    <Title>地上気象観測報</Title>
+    <DateTime>2026-07-16T06:00:00Z</DateTime>
+    <Status>通常</Status>
+  </Control>
+  <Head xmlns="http://xml.kishou.go.jp/jmaxml1/informationBasis1/">
+    <Title>地上気象観測報（アメダス）</Title>
+    <ReportDateTime>2026-07-16T15:05:00+09:00</ReportDateTime>
   </Head>
-  <Body>
+  <Body xmlns="http://xml.kishou.go.jp/jmaxml1/body/meteorology1/">
     <MeteorologicalInfo>
       <TimeSeriesInfo>
-        <Item>
-          <TimeDefine>
-            <Time>2026-07-15T10:00:00+09:00</Time>
+        <TimeDefines>
+          <TimeDefine timeId="1">
+            <DateTime>2026-07-16T15:00:00+09:00</DateTime>
           </TimeDefine>
-          <Area>
-            <Station>
-              <Name>東京雨量観測点</Name>
-              <Code>rainfall_tokyo</Code>
-              <Time>2026-07-15T10:00:00+09:00</Time>
-              <Precipitation>12.5</Precipitation>
-            </Station>
-          </Area>
+        </TimeDefines>
+        <Item>
+          <Station>
+            <Name>東京</Name>
+            <Code>44132</Code>
+          </Station>
+          <Kind>
+            <Property>
+              <Type>降水量</Type>
+              <Precipitation type="前１時間降水量" refID="1">12.5</Precipitation>
+            </Property>
+          </Kind>
         </Item>
       </TimeSeriesInfo>
     </MeteorologicalInfo>

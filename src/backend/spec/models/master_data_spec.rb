@@ -67,6 +67,96 @@ RSpec.describe Station, type: :model do
 
   it_behaves_like "a localized master record"
   it { is_expected.to validate_inclusion_of(:measurement_type).in_array(%w[seismic rainfall]) }
+
+  describe "validations" do
+    it "requires jma_code to be unique (allow blank)" do
+      described_class.create!(
+        code: "station_1",
+        measurement_type: "seismic",
+        jma_code: "123456",
+        label_ja: "観測点1",
+        label_en: "Station 1",
+        label_fr: "Station 1",
+        label_zh: "Station 1",
+        label_ru: "Station 1",
+        label_es: "Station 1",
+        label_ar: "Station 1"
+      )
+
+      duplicate = described_class.new(
+        code: "station_2",
+        measurement_type: "seismic",
+        jma_code: "123456",
+        label_ja: "観測点2",
+        label_en: "Station 2",
+        label_fr: "Station 2",
+        label_zh: "Station 2",
+        label_ru: "Station 2",
+        label_es: "Station 2",
+        label_ar: "Station 2"
+      )
+      expect(duplicate).not_to be_valid
+      expect(duplicate.errors[:jma_code]).to include("has already been taken")
+
+      # blank/nil are allowed to be duplicated
+      described_class.create!(
+        code: "station_3",
+        measurement_type: "seismic",
+        jma_code: nil,
+        label_ja: "観測点3",
+        label_en: "Station 3",
+        label_fr: "Station 3",
+        label_zh: "Station 3",
+        label_ru: "Station 3",
+        label_es: "Station 3",
+        label_ar: "Station 3"
+      )
+      another_nil = described_class.new(
+        code: "station_4",
+        measurement_type: "seismic",
+        jma_code: nil,
+        label_ja: "観測点4",
+        label_en: "Station 4",
+        label_fr: "Station 4",
+        label_zh: "Station 4",
+        label_ru: "Station 4",
+        label_es: "Station 4",
+        label_ar: "Station 4"
+      )
+      expect(another_nil).to be_valid
+
+      # empty string "" is normalized to nil, and multiple empty strings can be saved without RecordNotUnique
+      empty_station_1 = described_class.create!(
+        code: "station_5",
+        measurement_type: "seismic",
+        jma_code: "",
+        label_ja: "観測点5",
+        label_en: "Station 5",
+        label_fr: "Station 5",
+        label_zh: "Station 5",
+        label_ru: "Station 5",
+        label_es: "Station 5",
+        label_ar: "Station 5"
+      )
+      expect(empty_station_1.reload.jma_code).to be_nil
+
+      empty_station_2 = described_class.new(
+        code: "station_6",
+        measurement_type: "seismic",
+        jma_code: "",
+        label_ja: "観測点6",
+        label_en: "Station 6",
+        label_fr: "Station 6",
+        label_zh: "Station 6",
+        label_ru: "Station 6",
+        label_es: "Station 6",
+        label_ar: "Station 6"
+      )
+      expect(empty_station_2).to be_valid
+      expect { empty_station_2.save! }.not_to raise_error
+      expect(empty_station_2.reload.jma_code).to be_nil
+    end
+  end
 end
 
 RSpec.describe PayoutTier, type: :model do
