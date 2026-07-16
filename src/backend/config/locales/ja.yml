@@ -2,6 +2,11 @@ ja:
   hello: "こんにちは世界"
   notifications:
     payout_ordered: "支払指図（模擬）が生成されました。マイページで契約・支払履歴をご確認ください。"
+    payout_completed: "支払完了（模擬）を確認しました。マイページで支払履歴をご確認ください。"
+    survey_request: "支払完了（模擬）後のアンケートにご協力ください。"
+  admin_api:
+    payouts:
+      invalid_status_transition: "無効な状態遷移です"
   errors:
     messages:
       blank: "を入力してください"

@@ -2,6 +2,11 @@ zh:
   hello: "你好，世界"
   notifications:
     payout_ordered: "已生成模拟赔付指令。请在个人页面查看您的保单及赔付历史。"
+    payout_completed: "已确认模拟赔付完成。请在个人页面查看您的赔付历史。"
+    survey_request: "模拟赔付完成后，欢迎您协助填写问卷。"
+  admin_api:
+    payouts:
+      invalid_status_transition: "无效的状态转换"
   errors:
     messages:
       blank: "不能为空"

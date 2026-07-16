@@ -2,6 +2,11 @@ es:
   hello: "Hola mundo"
   notifications:
     payout_ordered: "Se ha ordenado un pago simulado. Consulte sus pólizas e historial de pagos en Mi Página."
+    payout_completed: "Se ha completado el pago simulado. Consulte su historial de pagos en Mi Página."
+    survey_request: "Por favor, complete la encuesta después del pago simulado."
+  admin_api:
+    payouts:
+      invalid_status_transition: "Transición de estado no válida"
   errors:
     messages:
       blank: "no puede estar en blanco"

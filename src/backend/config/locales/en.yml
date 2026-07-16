@@ -31,6 +31,11 @@ en:
   hello: "Hello world"
   notifications:
     payout_ordered: "A simulated payout has been ordered. Please check your contracts and payout history on My Page."
+    payout_completed: "The simulated payout has been completed. Please check your payout history on My Page."
+    survey_request: "Please help us with the survey after the simulated payout."
+  admin_api:
+    payouts:
+      invalid_status_transition: "Invalid status transition"
   errors:
     messages:
       blank: "can't be blank"

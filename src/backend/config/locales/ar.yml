@@ -2,6 +2,11 @@ ar:
   hello: "مرحبًا بالعالم"
   notifications:
     payout_ordered: "تم إصدار أمر دفع تجريبي (محاكاة). يرجى مراجعة عقودك وسجل المدفوعات في صفحتي."
+    payout_completed: "تم إكمال الدفع التجريبي (المحاكاة). يرجى مراجعة سجل المدفوعات في صفحتي."
+    survey_request: "يرجى المشاركة في الاستبيان بعد الدفع التجريبي."
+  admin_api:
+    payouts:
+      invalid_status_transition: "انتقال حالة غير صالح"
   errors:
     messages:
       blank: "لا يمكن أن يكون فارغًا"
