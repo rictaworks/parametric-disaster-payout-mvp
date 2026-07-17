@@ -4,6 +4,7 @@ module Api
       include InternalApiAuthentication
 
       before_action :authenticate_internal_session!
+      around_action :use_japanese_locale
 
       def create
         payout = Payout.includes(:policy, :payout_status).find(survey_response_params[:payout_id])
@@ -27,6 +28,10 @@ module Api
       end
 
       private
+
+      def use_japanese_locale(&block)
+        I18n.with_locale(:ja, &block)
+      end
 
       def survey_response_params
         params.permit(:payout_id, response_data: {})

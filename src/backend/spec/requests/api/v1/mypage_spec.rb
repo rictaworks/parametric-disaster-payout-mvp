@@ -532,6 +532,18 @@ RSpec.describe "POST /api/v1/survey_responses", type: :request do
       decided_at: Time.current
     )
 
+    # response_data が空の場合
+    post "/api/v1/survey_responses",
+      params: {
+        payout_id: payout.id,
+        response_data: {}
+      }.to_json,
+      headers: headers
+    expect(response).to have_http_status(:unprocessable_entity)
+    expect(JSON.parse(response.body)).to eq(
+      "error" => [ "Response data 満足度は必須入力です" ]
+    )
+
     # satisfaction が無い場合
     post "/api/v1/survey_responses",
       params: {
