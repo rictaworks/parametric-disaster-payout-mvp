@@ -21,6 +21,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root to: "policies#index"
+    get "kpi", to: "kpi#index"
     get "payouts", to: "payouts#index"
     get "simulated_events", to: "simulated_events#index"
     post "simulated_events", to: "simulated_events#create"

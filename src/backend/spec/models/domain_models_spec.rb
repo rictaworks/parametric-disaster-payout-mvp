@@ -991,7 +991,7 @@ RSpec.describe SurveyResponse, type: :model do
     described_class.new(
       user: user,
       payout: payout,
-      response_data: { "q1" => "yes" }
+      response_data: { "satisfaction" => 5, "q1" => "yes" }
     )
   end
 

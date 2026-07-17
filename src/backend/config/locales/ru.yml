@@ -42,3 +42,8 @@ ru:
         survey_response:
           must_be_policy_owner: "должен быть владельцем выплаты полиса"
           must_be_completed_to_accept_survey: "должен быть завершен, чтобы принять ответ на опрос"
+          attributes:
+            response_data:
+              satisfaction_required: "удовлетворенность обязательна"
+              satisfaction_not_integer: "удовлетворенность должна быть целым числом"
+              satisfaction_out_of_range: "удовлетворенность должна быть от 1 до 5"

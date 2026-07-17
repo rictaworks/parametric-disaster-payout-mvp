@@ -42,3 +42,8 @@ zh:
         survey_response:
           must_be_policy_owner: "必须是保单赔付的所有者"
           must_be_completed_to_accept_survey: "必须已完成以接受调查问卷回复"
+          attributes:
+            response_data:
+              satisfaction_required: "满意度是必填项"
+              satisfaction_not_integer: "满意度必须是整数"
+              satisfaction_out_of_range: "满意度必须在1到5之间"

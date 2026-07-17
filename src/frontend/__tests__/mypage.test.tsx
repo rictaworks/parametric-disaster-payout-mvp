@@ -208,11 +208,14 @@ describe("My page", () => {
         }
 
         if (url === "/api/v1/survey_responses" && init?.method === "POST") {
+          const body = JSON.parse(init.body as string);
+          expect(body.response_data.satisfaction).toBe(5);
+          expect(body.response_data.feedback).toBe("今回の模擬支払体験の感想をお聞かせください。とても分かりやすい体験でした。");
           return jsonResponse({
             survey_response: {
               id: 501,
               payout_id: 991,
-              response_data: { feedback: "今回の模擬支払体験の感想をお聞かせください。" },
+              response_data: body.response_data,
               created_at: "2026-07-16T02:30:00.000Z",
             },
           }, 201);

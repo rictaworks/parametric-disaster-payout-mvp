@@ -179,6 +179,7 @@
       "requestTitle": "طلب استطلاع",
       "requestDescription": "يرجى التعاون في الاستطلاع بعد اكتمال المدفوعات التجريبية.",
       "targetPayoutPrefix": "معرّف المدفوعات المستهدف: ",
+      "satisfactionLabel": "الرضا (1: غير راضٍ - 5: راضٍ)",
       "feedbackLabel": "محتوى الإجابة",
       "submitting": "جاري الإرسال...",
       "submit": "إرسال الاستطلاع",

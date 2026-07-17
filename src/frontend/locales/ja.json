@@ -179,6 +179,7 @@
       "requestTitle": "アンケート依頼",
       "requestDescription": "支払完了（模擬）後の回答にご協力ください。",
       "targetPayoutPrefix": "対象支払ID: ",
+      "satisfactionLabel": "満足度（1: 不満 〜 5: 満足）",
       "feedbackLabel": "回答内容",
       "submitting": "送信中",
       "submit": "アンケートを送信",

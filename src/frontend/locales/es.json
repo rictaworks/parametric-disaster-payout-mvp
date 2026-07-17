@@ -179,6 +179,7 @@
       "requestTitle": "Solicitud de encuesta",
       "requestDescription": "Por favor, colabore con la encuesta después de completar el pago simulado.",
       "targetPayoutPrefix": "ID de pago objetivo: ",
+      "satisfactionLabel": "Satisfacción (1: Insatisfecho - 5: Satisfecho)",
       "feedbackLabel": "Contenido de la respuesta",
       "submitting": "Enviando...",
       "submit": "Enviar encuesta",

@@ -42,3 +42,8 @@ fr:
         survey_response:
           must_be_policy_owner: "doit être le propriétaire du versement du contrat"
           must_be_completed_to_accept_survey: "doit être complété pour accepter la réponse au questionnaire"
+          attributes:
+            response_data:
+              satisfaction_required: "la satisfaction est requise"
+              satisfaction_not_integer: "la satisfaction doit être un entier"
+              satisfaction_out_of_range: "la satisfaction doit être comprise entre 1 et 5"
