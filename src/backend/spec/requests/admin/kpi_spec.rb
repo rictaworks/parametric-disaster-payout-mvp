@@ -219,7 +219,7 @@ RSpec.describe "Admin KPI dashboard", type: :request do
     )
 
     SurveyResponse.create!(user: user_1, payout: payout_1, response_data: { satisfaction: 4 })
-    SurveyResponse.create!(user: user_2, payout: payout_2, response_data: { satisfaction_score: 5 })
+    SurveyResponse.create!(user: user_2, payout: payout_2, response_data: { satisfaction: 5 })
     policy_2.update!(policy_status: cancelled_status)
   end
 end

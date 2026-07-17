@@ -42,3 +42,8 @@ es:
         survey_response:
           must_be_policy_owner: "debe ser el propietario del pago de la póliza"
           must_be_completed_to_accept_survey: "debe completarse para aceptar la respuesta de la encuesta"
+          attributes:
+            response_data:
+              satisfaction_required: "la satisfacción es obligatoria"
+              satisfaction_not_integer: "la satisfacción debe ser un número entero"
+              satisfaction_out_of_range: "la satisfacción debe estar entre 1 y 5"

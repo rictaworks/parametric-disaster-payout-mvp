@@ -75,7 +75,7 @@ RSpec.describe "Admin reset", type: :request do
     SurveyResponse.create!(
       user: user,
       payout: payout,
-      response_data: { "answer" => "yes" }
+      response_data: { "satisfaction" => 5, "answer" => "yes" }
     )
   end
 

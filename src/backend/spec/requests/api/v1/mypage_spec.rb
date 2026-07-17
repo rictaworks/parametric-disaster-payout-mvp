@@ -385,7 +385,7 @@ RSpec.describe "POST /api/v1/survey_responses", type: :request do
     post "/api/v1/survey_responses",
       params: {
         payout_id: payout.id,
-        response_data: { feedback: "よかったです" }
+        response_data: { satisfaction: 5, feedback: "よかったです" }
       }.to_json,
       headers: headers
 
@@ -393,7 +393,7 @@ RSpec.describe "POST /api/v1/survey_responses", type: :request do
     body = JSON.parse(response.body)
     expect(body["survey_response"]).to include(
       "payout_id" => payout.id,
-      "response_data" => { "feedback" => "よかったです" }
+      "response_data" => { "satisfaction" => 5, "feedback" => "よかったです" }
     )
     expect(SurveyResponse.count).to eq(1)
   end
@@ -438,7 +438,7 @@ RSpec.describe "POST /api/v1/survey_responses", type: :request do
     post "/api/v1/survey_responses",
       params: {
         payout_id: payout.id,
-        response_data: { feedback: "よかったです" }
+        response_data: { satisfaction: 5, feedback: "よかったです" }
       }.to_json,
       headers: headers
 
@@ -487,11 +487,78 @@ RSpec.describe "POST /api/v1/survey_responses", type: :request do
     post "/api/v1/survey_responses",
       params: {
         payout_id: payout.id,
-        response_data: { feedback: "よかったです" }
+        response_data: { satisfaction: 5, feedback: "よかったです" }
       }.to_json,
       headers: headers
 
     expect(response).to have_http_status(:unprocessable_entity)
+    expect(SurveyResponse.count).to eq(0)
+  end
+
+  it "returns 422 when satisfaction is missing or invalid in response_data" do
+    policy = Policy.create!(
+      user: user,
+      plan: plan,
+      station: station,
+      payout_tier: payout_tier,
+      policy_status: active_status,
+      threshold: "5弱"
+    ).tap do |created_policy|
+      created_policy.update_columns(waiting_until: Time.current - 1.hour, expires_at: Time.current + 1.year)
+    end
+    payout = Payout.create!(
+      policy: policy,
+      payout_tier: payout_tier,
+      payout_status: completed_status,
+      observation: Observation.create!(
+        station: station,
+        event_id: "event-invalid-survey",
+        observed_at: Time.current,
+        seismic_intensity_level: SeismicIntensityLevel.find_or_create_by!(
+          code: "level-invalid-survey",
+          sort_order: 5,
+          label_ja: "5弱",
+          label_en: "5 weak",
+          label_fr: "5 weak",
+          label_zh: "5 weak",
+          label_ru: "5 weak",
+          label_es: "5 weak",
+          label_ar: "5 weak"
+        ),
+        max_value: 5,
+        simulated: false
+      ),
+      idempotency_key: "policy_#{policy.id}_event-invalid-survey",
+      decided_at: Time.current
+    )
+
+    # satisfaction が無い場合
+    post "/api/v1/survey_responses",
+      params: {
+        payout_id: payout.id,
+        response_data: { feedback: "よかったです" }
+      }.to_json,
+      headers: headers
+    expect(response).to have_http_status(:unprocessable_entity)
+
+    # satisfaction が範囲外の場合
+    post "/api/v1/survey_responses",
+      params: {
+        payout_id: payout.id,
+        response_data: { satisfaction: 999999999, feedback: "よかったです" }
+      }.to_json,
+      headers: headers
+    expect(response).to have_http_status(:unprocessable_entity)
+
+    # satisfaction が整数以外の場合
+    post "/api/v1/survey_responses",
+      params: {
+        payout_id: payout.id,
+        response_data: { satisfaction: "invalid", feedback: "よかったです" }
+      }.to_json,
+      headers: headers
+    expect(response).to have_http_status(:unprocessable_entity)
+
     expect(SurveyResponse.count).to eq(0)
   end
 end

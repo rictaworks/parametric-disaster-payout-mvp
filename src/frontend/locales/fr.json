@@ -179,6 +179,7 @@
       "requestTitle": "Demande de questionnaire",
       "requestDescription": "Veuillez coopérer avec le questionnaire après le versement simulé.",
       "targetPayoutPrefix": "ID du versement ciblé : ",
+      "satisfactionLabel": "Satisfaction (1: Insatisfait - 5: Satisfait)",
       "feedbackLabel": "Contenu des réponses",
       "submitting": "Envoi...",
       "submit": "Envoyer le questionnaire",

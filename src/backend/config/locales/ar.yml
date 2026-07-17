@@ -42,3 +42,8 @@ ar:
         survey_response:
           must_be_policy_owner: "يجب أن يكون مالك مدفوعات الوثيقة"
           must_be_completed_to_accept_survey: "يجب أن يكتمل لقبول استجابة الاستطلاع"
+          attributes:
+            response_data:
+              satisfaction_required: "مستوى الرضا مطلوب"
+              satisfaction_not_integer: "مستوى الرضا يجب أن يكون عدداً صحيحاً"
+              satisfaction_out_of_range: "مستوى الرضا يجب أن يكون بين 1 و 5"

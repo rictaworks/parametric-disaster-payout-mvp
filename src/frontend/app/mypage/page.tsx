@@ -100,6 +100,7 @@ export default function MyPage() {
   const { messages } = useLocale();
   const [state, setState] = useState<PageState>({ status: "loading" });
   const [surveyDraft, setSurveyDraft] = useState(messages.mypage.survey.defaultFeedback);
+  const [satisfaction, setSatisfaction] = useState<number>(5);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [submittingSurvey, setSubmittingSurvey] = useState(false);
@@ -265,6 +266,7 @@ export default function MyPage() {
         body: JSON.stringify({
           payout_id: surveyTarget.id,
           response_data: {
+            satisfaction: satisfaction,
             feedback: surveyDraft,
           },
         }),
@@ -291,6 +293,7 @@ export default function MyPage() {
         survey_response_submitted: true,
       });
       setSurveyDraft(messages.mypage.survey.defaultFeedback);
+      setSatisfaction(5);
       setActionMessage(`${messages.mypage.survey.savedPrefix}${body.survey_response.payout_id}${messages.mypage.survey.savedSuffix}`);
     } finally {
       setSubmittingSurvey(false);
@@ -340,6 +343,26 @@ export default function MyPage() {
                 <p>{`${messages.mypage.survey.targetPayoutPrefix}${surveyTarget.id} / ${payoutTierLabel(surveyTarget.payout_tier_code)}`}</p>
 
                 <form className="mypage-form" onSubmit={handleSurveySubmit}>
+                  <div className="field" style={{ marginBottom: "1rem" }}>
+                    <span style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>
+                      {messages.mypage.survey.satisfactionLabel}
+                    </span>
+                    <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
+                      {[1, 2, 3, 4, 5].map((val) => (
+                        <label key={val} style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                          <input
+                            type="radio"
+                            name="satisfaction"
+                            value={val}
+                            checked={satisfaction === val}
+                            onChange={() => setSatisfaction(val)}
+                          />
+                          <span style={{ fontSize: "1rem" }}>{val}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
                   <label>
                     <span>{messages.mypage.survey.feedbackLabel}</span>
                     <textarea value={surveyDraft} onChange={(event) => setSurveyDraft(event.target.value)} rows={4} />

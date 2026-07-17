@@ -5,7 +5,7 @@ class KpiAggregator
   def call
     {
       registered_users_count: User.count,
-      application_completion_rate: rate(Policy.count, User.count),
+      application_completion_rate: rate(Policy.distinct.count(:user_id), User.count),
       contract_continuation_rate: rate(continuing_policies_count, Policy.count),
       survey_response_count: SurveyResponse.count,
       average_satisfaction: average_satisfaction,
@@ -29,24 +29,21 @@ class KpiAggregator
   end
 
   def average_satisfaction
-    values = SurveyResponse.pluck(:response_data).filter_map { |response_data| extract_numeric_value(response_data) }
+    values = SurveyResponse.pluck(:response_data).filter_map do |response_data|
+      extract_preferred_value(response_data)
+    end
     return 0.0 if values.empty?
 
     values.sum.to_f / values.size
   end
 
-  def extract_numeric_value(response_data)
+  def extract_preferred_value(response_data)
     hash = response_data.respond_to?(:to_h) ? response_data.to_h : {}
     preferred_keys = %w[satisfaction satisfaction_score rating score]
 
     preferred_keys.each do |key|
       value = extract_number(hash[key] || hash[key.to_sym])
       return value if value
-    end
-
-    hash.each_value do |value|
-      numeric_value = extract_number(value)
-      return numeric_value if numeric_value
     end
 
     nil

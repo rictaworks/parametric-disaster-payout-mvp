@@ -145,3 +145,8 @@ ja:
         survey_response:
           must_be_policy_owner: "保険契約の所有者である必要があります"
           must_be_completed_to_accept_survey: "支払が完了している必要があります"
+          attributes:
+            response_data:
+              satisfaction_required: "満足度は必須入力です"
+              satisfaction_not_integer: "満足度は整数である必要があります"
+              satisfaction_out_of_range: "満足度は1から5の間で入力してください"

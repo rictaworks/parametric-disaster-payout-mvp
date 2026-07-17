@@ -179,6 +179,7 @@
       "requestTitle": "问卷调查",
       "requestDescription": "请在模拟赔付完成后协助填写问卷。",
       "targetPayoutPrefix": "目标赔付ID: ",
+      "satisfactionLabel": "满意度 (1: 不满 - 5: 满意)",
       "feedbackLabel": "反馈内容",
       "submitting": "发送中...",
       "submit": "提交问卷",

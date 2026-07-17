@@ -71,3 +71,8 @@ en:
         survey_response:
           must_be_policy_owner: "must be the owner of the policy payout"
           must_be_completed_to_accept_survey: "must be completed to accept survey response"
+          attributes:
+            response_data:
+              satisfaction_required: "satisfaction is required"
+              satisfaction_not_integer: "satisfaction must be an integer"
+              satisfaction_out_of_range: "satisfaction must be between 1 and 5"

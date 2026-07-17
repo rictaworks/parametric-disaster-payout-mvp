@@ -225,7 +225,7 @@ RSpec.describe FixRainfallObservationThresholds, type: :migration do
     let!(:payout_conflict_a) { Payout.create!(policy_id: policy_conflict_a.id, observation_id: obs_conflict.id, payout_status_id: completed_status.id, payout_tier_id: payout_tier.id, idempotency_key: "key_conflict_a") }
     let!(:payout_conflict_b) { Payout.create!(policy_id: policy_conflict_b.id, observation_id: obs_conflict.id, payout_status_id: payout_status.id, payout_tier_id: payout_tier.id, idempotency_key: "key_conflict_b") }
     let!(:notification_conflict_a) { Notification.create!(user_id: user.id, policy_id: policy_conflict_a.id, payout_id: payout_conflict_a.id, kind: "payout", message: "test") }
-    let!(:survey_response_conflict_a) { SurveyResponse.create!(user_id: user.id, payout_id: payout_conflict_a.id, response_data: { "q1" => "yes" }) }
+    let!(:survey_response_conflict_a) { SurveyResponse.create!(user_id: user.id, payout_id: payout_conflict_a.id, response_data: { "satisfaction" => 5, "q1" => "yes" }) }
 
     # 不正閾値によるパースエラーで隔離されるケース
     let!(:policy_invalid) do

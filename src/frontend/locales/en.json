@@ -179,6 +179,7 @@
       "requestTitle": "Survey Request",
       "requestDescription": "Please cooperate with the survey after the simulated payout completed.",
       "targetPayoutPrefix": "Target Payout ID: ",
+      "satisfactionLabel": "Satisfaction (1: Dissatisfied - 5: Satisfied)",
       "feedbackLabel": "Feedback content",
       "submitting": "Sending...",
       "submit": "Submit Survey",
