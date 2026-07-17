@@ -164,7 +164,7 @@ RSpec.describe "PR59: READMEの最終整備とAPI参照の追加" do
       expect(File.exist?(spec_api_readme_path)).to be(true)
     end
 
-    it "README「API 一覧」表に9つのエンドポイントが記載されている" do
+    it "README「API 一覧」表に9つの利用者向けエンドポイントが記載されている" do
       table_section = readme_body[/## API 一覧.*/m]
       expect(table_section).not_to be_nil
 
@@ -185,6 +185,22 @@ RSpec.describe "PR59: READMEの最終整備とAPI参照の追加" do
       end
     end
 
+    it "README「API 一覧」表に4つの管理APIエンドポイントが記載されている" do
+      table_section = readme_body[/## API 一覧.*/m]
+      expect(table_section).not_to be_nil
+
+      expected_admin_endpoints = [
+        "POST /admin/simulated_events",
+        "POST /admin/reset",
+        "PATCH /admin/api/payouts/:id/complete",
+        "PATCH /admin/api/payouts/:id/invalidate"
+      ]
+
+      expected_admin_endpoints.each do |endpoint|
+        expect(table_section).to include(endpoint), "API一覧に #{endpoint} が見つかりません"
+      end
+    end
+
     it "README中の `SPEC/api/README.md#...` リンクが、SPEC/api/README.md内の実在する見出しへ解決できる" do
       # アンカーはハイフンだけでなくアンダースコアも含みうる
       # （例: force_waiting_period_elapsed）ため [a-z0-9_-]+ で抽出する
@@ -199,18 +215,18 @@ RSpec.describe "PR59: READMEの最終整備とAPI参照の追加" do
       end
     end
 
-    it "README「API 一覧」の9エンドポイントすべてに SPEC/api/README.md へのリンクが付与されている" do
+    it "README「API 一覧」の13エンドポイント（利用者向け9+管理API4）すべてに SPEC/api/README.md へのリンクが付与されている" do
       table_section = readme_body[/## API 一覧.*/m]
       # 表の各行は `[`...`](SPEC/api/README.md#...)` の形式のため、
       # 実際のリンクURL部分（`](...)` の中）だけを数える。
       # バッククォート付きのリンクラベル文字列自体にも同じ文字列が含まれるため、
-      # 単純に "SPEC/api/README.md#" の出現回数を数えると2倍（18件）になってしまう点に注意。
+      # 単純に "SPEC/api/README.md#" の出現回数を数えると2倍になってしまう点に注意。
       link_count = table_section.scan(%r{\]\(SPEC/api/README\.md#[a-z0-9_\-]+\)}).size
 
-      expect(link_count).to eq(9)
+      expect(link_count).to eq(13)
     end
 
-    it "SPEC/api/README.md に記載された9つのエンドポイントが、実際のRailsルーティングに存在する（ドキュメントとコードの整合性）" do
+    it "SPEC/api/README.md に記載された13エンドポイント（利用者向け9+管理API4）が、実際のRailsルーティングに存在する（ドキュメントとコードの整合性）" do
       routes = Rails.application.routes.routes.map do |route|
         verb = route.verb.to_s
         path = route.path.spec.to_s.gsub(%r{\(\.:format\)\z}, "")
@@ -226,7 +242,11 @@ RSpec.describe "PR59: READMEの最終整備とAPI参照の追加" do
         [ "PATCH", "/api/v1/policies/:id/force_waiting_period_elapsed" ],
         [ "GET", "/api/v1/payouts" ],
         [ "GET", "/api/v1/notifications" ],
-        [ "POST", "/api/v1/survey_responses" ]
+        [ "POST", "/api/v1/survey_responses" ],
+        [ "POST", "/admin/simulated_events" ],
+        [ "POST", "/admin/reset" ],
+        [ "PATCH", "/admin/api/payouts/:id/complete" ],
+        [ "PATCH", "/admin/api/payouts/:id/invalidate" ]
       ]
 
       documented_endpoints.each do |verb, doc_path|
