@@ -103,12 +103,26 @@ curl -i http://localhost:3000/api/v1/policies \
 
 ## ページ一覧
 
+### 利用者向け（Google ログイン）
+
 | ページ名 | URL | 用途 |
 | --- | --- | --- |
 | ホーム | `http://localhost:3000/` | 模擬デモの概要とログイン導線 |
 | ログイン | `http://localhost:3000/login` | Google ID トークンでセッション作成 |
 | 申込ウィザード | `http://localhost:3000/policies/new` | 模擬契約の申込 |
 | マイページ | `http://localhost:3000/mypage` | 契約・支払・通知の確認 |
+
+### 管理画面（Rails・HTTP Basic 認証・日本語のみ）
+
+Rails サーバー（既定では `http://localhost:3001`）に対して直接アクセスします。認証情報は環境変数 `ADMIN_BASIC_USER` / `ADMIN_BASIC_PASSWORD`（`src/backend/.env`）で設定します。
+
+| ページ名 | URL | 用途 |
+| --- | --- | --- |
+| 契約一覧 | `http://localhost:3001/admin` | 全契約の確認 |
+| KPI 閲覧 | `http://localhost:3001/admin/kpi` | 登録数・契約継続率等の KPI 集計表示 |
+| 支払一覧 | `http://localhost:3001/admin/payouts` | 支払指図・完了操作 |
+| 模擬イベント注入 | `http://localhost:3001/admin/simulated_events` | テスト用の震度・降雨観測イベントを手動投入 |
+| 手動リセット | `http://localhost:3001/admin/reset` | 模擬デモデータの一括初期化（本番環境では無効） |
 
 ## API 一覧
 
@@ -125,3 +139,12 @@ curl -i http://localhost:3000/api/v1/policies \
 | 支払一覧 | `GET /api/v1/payouts` | [`SPEC/api/README.md#get-apiv1payouts`](SPEC/api/README.md#get-apiv1payouts) |
 | 通知一覧 | `GET /api/v1/notifications` | [`SPEC/api/README.md#get-apiv1notifications`](SPEC/api/README.md#get-apiv1notifications) |
 | アンケート送信 | `POST /api/v1/survey_responses` | [`SPEC/api/README.md#post-apiv1survey_responses`](SPEC/api/README.md#post-apiv1survey_responses) |
+
+### 管理 API（Rails・HTTP Basic 認証）
+
+| タイトル | エンドポイント | 仕様メモ |
+| --- | --- | --- |
+| 模擬イベント注入 | `POST /admin/simulated_events` | [`SPEC/api/README.md#post-adminsimulated_events`](SPEC/api/README.md#post-adminsimulated_events) |
+| 手動リセット | `POST /admin/reset` | [`SPEC/api/README.md#post-adminreset`](SPEC/api/README.md#post-adminreset) |
+| 支払完了（模擬） | `PATCH /admin/api/payouts/:id/complete` | [`SPEC/api/README.md#patch-adminapipayoutsidcomplete`](SPEC/api/README.md#patch-adminapipayoutsidcomplete) |
+| 支払無効化 | `PATCH /admin/api/payouts/:id/invalidate` | [`SPEC/api/README.md#patch-adminapipayoutsidinvalidate`](SPEC/api/README.md#patch-adminapipayoutsidinvalidate) |

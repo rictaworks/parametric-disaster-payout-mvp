@@ -85,3 +85,38 @@ Rails の API 仕様メモです。README の API 一覧からも参照します
       ]
     }
     ```
+
+## 管理 API
+
+`/admin` 配下は HTTP Basic 認証（環境変数 `ADMIN_BASIC_USER` / `ADMIN_BASIC_PASSWORD`）で保護されており、日本語ロケール固定です（`src/backend/app/controllers/concerns/admin/authentication.rb`）。
+
+## POST /admin/simulated_events
+
+- 模擬イベント注入（`IngestObservationEvent` を経由し F2 の取込経路と同一処理）
+- 管理画面 `http://localhost:3001/admin/simulated_events` のフォームから送信
+- パラメータ
+  - `station_id`（必須）: 観測点ID
+  - `event_mode`: `new`（新規）または `follow_up`（続報）。`follow_up` の場合は `observation_id` が必須で、対象観測の `event_id`/`occurred_at` を引き継ぐ
+  - 震度観測点の場合: `seismic_intensity_level_id`（必須）
+  - 雨量観測点の場合: `rainfall_mm`（必須、0以上の数値）
+- 生成される観測レコードには `simulated: true`, `admin_injected: true` が付与され、KPI集計上は実イベントと区別される
+- 失敗時（観測点未存在・パラメータ不正・続報時の観測点不一致等）は `422 Unprocessable Entity` でフォームを再表示
+
+## POST /admin/reset
+
+- 模擬デモデータの手動一括リセット（`ResetDemoData` を実行）
+- **本番環境（`Rails.env.production?`）では `404 Not Found` を返し実行不可**
+- パラメータ
+  - `confirmation_text`（必須）: `ResetDemoData::CONFIRMATION_TEXT` と完全一致しない場合は `422 Unprocessable Entity`
+
+## PATCH /admin/api/payouts/:id/complete
+
+- 支払指図（`ordered`）を「支払完了（模擬）」に遷移（`ExecutePayout` を実行）
+- 成功時: `{ "payout": { "id", "payout_status_code", "policy_status_code" } }`
+- パラメータ `return_to_admin_payouts` が付与されている場合は `303 See Other` で `/admin/payouts` へリダイレクト
+
+## PATCH /admin/api/payouts/:id/invalidate
+
+- 支払指図（`ordered`）を異常時操作として「無効」に遷移
+- `ordered` 状態以外からの遷移は `422 Unprocessable Entity`（`{ "error": "..." }`）
+- 既に `invalid` の場合は冪等に成功扱い
