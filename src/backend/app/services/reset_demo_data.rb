@@ -18,6 +18,7 @@ class ResetDemoData
       Policy.delete_all
       ObservationEvent.delete_all
       Observation.delete_all
+      ProcessedJmaEntry.delete_all
     end
 
     Result.new(status: :ok)

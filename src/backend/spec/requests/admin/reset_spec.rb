@@ -79,6 +79,12 @@ RSpec.describe "Admin reset", type: :request do
     )
   end
 
+  let!(:processed_jma_entry) do
+    ProcessedJmaEntry.create!(
+      entry_id: "urn:uuid:eq-entry-reset-spec"
+    )
+  end
+
   it "requires BASIC auth" do
     get "/admin/reset"
 
@@ -99,7 +105,7 @@ RSpec.describe "Admin reset", type: :request do
       post "/admin/reset",
         headers: auth_headers,
         params: { confirmation_text: ResetDemoData::CONFIRMATION_TEXT }
-    end.to change { [ Policy.count, Observation.count, Payout.count, Notification.count, SurveyResponse.count ] }.from([ 1, 1, 1, 1, 1 ]).to([ 0, 0, 0, 0, 0 ])
+    end.to change { [ Policy.count, Observation.count, Payout.count, Notification.count, SurveyResponse.count, ProcessedJmaEntry.count ] }.from([ 1, 1, 1, 1, 1, 1 ]).to([ 0, 0, 0, 0, 0, 0 ])
 
     expect(response).to redirect_to("/admin/reset")
     get "/admin/reset", headers: auth_headers
@@ -122,5 +128,6 @@ RSpec.describe "Admin reset", type: :request do
 
     expect(response).to have_http_status(:unprocessable_entity)
     expect(Policy.count).to eq(1)
+    expect(ProcessedJmaEntry.count).to eq(1)
   end
 end
