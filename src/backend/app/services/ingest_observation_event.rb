@@ -166,6 +166,7 @@ class IngestObservationEvent
     observation.event_id = event_id
     observation.observed_at = occurrence_time
     observation.simulated = simulated?
+    observation.admin_injected = admin_injected?
     observation.seismic_intensity_level = seismic_intensity_level
     observation.rainfall_mm = nil
   end
@@ -175,6 +176,7 @@ class IngestObservationEvent
     observation.event_id = nil
     observation.observed_at = occurrence_time
     observation.simulated = simulated?
+    observation.admin_injected = admin_injected?
     observation.rainfall_mm = rainfall_mm
     observation.seismic_intensity_level = nil
   end
@@ -220,5 +222,14 @@ class IngestObservationEvent
 
   def simulated?
     payload.fetch(:simulated, false)
+  end
+
+  # 「simulated」は気象庁の訓練報・試験報（JmaPoller由来）と管理画面の
+  # 模擬イベント注入（Admin::SimulatedEventsController由来）の両方で true になる。
+  # 両者は「実際の災害観測ではない」という点では同じだが、後者だけがトリガー判定
+  # （EvaluateTrigger）を通って模擬支払デモを動かすことを意図しているため、
+  # 「管理者が意図的に注入したものか」を別カラムで独立に区別する
+  def admin_injected?
+    payload.fetch(:admin_injected, false)
   end
 end

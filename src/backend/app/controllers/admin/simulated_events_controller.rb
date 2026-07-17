@@ -31,7 +31,7 @@ module Admin
     def load_form_data
       @stations = Station.order(:measurement_type, :code)
       @seismic_intensity_levels = SeismicIntensityLevel.order(:sort_order)
-      @recent_observations = Observation.where(simulated: true).includes(:station, :seismic_intensity_level).order(created_at: :desc).limit(50)
+      @recent_observations = Observation.where(simulated: true, admin_injected: true).includes(:station, :seismic_intensity_level).order(created_at: :desc).limit(50)
       @recent_observation_options = @recent_observations.map { |observation| [ observation_option_label(observation), observation.id ] }
     end
 
@@ -39,7 +39,7 @@ module Admin
       station = Station.find_by(id: params[:station_id])
       return nil if station.nil?
 
-      follow_up_observation = follow_up? ? Observation.where(simulated: true).includes(:station, :seismic_intensity_level).find_by(id: params[:observation_id]) : nil
+      follow_up_observation = follow_up? ? Observation.where(simulated: true, admin_injected: true).includes(:station, :seismic_intensity_level).find_by(id: params[:observation_id]) : nil
       return nil if follow_up? && follow_up_observation.nil?
       return nil if follow_up_observation.present? && follow_up_observation.station_id != station.id
 
@@ -59,7 +59,8 @@ module Admin
         event_id: follow_up_observation&.event_id.presence || simulated_event_id(station),
         occurred_at: follow_up_observation&.observed_at || Time.current,
         seismic_intensity_level_id: seismic_intensity_level_id,
-        simulated: true
+        simulated: true,
+        admin_injected: true
       }
     end
 
@@ -72,7 +73,8 @@ module Admin
         station_id: station.id,
         occurred_at: follow_up_observation&.observed_at || Time.current,
         rainfall_mm: rainfall_mm,
-        simulated: true
+        simulated: true,
+        admin_injected: true
       }
     end
 
