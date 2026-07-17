@@ -2,7 +2,7 @@ class SurveyResponse < ApplicationRecord
   belongs_to :user
   belongs_to :payout
 
-  validates :response_data, presence: true
+  validates :response_data, presence: true, unless: :response_data_is_empty_hash?
   validates :payout_id, uniqueness: true
 
   validate :user_matches_payout_user
@@ -10,6 +10,10 @@ class SurveyResponse < ApplicationRecord
   validate :satisfaction_must_be_valid, on: :create
 
   private
+
+  def response_data_is_empty_hash?
+    response_data.is_a?(Hash) && response_data.empty?
+  end
 
   def user_matches_payout_user
     return if user.blank? || payout.blank?

@@ -310,37 +310,16 @@ RSpec.describe "PR59: READMEの最終整備とAPI参照の追加" do
       allow(ENV).to receive(:[]).with("INTERNAL_API_SECRET").and_return(internal_api_secret)
     end
 
-    # --- 既知バグ（RED）: 以下2件は意図的に失敗する ------------------------------------
-    # PR #59 の本文・SPEC/api/README.md は「payout_id:1, response_data:{} を送ると
-    # {"error":["Response data 満足度は必須入力です"]} が返る」と説明している。
-    # しかし実際に開発サーバー（RAILS_ENV=development, ポート3091）を起動し、
-    # PR本文のcurlコマンドをそのまま実行して確認したところ、実際のレスポンスは
-    #   {"error":["Response data can't be blank","Response data satisfaction is required"]}
-    # であり、ドキュメントの記載と一致しないことを確認した（本テスト作成時に検証済み）。
-    # 原因は2点:
-    #   (1) このRailsアプリには Accept-Language 等から I18n.locale を設定する仕組みが
-    #       存在せず（app/controllers/concerns/admin/authentication.rb の
-    #       I18n.with_locale(:ja, ...) は管理画面(BASIC認証配下)専用）、
-    #       api/v1系コントローラでは I18n.default_locale の :en のまま処理される。
-    #   (2) response_data に空Hash `{}` を送ると、Hash#blank? が true になるため
-    #       `validates :response_data, presence: true` と 独自の
-    #       satisfaction_must_be_valid の両方がエラーを追加し、メッセージが2件になる。
-    # よってこの2つのitは「ドキュメント通りの期待結果」を検証する意図的なRED（失敗）テストであり、
-    # ドキュメント修正またはアプリ側のロケール設定修正のいずれかが必要であることを示す。
-    # 実際に現在返ってくる内容は次のitでピン留めして回帰検知する。
-    it "[既知バグ・RED] PR本文の再現curlどおり、satisfaction未入力だと『Response data 満足度は必須入力です』が返ることを期待する",
-      pending: "Issue #61: api/v1系にI18nロケール切替がなく、response_data:{}で重複バリデーションも発生するためドキュメント通りの1件メッセージにならない（要修正）" do
+    it "PR本文の再現curlどおり、satisfaction未入力だと『Response data 満足度は必須入力です』を返す" do
       post "/api/v1/survey_responses",
         params: { payout_id: completed_payout.id, response_data: {} }.to_json,
         headers: headers.merge("Content-Type" => "application/json")
 
       expect(response).to have_http_status(:unprocessable_entity)
-      body = JSON.parse(response.body)
-      expect(body["error"]).to eq([ "Response data 満足度は必須入力です" ])
+      expect(JSON.parse(response.body)["error"]).to eq([ "Response data 満足度は必須入力です" ])
     end
 
-    it "[既知バグ・RED] SPEC/api/README.mdに記載されたエラーメッセージ文字列が実際のレスポンスと完全一致することを期待する",
-      pending: "Issue #61: api/v1系にI18nロケール切替がなく、response_data:{}で重複バリデーションも発生するためドキュメント通りの1件メッセージにならない（要修正）" do
+    it "SPEC/api/README.mdに記載されたエラーメッセージ文字列と実際のレスポンスが完全一致する" do
       documented_message = spec_api_body[/```json\s*\{\s*"error":\s*\[\s*"([^"]+)"/m, 1]
       expect(documented_message).to eq("Response data 満足度は必須入力です")
 
@@ -351,26 +330,24 @@ RSpec.describe "PR59: READMEの最終整備とAPI参照の追加" do
       expect(JSON.parse(response.body)["error"]).to eq([ documented_message ])
     end
 
-    it "[現状の実挙動のピン留め] I18n.default_localeが:enのままのため、実際は英語の2メッセージが返る（デグレ検知用）" do
+    it "I18n.default_localeが:enでも、アンケート送信APIは日本語の検証メッセージを返す" do
       expect(I18n.default_locale).to eq(:en)
 
       post "/api/v1/survey_responses",
         params: { payout_id: completed_payout.id, response_data: {} }.to_json,
         headers: headers.merge("Content-Type" => "application/json")
 
-      body = JSON.parse(response.body)
-      expect(body["error"]).to eq([ "Response data can't be blank", "Response data satisfaction is required" ])
+      expect(JSON.parse(response.body)["error"]).to eq([ "Response data 満足度は必須入力です" ])
     end
 
-    it "[現状の実挙動のピン留め] I18n.with_locale(:ja) 下でも、response_data:{} は presence + satisfaction_required の2件になり、SPEC記載の1件にはならない" do
+    it "I18n.with_locale(:ja) 下でも、response_data:{} はsatisfaction_requiredのみを返す" do
       I18n.with_locale(:ja) do
         post "/api/v1/survey_responses",
           params: { payout_id: completed_payout.id, response_data: {} }.to_json,
           headers: headers.merge("Content-Type" => "application/json")
       end
 
-      body = JSON.parse(response.body)
-      expect(body["error"]).to eq([ "Response data を入力してください", "Response data 満足度は必須入力です" ])
+      expect(JSON.parse(response.body)["error"]).to eq([ "Response data 満足度は必須入力です" ])
     end
 
     it "『満足度は必須入力です』という完全な日本語表記（Response dataが付かない誤記載）にはならない（README記載の失敗パターンの否定）" do
