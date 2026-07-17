@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - "src/backend/**"
+      - "test/**"
+      - "README.md"
+      - "SPEC/**"
 
 permissions:
   contents: read
@@ -37,4 +40,4 @@ jobs:
         run: bundle exec rubocop --parallel
 
       - name: Test (RSpec)
-        run: bundle exec rspec --format progress
+        run: bundle exec rspec spec ../../test --format progress

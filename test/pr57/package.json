@@ -1,0 +1,11 @@
+{
+  "name": "pr57-admin-reset-e2e",
+  "private": true,
+  "description": "PR#57（管理画面リセットタブ）の非エンジニア向けユーザーテスト手順をPlaywrightで再現するE2Eテスト。開発サーバー（RAILS_ENV=test の使い捨てローカルサーバー）のみを対象とし、本番には一切接続しない。",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1"
+  }
+}

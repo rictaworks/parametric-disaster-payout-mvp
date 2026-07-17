@@ -1,0 +1,52 @@
+name: PR57 Admin Reset E2E (Playwright)
+
+# test/pr57 の Playwright E2E は、RSpecのrequest specだけでは検出できない
+# 実サーバー特有の不具合（例: config.api_only=true によるActionDispatch::Flash
+# ミドルウェア欠落）を検出するために作られている（詳細は
+# test/pr57/pr57_reset_tab.e2e.spec.js の冒頭コメント参照）。
+# 実サーバー（RAILS_ENV=test で起動するローカルRailsサーバー）へ実際に
+# 接続する必要があるため、Ruby側（src/backend）の変更でもE2E側
+# （test/pr57）の変更でも起動する。
+
+on:
+  pull_request:
+    paths:
+      - "src/backend/**"
+      - "test/pr57/**"
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: Playwright (test/pr57)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3.4"
+          bundler-cache: true
+          working-directory: src/backend
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: test/pr57/package-lock.json
+
+      - name: Install Playwright test dependencies
+        working-directory: test/pr57
+        run: npm ci
+
+      - name: Install Playwright browser (Chromium)
+        working-directory: test/pr57
+        run: npx playwright install --with-deps chromium
+
+      - name: Test (Playwright)
+        working-directory: test/pr57
+        run: npm test
