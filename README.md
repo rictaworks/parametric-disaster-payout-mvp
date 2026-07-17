@@ -2,7 +2,7 @@
 
 > **本サービスは保険の引受・実支払を行わない需要調査用の模擬デモです。実際の金銭のお支払いは発生しません。**
 
-震度・降雨量という客観的パラメータのみで即日模擬支払判定を行うパラメトリック災害保険 MVP。
+震度・降雨量という客観的パラメータのみで即日模擬支払判定を行うパラメトリック災害保険 MVP です。
 
 ## リポジトリ構成
 
@@ -10,6 +10,7 @@
 /src
   /frontend/    # Next.js (TypeScript, App Router)  — port 3000
   /backend/     # Rails API                         — port 3001
+/SPEC/api/      # API 仕様メモ
 /e2e/           # Playwright (後続 Issue で実装)
 /.github/workflows/
 ```
@@ -39,6 +40,7 @@ bin/rails server   # http://localhost:3001
 フロントエンドとバックエンドのそれぞれで環境変数を設定する必要があります。
 
 #### フロントエンド
+
 ```bash
 cd src/frontend
 cp .env.example .env
@@ -46,6 +48,7 @@ cp .env.example .env
 ```
 
 #### バックエンド
+
 ```bash
 cd src/backend
 cp .env.example .env
@@ -57,12 +60,68 @@ cp .env.example .env
 
 ## 自動ログイン手順
 
-（後続 Issue で記載）
+### 1. 通常の Google ログイン
+
+1. `src/frontend` と `src/backend` を起動します。
+2. `http://localhost:3000/login` を開き、Google ID トークンを貼り付けて送信します。
+3. 成功すると `parametric_session_token` Cookie が設定され、`/mypage` で契約情報を確認できます。
+
+### 2. development 環境の認証済み分岐
+
+Rails が `development` 環境のときは、`POST /api/v1/session` が Google ID トークンなしでも `development-user` を作成します。
+
+#### ブラウザのコンソールから自動ログインする場合
+
+ブラウザで `http://localhost:3000` を開いた後、開発者ツールのコンソールから以下の `fetch` を実行することで、自動ログイン用 Cookie を設定できます。
+
+```javascript
+fetch('/api/v1/session', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({})
+}).then(res => console.log('Logged in successfully!'));
+```
+
+実行後、そのまま `http://localhost:3000/mypage` を開くとログインされた状態になります。
+
+#### コマンドラインから `curl` で確認する場合
+
+`-c` オプションで Cookie を保存し、後続リクエストに `-b` で引き渡します。
+
+```bash
+# Cookie をファイルに保存してセッション作成
+curl -i -X POST http://localhost:3000/api/v1/session \
+  -H "Content-Type: application/json" \
+  -H "Origin: http://localhost:3000" \
+  -c cookies.txt \
+  -d '{}'
+
+# 保存した Cookie を使用して契約一覧 API を呼び出す
+curl -i http://localhost:3000/api/v1/policies \
+  -b cookies.txt
+```
 
 ## ページ一覧
 
-（後続 Issue で記載）
+| ページ名 | URL | 用途 |
+| --- | --- | --- |
+| ホーム | `http://localhost:3000/` | 模擬デモの概要とログイン導線 |
+| ログイン | `http://localhost:3000/login` | Google ID トークンでセッション作成 |
+| 申込ウィザード | `http://localhost:3000/policies/new` | 模擬契約の申込 |
+| マイページ | `http://localhost:3000/mypage` | 契約・支払・通知の確認 |
 
 ## API 一覧
 
-（後続 Issue で記載）
+ブラウザからは Next.js の BFF (`http://localhost:3000/api/v1/...`) を経由して Rails API を呼び出します。
+
+| タイトル | エンドポイント | 仕様メモ |
+| --- | --- | --- |
+| セッション作成 | `POST /api/v1/session` | [`SPEC/api/README.md#post-apiv1session`](SPEC/api/README.md#post-apiv1session) |
+| マスタ一覧 | `GET /api/v1/masters` | [`SPEC/api/README.md#get-apiv1masters`](SPEC/api/README.md#get-apiv1masters) |
+| 契約一覧 | `GET /api/v1/policies` | [`SPEC/api/README.md#get-apiv1policies`](SPEC/api/README.md#get-apiv1policies) |
+| 契約作成 | `POST /api/v1/policies` | [`SPEC/api/README.md#post-apiv1policies`](SPEC/api/README.md#post-apiv1policies) |
+| 契約解約 | `PATCH /api/v1/policies/:id/cancel` | [`SPEC/api/README.md#patch-apiv1policiesidcancel`](SPEC/api/README.md#patch-apiv1policiesidcancel) |
+| 免責期間即時経過 | `PATCH /api/v1/policies/:id/force_waiting_period_elapsed` | [`SPEC/api/README.md#patch-apiv1policiesidforce_waiting_period_elapsed`](SPEC/api/README.md#patch-apiv1policiesidforce_waiting_period_elapsed) |
+| 支払一覧 | `GET /api/v1/payouts` | [`SPEC/api/README.md#get-apiv1payouts`](SPEC/api/README.md#get-apiv1payouts) |
+| 通知一覧 | `GET /api/v1/notifications` | [`SPEC/api/README.md#get-apiv1notifications`](SPEC/api/README.md#get-apiv1notifications) |
+| アンケート送信 | `POST /api/v1/survey_responses` | [`SPEC/api/README.md#post-apiv1survey_responses`](SPEC/api/README.md#post-apiv1survey_responses) |
