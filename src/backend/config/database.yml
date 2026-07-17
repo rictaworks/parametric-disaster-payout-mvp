@@ -11,7 +11,13 @@ development:
 
 test:
   <<: *default_sqlite
-  database: storage/test.sqlite3
+  # TEST_DATABASE_PATH: 通常は未設定で既定の storage/test.sqlite3 を使う。
+  # 別プロセス（rakeタスク等）をspawnして実データをコミットするテストが、
+  # RSpecプロセス本体と同じ storage/test.sqlite3 を共有すると、他のテスト
+  # ファイルが期待するマスタデータと衝突しうる（別プロセスの書き込みは
+  # RSpecのトランザクションロールバックの対象外のため）。そのようなテストは
+  # 使い捨ての専用DBファイルへ隔離するために本変数を利用する。
+  database: <%= ENV.fetch("TEST_DATABASE_PATH", "storage/test.sqlite3") %>
 
 production:
   adapter: postgresql

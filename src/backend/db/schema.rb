@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_16_145154) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_17_130000) do
   create_table "legacy_payouts", force: :cascade do |t|
     t.integer "policy_id"
     t.integer "payout_tier_id"
@@ -69,6 +69,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_16_145154) do
     t.string "event_id"
     t.boolean "simulated", default: false, null: false
     t.decimal "max_value", precision: 6, scale: 2
+    t.boolean "admin_injected", default: false, null: false
     t.index ["seismic_intensity_level_id"], name: "index_observations_on_seismic_intensity_level_id"
     t.index ["station_id", "event_id"], name: "idx_obs_station_event", unique: true, where: "event_id IS NOT NULL"
     t.index ["station_id", "observed_at"], name: "idx_obs_station_observed", unique: true, where: "event_id IS NULL"

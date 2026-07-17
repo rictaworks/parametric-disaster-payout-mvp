@@ -140,7 +140,8 @@ RSpec.describe "Admin simulated events", type: :request do
       observed_at: Time.zone.parse("2026-07-15 10:00:00"),
       seismic_intensity_level: seismic_level_4,
       max_value: seismic_level_4.sort_order,
-      simulated: true
+      simulated: true,
+      admin_injected: true
     )
 
     get "/admin/simulated_events", headers: auth_headers

@@ -14,6 +14,12 @@ class EvaluateTrigger
   def call
     return Result.new(payouts: [], status: :ignored) if observation.nil? || observation.max_value.nil?
 
+    # simulated は「気象庁の訓練報・試験報（JmaPoller由来）」と「管理画面からの
+    # 模擬イベント注入（Admin::SimulatedEventsController由来、F5）」の両方で true
+    # になる。後者だけがトリガー判定・模擬支払デモを動かすことを意図しているため、
+    # admin_injected でない simulated（＝気象庁の訓練報・試験報）は判定対象から除外する
+    return Result.new(payouts: [], status: :ignored) if observation.simulated? && !observation.admin_injected?
+
     payouts = []
 
     # 同一観測点・同一プラン種別のポリシーを抽出する。
