@@ -1,0 +1,44 @@
+<section class="card stack">
+  <h2><%= t("admin_ui.kpi.index.title") %></h2>
+  <p class="muted"><%= t("admin_ui.kpi.index.description") %></p>
+
+  <% metrics = [
+    {
+      label: t("admin_ui.kpi.index.metrics.registered_users"),
+      value: number_with_delimiter(@kpi_metrics.fetch(:registered_users_count, 0))
+    },
+    {
+      label: t("admin_ui.kpi.index.metrics.application_completion_rate"),
+      value: "#{number_with_precision(@kpi_metrics.fetch(:application_completion_rate, 0) * 100, precision: 1)}%"
+    },
+    {
+      label: t("admin_ui.kpi.index.metrics.contract_continuation_rate"),
+      value: "#{number_with_precision(@kpi_metrics.fetch(:contract_continuation_rate, 0) * 100, precision: 1)}%"
+    },
+    {
+      label: t("admin_ui.kpi.index.metrics.survey_responses"),
+      value: number_with_delimiter(@kpi_metrics.fetch(:survey_response_count, 0))
+    },
+    {
+      label: t("admin_ui.kpi.index.metrics.average_satisfaction"),
+      value: number_with_precision(@kpi_metrics.fetch(:average_satisfaction, 0), precision: 1)
+    },
+    {
+      label: t("admin_ui.kpi.index.metrics.today_payout_orders"),
+      value: number_with_delimiter(@kpi_metrics.fetch(:todays_payout_orders_count, 0))
+    },
+    {
+      label: t("admin_ui.kpi.index.metrics.average_order_latency_minutes"),
+      value: "#{number_with_precision(@kpi_metrics.fetch(:average_order_latency_minutes, 0), precision: 1)}#{t("admin_ui.kpi.index.minutes_unit")}"
+    }
+  ] %>
+
+  <div class="kpi-grid">
+    <% metrics.each do |metric| %>
+      <article class="kpi-card">
+        <p class="kpi-label"><%= metric[:label] %></p>
+        <p class="kpi-value"><%= metric[:value] %></p>
+      </article>
+    <% end %>
+  </div>
+</section>

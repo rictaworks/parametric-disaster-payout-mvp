@@ -33,6 +33,10 @@
       .primary { background: #1f4b99; color: #fff; }
       .danger { background: #b91c1c; color: #fff; }
       .muted { color: #666; }
+      .kpi-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-top: 8px; }
+      .kpi-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px; background: #fff; }
+      .kpi-label { margin: 0 0 8px; color: #666; font-size: 0.92rem; }
+      .kpi-value { margin: 0; font-size: 1.8rem; font-weight: 700; color: #111; }
       dialog { border: 1px solid #ddd; border-radius: 12px; padding: 18px; max-width: 520px; width: calc(100% - 32px); }
       dialog::backdrop { background: rgba(0, 0, 0, 0.45); }
     </style>
@@ -43,6 +47,7 @@
       <p class="muted"><%= t("admin_ui.layout.subtitle") %></p>
       <nav class="tabs" aria-label="管理画面タブ">
         <%= link_to t("admin_ui.layout.tabs.policies"), admin_root_path, class: "tab #{current_page?(admin_root_path) ? "is-active" : ""}" %>
+        <%= link_to t("admin_ui.layout.tabs.kpi"), admin_kpi_path, class: "tab #{current_page?(admin_kpi_path) ? "is-active" : ""}" %>
         <%= link_to t("admin_ui.layout.tabs.payouts"), admin_payouts_path, class: "tab #{current_page?(admin_payouts_path) ? "is-active" : ""}" %>
         <%= link_to t("admin_ui.layout.tabs.simulated_events"), admin_simulated_events_path, class: "tab #{current_page?(admin_simulated_events_path) ? "is-active" : ""}" %>
         <%= link_to t("admin_ui.layout.tabs.reset"), admin_reset_path, class: "tab #{current_page?(admin_reset_path) ? "is-active" : ""}" %>

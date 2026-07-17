@@ -13,9 +13,23 @@ ja:
       subtitle: "模擬支払の運用確認用画面です。"
       tabs:
         policies: "契約一覧"
+        kpi: "KPI"
         payouts: "支払一覧"
         simulated_events: "模擬イベント注入"
         reset: "リセット"
+    kpi:
+      index:
+        title: "KPI"
+        description: "登録ユーザー数や支払指図状況などの集計を確認できます。"
+        minutes_unit: "分"
+        metrics:
+          registered_users: "登録ユーザー数"
+          application_completion_rate: "申込完了率"
+          contract_continuation_rate: "契約継続率"
+          survey_responses: "アンケート回答数"
+          average_satisfaction: "平均満足度"
+          today_payout_orders: "本日の支払指図件数"
+          average_order_latency_minutes: "即日性平均分数"
     policies:
       index:
         title: "契約一覧"
