@@ -33,6 +33,8 @@
       .primary { background: #1f4b99; color: #fff; }
       .danger { background: #b91c1c; color: #fff; }
       .muted { color: #666; }
+      dialog { border: 1px solid #ddd; border-radius: 12px; padding: 18px; max-width: 520px; width: calc(100% - 32px); }
+      dialog::backdrop { background: rgba(0, 0, 0, 0.45); }
     </style>
   </head>
   <body>
@@ -43,6 +45,7 @@
         <%= link_to t("admin_ui.layout.tabs.policies"), admin_root_path, class: "tab #{current_page?(admin_root_path) ? "is-active" : ""}" %>
         <%= link_to t("admin_ui.layout.tabs.payouts"), admin_payouts_path, class: "tab #{current_page?(admin_payouts_path) ? "is-active" : ""}" %>
         <%= link_to t("admin_ui.layout.tabs.simulated_events"), admin_simulated_events_path, class: "tab #{current_page?(admin_simulated_events_path) ? "is-active" : ""}" %>
+        <%= link_to t("admin_ui.layout.tabs.reset"), admin_reset_path, class: "tab #{current_page?(admin_reset_path) ? "is-active" : ""}" %>
       </nav>
     </header>
     <main>

@@ -24,6 +24,8 @@ Rails.application.routes.draw do
     get "payouts", to: "payouts#index"
     get "simulated_events", to: "simulated_events#index"
     post "simulated_events", to: "simulated_events#create"
+    get "reset", to: "reset#index"
+    post "reset", to: "reset#create"
 
     namespace :api do
       patch "payouts/:id/complete", to: "payouts#complete"
