@@ -70,17 +70,36 @@ cp .env.example .env
 
 Rails が `development` 環境のときは、`POST /api/v1/session` が Google ID トークンなしでも `development-user` を作成します。
 
-Next.js の BFF 経由で自動ログインする場合は、以下のように空の JSON を送ります。
+#### ブラウザのコンソールから自動ログインする場合
+
+ブラウザで `http://localhost:3000` を開いた後、開発者ツールのコンソールから以下の `fetch` を実行することで、自動ログイン用 Cookie を設定できます。
+
+```javascript
+fetch('/api/v1/session', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({})
+}).then(res => console.log('Logged in successfully!'));
+```
+
+実行後、そのまま `http://localhost:3000/mypage` を開くとログインされた状態になります。
+
+#### コマンドラインから `curl` で確認する場合
+
+`-c` オプションで Cookie を保存し、後続リクエストに `-b` で引き渡します。
 
 ```bash
+# Cookie をファイルに保存してセッション作成
 curl -i -X POST http://localhost:3000/api/v1/session \
   -H "Content-Type: application/json" \
   -H "Origin: http://localhost:3000" \
-  -H "Host: localhost:3000" \
+  -c cookies.txt \
   -d '{}'
-```
 
-レスポンスの `Set-Cookie` で `parametric_session_token` が返るので、そのまま `/mypage` を開けます。
+# 保存した Cookie を使用して契約一覧 API を呼び出す
+curl -i http://localhost:3000/api/v1/policies \
+  -b cookies.txt
+```
 
 ## ページ一覧
 

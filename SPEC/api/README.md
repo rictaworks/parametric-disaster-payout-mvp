@@ -42,3 +42,46 @@ Rails の API 仕様メモです。README の API 一覧からも参照します
 
 - アンケート送信
 - `payout_id` と `response_data` を送る
+  - `response_data` 内の `satisfaction`（1〜5の整数）は**必須**です。
+  - `response_data` 内の `feedback`（文字列）は**任意**です。
+
+### リクエストJSON例
+
+```json
+{
+  "payout_id": 1,
+  "response_data": {
+    "satisfaction": 5,
+    "feedback": "非常に迅速な模擬支払いで満足しました。"
+  }
+}
+```
+
+### レスポンス
+
+- **成功時 (`201 Created`)**
+
+```json
+{
+  "survey_response": {
+    "id": 1,
+    "payout_id": 1,
+    "response_data": {
+      "satisfaction": 5,
+      "feedback": "非常に迅速な模擬支払いで満足しました。"
+    },
+    "created_at": "2026-07-17T01:54:33Z"
+  }
+}
+```
+
+- **エラー時 (`422 Unprocessable Entity`)**
+  - `payout_id` に対応する支払の状態が `completed_simulated` ではない場合、または `satisfaction` が正しくない場合に返ります。
+  - `satisfaction` の検証エラー例（`response_data` の日本語属性ラベルが未定義のため、属性名部分は英語表記のまま返ります）:
+    ```json
+    {
+      "error": [
+        "Response data 満足度は必須入力です"
+      ]
+    }
+    ```
