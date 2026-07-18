@@ -164,6 +164,7 @@ RSpec.describe "Admin KPI dashboard", type: :request do
       policy.update_columns(waiting_until: zone.parse("2026-07-15 00:00:00"), expires_at: zone.parse("2026-12-31 23:59:59"))
     end
 
+    # KPIは simulated: false の観測由来の支払指図のみを集計対象とする（PR#72）
     observation_1 = Observation.create!(
       station: station,
       event_id: "event-admin-kpi-1",
@@ -180,7 +181,7 @@ RSpec.describe "Admin KPI dashboard", type: :request do
         label_ar: "5 strong"
       ),
       max_value: 5,
-      simulated: true
+      simulated: false
     )
     observation_2 = Observation.create!(
       station: station,
