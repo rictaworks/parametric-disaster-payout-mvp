@@ -26,14 +26,14 @@
     }
   },
   "home": {
-    "eyebrow": "BFF / Route Handler",
-    "title": "Oculta Rails mientras el flujo de demostración se ejecuta en el navegador.",
-    "description": "El navegador siempre habla solo con el dominio de Vercel, y los Route Handlers de Next.js reenvían las llamadas API a Rails.",
-    "primaryAction": "Abrir acceso",
-    "secondaryAction": "Solo red de Vercel",
-    "featureA": "Franja permanente con el aviso de demostración",
-    "featureB": "Cambio instantáneo entre 7 idiomas",
-    "featureC": "Cookie de sesión emitida por Next.js"
+    "eyebrow": "Seguro Paramétrico de Catástrofes (Demo)",
+    "title": "Experimente pagos simulados al instante vinculados a datos de sismos y lluvia",
+    "description": "Sin tasación de daños ni trámites burocráticos. Una demostración donde los pagos se determinan automáticamente basados solo en datos meteorológicos objetivos. *Este servicio es una simulación para estudio de mercado; no se emiten pólizas reales ni se realiza pago de dinero real.",
+    "primaryAction": "Iniciar sesión y solicitar demo",
+    "secondaryAction": "*No se aplican tarifas ni primas.",
+    "featureA": "Sin tasación de daños ni papeleo",
+    "featureB": "Decisión al instante mediante datos del clima",
+    "featureC": "Simulación segura identificada como demo"
   },
   "login": {
     "eyebrow": "Acceso con Google",

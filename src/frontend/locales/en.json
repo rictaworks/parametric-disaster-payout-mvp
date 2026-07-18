@@ -26,14 +26,14 @@
     }
   },
   "home": {
-    "eyebrow": "BFF / Route Handler",
-    "title": "Keep Rails hidden while the demo payout flow runs in the browser.",
-    "description": "The browser always talks to the Vercel domain, and Next.js Route Handlers relay API traffic to Rails.",
-    "primaryAction": "Open login",
-    "secondaryAction": "Vercel-only network",
-    "featureA": "Persistent strip with the demo notice",
-    "featureB": "Switch among 7 languages instantly",
-    "featureC": "Session cookie issued on the Next.js side"
+    "eyebrow": "Parametric Disaster Insurance (Demo)",
+    "title": "Experience Next-Gen Instant Simulated Payouts Linked to Seismic & Rainfall Data",
+    "description": "No damage assessment or paperwork required. This is a demonstration where payouts are automatically determined solely based on objective weather observation data. *This service is a simulation for demand research; no actual policies are underwritten and no real money is paid.",
+    "primaryAction": "Log In & Apply (Simulated)",
+    "secondaryAction": "*No registration or premium fees apply.",
+    "featureA": "No damage assessment or paperwork",
+    "featureB": "Instant check via weather data trigger",
+    "featureC": "Safe simulation clearly marked as a demo"
   },
   "login": {
     "eyebrow": "Google login",
