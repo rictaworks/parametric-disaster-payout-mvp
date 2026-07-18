@@ -37,6 +37,6 @@ jobs:
       - name: Test (Jest)
         run: npm test -- --ci --passWithNoTests
 
-      - name: Test (PR64: jest.config.ts roots/testMatch verification, node:test)
+      - name: "Test (PR64: jest.config.ts roots/testMatch verification, node:test)"
         working-directory: .
         run: node --test test/pr64/pr64_jest_config_roots_test.js
