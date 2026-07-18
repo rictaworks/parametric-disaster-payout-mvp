@@ -35,7 +35,9 @@ RSpec.describe "POST /api/v1/session", type: :request do
       "google_sub" => google_sub
     )
     expect(body["session_token"]).to be_present
-    expect(user.attributes.except("id", "google_sub", "created_at", "updated_at")).to be_empty
+    # localeは個人情報ではなく多言語対応のための選好言語（Issue #65）。デフォルトは:ja
+    expect(user.attributes.except("id", "google_sub", "created_at", "updated_at", "locale")).to be_empty
+    expect(user.locale).to eq("ja")
     expect(User.column_names & %w[email name first_name last_name given_name family_name avatar_url phone_number]).to be_empty
   end
 

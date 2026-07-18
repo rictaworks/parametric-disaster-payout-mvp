@@ -111,6 +111,8 @@ ja:
         success: "デモデータを初期化しました。"
         failure: "データ初期化に失敗しました。入力内容をご確認ください。"
   api:
+    locale_preferences:
+      invalid_locale: "対応していない言語です"
     policies:
       only_pending_can_be_activated: "待機中の契約のみ有効化できます"
     survey_responses:

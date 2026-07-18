@@ -3,6 +3,7 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { useLocale } from "@/components/LocaleContext";
+import { syncLocalePreference } from "@/lib/locale-api";
 
 type LoginState = {
   kind: "idle" | "success" | "error";
@@ -10,7 +11,7 @@ type LoginState = {
 };
 
 export function LoginForm() {
-  const { messages } = useLocale();
+  const { getLocale, messages } = useLocale();
   const [idToken, setIdToken] = useState("");
   const [state, setState] = useState<LoginState>({ kind: "idle", message: "" });
   const [submitting, setSubmitting] = useState(false);
@@ -33,6 +34,11 @@ export function LoginForm() {
         setState({ kind: "error", message: messages.login.error });
         return;
       }
+
+      // ログイン成功時点で最新のlocaleをUser#localeへ同期する（Issue #65）。
+      // フォーム送信開始時にクロージャで捕捉した値ではなくgetLocale()で読み直すことで、
+      // ログイン処理中に言語が切り替わった場合でも古い値で上書きしない
+      void syncLocalePreference(getLocale());
 
       setState({ kind: "success", message: messages.login.success });
       setIdToken("");

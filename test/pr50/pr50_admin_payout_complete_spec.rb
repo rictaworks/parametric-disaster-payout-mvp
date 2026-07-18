@@ -301,29 +301,24 @@ RSpec.describe "PR50: PATCH /admin/api/payouts/:id/complete（F4 支払完了・
   end
 
   # ---------------------------------------------------------------------
-  # 既知の設計上の課題（不具合ではないが要注意点として記録）
+  # Issue #65対応済み: 通知本文は契約者本人のUser#localeで生成される
   # ---------------------------------------------------------------------
-  describe "既知の設計上の課題: 通知本文の言語が契約者の選択言語ではなく管理者操作時のロケールで固定される" do
-    it(
-      "pending: 支払完了・アンケート依頼通知は7言語ぶんロケールファイルが用意されているにもかかわらず、" \
-      "Admin::Authenticationのaround_actionが常にI18n.locale=:jaへ固定するため、" \
-      "契約者が英語等でマイページを利用していても通知本文は常に日本語で保存されてしまう",
-      pending: "Userモデルに選好言語（locale）が保存されておらず、通知本文が生成時点の" \
-               "実行コンテキストのロケール（管理操作時は常に:ja）に依存する設計になっているため。" \
-               "修正にはUserへのlocale永続化とNotification生成箇所でのロケール切り替えが必要で、" \
-               "本PR(#50)の範囲を超えるため要設計判断。"
-    ) do
-      user = User.create!(google_sub: "google-sub-pr50-locale-bug")
-      payout = build_ordered_payout_for(user, suffix: "locale-bug")
+  describe "Issue #65対応: 通知本文の言語は管理者操作時のロケールではなく契約者本人の選好言語に従う" do
+    it "支払完了・アンケート依頼通知は、Admin::Authenticationのaround_actionが呼び出しスレッドを" \
+       "I18n.locale=:jaへ固定していても、契約者のUser#localeで生成される" do
+      user = User.create!(google_sub: "google-sub-pr50-locale-fixed", locale: "en")
+      payout = build_ordered_payout_for(user, suffix: "locale-fixed")
 
-      # 事前にAPI呼び出し側のロケールを英語にしても、Admin::Authenticationの
-      # around_action :use_japanese_locale がAdmin::Api::PayoutsController配下の
-      # アクション全体を強制的に :ja へ固定するため、通知本文は常に日本語になる
-      I18n.locale = :en
-      patch "/admin/api/payouts/#{payout.id}/complete", headers: valid_auth_headers.merge("Accept-Language" => "en")
+      # 管理画面側は常に:jaで動くが（Admin::Authentication#use_japanese_locale）、
+      # ExecutePayoutが契約者本人のlocaleで明示的に上書きするため通知は英語になる
+      I18n.locale = :ja
+      patch "/admin/api/payouts/#{payout.id}/complete", headers: valid_auth_headers
 
       completed_notification = Notification.find_by(payout: payout, kind: Notification::KIND_PAYOUT_COMPLETED)
+      survey_notification = Notification.find_by(payout: payout, kind: Notification::KIND_SURVEY_REQUEST)
+
       expect(completed_notification.message).to eq(I18n.t("notifications.payout_completed", locale: :en))
+      expect(survey_notification.message).to eq(I18n.t("notifications.survey_request", locale: :en))
     ensure
       I18n.locale = I18n.default_locale
     end

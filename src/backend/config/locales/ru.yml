@@ -8,6 +8,8 @@ ru:
     payouts:
       invalid_status_transition: "Недопустимый переход состояния"
   api:
+    locale_preferences:
+      invalid_locale: "Этот язык не поддерживается"
     policies:
       only_pending_can_be_activated: "Активировать можно только полисы в ожидании"
     survey_responses:
