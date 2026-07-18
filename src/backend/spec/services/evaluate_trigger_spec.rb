@@ -149,7 +149,18 @@ RSpec.describe EvaluateTrigger do
         expect(notification.policy).to eq(policy)
         expect(notification.payout).to eq(payout)
         expect(notification.kind).to eq("payout_ordered")
-        expect(notification.message).to eq(I18n.t("notifications.payout_ordered"))
+        # user.localeの既定値(:ja)で通知本文が生成されること
+        expect(notification.message).to eq(I18n.t("notifications.payout_ordered", locale: :ja))
+      end
+
+      it "generates the notification message in the policyholder's locale, regardless of the ambient I18n.locale (Issue #65)" do
+        user.update!(locale: "en")
+
+        I18n.with_locale(:ja) do
+          EvaluateTrigger.call(observation)
+        end
+
+        expect(Notification.last.message).to eq(I18n.t("notifications.payout_ordered", locale: :en))
       end
 
       it "does not create a payout or a notification when the transaction is not going to commit due to an unrelated failure downstream" do

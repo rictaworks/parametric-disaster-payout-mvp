@@ -8,6 +8,8 @@ zh:
     payouts:
       invalid_status_transition: "无效的状态转换"
   api:
+    locale_preferences:
+      invalid_locale: "不支持该语言"
     policies:
       only_pending_can_be_activated: "只有待处理的合同才能被激活"
     survey_responses:

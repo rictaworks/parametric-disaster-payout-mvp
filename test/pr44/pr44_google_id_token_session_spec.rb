@@ -70,9 +70,10 @@ RSpec.describe "PR44: Google IDトークン認証用の内部セッションAPI 
       expect(response.body.downcase).not_to include("email")
       expect(response.body.downcase).not_to include("\"name\"")
 
-      # DB側も肯定的に確認: 実際に保存されたUserレコードのカラムがgoogle_sub/id/created_at/updated_atのみであること
+      # DB側も肯定的に確認: 実際に保存されたUserレコードのカラムがgoogle_sub/id/created_at/updated_at/
+      # locale（多言語対応のための選好言語。個人情報ではない。Issue #65）のみであること
       user = User.find_by!(google_sub: "development-user")
-      expect(user.attributes.keys.sort).to eq(%w[created_at google_sub id updated_at])
+      expect(user.attributes.keys.sort).to eq(%w[created_at google_sub id locale updated_at])
       expect(user.google_sub).to eq("development-user")
     end
 
@@ -150,7 +151,7 @@ RSpec.describe "PR44: Google IDトークン認証用の内部セッションAPI 
       expect(response.body).not_to include("PR44 Tester")
 
       user = User.find_by!(google_sub: google_sub)
-      expect(user.attributes.keys.sort).to eq(%w[created_at google_sub id updated_at])
+      expect(user.attributes.keys.sort).to eq(%w[created_at google_sub id locale updated_at])
     end
 
     it "不正なIDトークンの場合は401で拒否され、ユーザーは作成されない" do
@@ -193,7 +194,8 @@ RSpec.describe "PR44: Google IDトークン認証用の内部セッションAPI 
         avatar_url picture phone_number address birthday
       ]
       expect(User.column_names & forbidden_columns).to eq([])
-      expect(User.column_names.sort).to eq(%w[created_at google_sub id updated_at])
+      # localeは多言語対応のための選好言語であり、個人情報ではない（Issue #65）
+      expect(User.column_names.sort).to eq(%w[created_at google_sub id locale updated_at])
     end
   end
 

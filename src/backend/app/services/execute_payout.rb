@@ -36,20 +36,25 @@ class ExecutePayout
   end
 
   def create_notifications!
-    Notification.create!(
-      user: payout.policy.user,
-      policy: payout.policy,
-      payout: payout,
-      kind: Notification::KIND_PAYOUT_COMPLETED,
-      message: I18n.t("notifications.payout_completed")
-    )
+    # 管理画面（Admin::Authenticationのaround_action）が呼び出しスレッドのI18n.localeを
+    # 常に:jaへ固定するため、契約者本人宛の通知だけは契約者のUser#localeで明示的に
+    # 上書きして生成する（Issue #65）
+    I18n.with_locale(payout.policy.user.locale) do
+      Notification.create!(
+        user: payout.policy.user,
+        policy: payout.policy,
+        payout: payout,
+        kind: Notification::KIND_PAYOUT_COMPLETED,
+        message: I18n.t("notifications.payout_completed")
+      )
 
-    Notification.create!(
-      user: payout.policy.user,
-      policy: payout.policy,
-      payout: payout,
-      kind: Notification::KIND_SURVEY_REQUEST,
-      message: I18n.t("notifications.survey_request")
-    )
+      Notification.create!(
+        user: payout.policy.user,
+        policy: payout.policy,
+        payout: payout,
+        kind: Notification::KIND_SURVEY_REQUEST,
+        message: I18n.t("notifications.survey_request")
+      )
+    end
   end
 end

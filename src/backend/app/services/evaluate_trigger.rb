@@ -68,14 +68,18 @@ class EvaluateTrigger
         end
 
         # F4仕様：支払指図の生成と同時に契約者へアプリ内通知を送る（メール等は使用しない）。
-        # Payout・契約状態更新と同一トランザクション内で作成し、通知の欠落を防ぐ
-        Notification.create!(
-          user: policy.user,
-          policy: policy,
-          payout: payout,
-          kind: Notification::KIND_PAYOUT_ORDERED,
-          message: I18n.t("notifications.payout_ordered")
-        )
+        # Payout・契約状態更新と同一トランザクション内で作成し、通知の欠落を防ぐ。
+        # 呼び出し元（管理画面の模擬イベント注入等）のI18n.localeに依存せず、
+        # 契約者本人のUser#localeで通知本文を生成する（Issue #65）
+        I18n.with_locale(policy.user.locale) do
+          Notification.create!(
+            user: policy.user,
+            policy: policy,
+            payout: payout,
+            kind: Notification::KIND_PAYOUT_ORDERED,
+            message: I18n.t("notifications.payout_ordered")
+          )
+        end
 
         payouts << payout
       end

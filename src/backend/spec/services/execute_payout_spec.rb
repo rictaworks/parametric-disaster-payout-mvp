@@ -104,11 +104,27 @@ RSpec.describe ExecutePayout do
           Notification::KIND_PAYOUT_COMPLETED,
           Notification::KIND_SURVEY_REQUEST
         )
+        # user.localeの既定値(:ja)で通知本文が生成されること
         expect(Notification.pluck(:message)).to contain_exactly(
-          I18n.t("notifications.payout_completed"),
-          I18n.t("notifications.survey_request")
+          I18n.t("notifications.payout_completed", locale: :ja),
+          I18n.t("notifications.survey_request", locale: :ja)
         )
       end
+    end
+
+    it "generates notification messages in the policy owner's locale, regardless of the ambient I18n.locale (Issue #65)" do
+      user.update!(locale: "en")
+
+      travel_to Time.zone.parse("2026-07-15 12:00:00") do
+        I18n.with_locale(:ja) do
+          described_class.new(payout: payout).call
+        end
+      end
+
+      expect(Notification.pluck(:message)).to contain_exactly(
+        I18n.t("notifications.payout_completed", locale: :en),
+        I18n.t("notifications.survey_request", locale: :en)
+      )
     end
 
     it "moves the policy to cap_reached when this completion reaches the annual payout limit" do

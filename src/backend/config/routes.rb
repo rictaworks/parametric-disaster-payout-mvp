@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       post "session", to: "sessions#create"
+      patch "locale", to: "locale_preferences#update"
       get "policies", to: "policies#index"
       post "policies", to: "policies#create"
       patch "policies/:id/cancel", to: "policies#cancel"

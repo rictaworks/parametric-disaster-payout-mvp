@@ -8,6 +8,8 @@ ar:
     payouts:
       invalid_status_transition: "انتقال حالة غير صالح"
   api:
+    locale_preferences:
+      invalid_locale: "هذه اللغة غير مدعومة"
     policies:
       only_pending_can_be_activated: "يمكن تفعيل العقود قيد الانتظار فقط"
     survey_responses:

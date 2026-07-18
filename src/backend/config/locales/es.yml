@@ -8,6 +8,8 @@ es:
     payouts:
       invalid_status_transition: "Transición de estado no válida"
   api:
+    locale_preferences:
+      invalid_locale: "Este idioma no es compatible"
     policies:
       only_pending_can_be_activated: "Solo las pólizas pendientes pueden activarse"
     survey_responses:

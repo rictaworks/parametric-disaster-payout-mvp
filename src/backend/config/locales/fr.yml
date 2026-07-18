@@ -8,6 +8,8 @@ fr:
     payouts:
       invalid_status_transition: "Transition d'état invalide"
   api:
+    locale_preferences:
+      invalid_locale: "Cette langue n'est pas prise en charge"
     policies:
       only_pending_can_be_activated: "Seuls les contrats en attente peuvent être activés"
     survey_responses:

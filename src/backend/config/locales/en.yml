@@ -37,6 +37,8 @@ en:
     payouts:
       invalid_status_transition: "Invalid status transition"
   api:
+    locale_preferences:
+      invalid_locale: "This language is not supported"
     policies:
       only_pending_can_be_activated: "Only pending policies can be activated"
     survey_responses:
