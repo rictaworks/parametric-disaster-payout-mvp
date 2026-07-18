@@ -7,11 +7,11 @@
     "notice": "本服务是用于需求调研的演示，不承保保单，也不进行真实赔付。"
   },
   "navigation": {
-    "label": "導覽",
-    "home": "首頁",
-    "policies": "申請流程",
-    "mypage": "我的頁面",
-    "login": "登入"
+    "label": "导航",
+    "home": "首页",
+    "policies": "申请流程",
+    "mypage": "我的页面",
+    "login": "登录"
   },
   "language": {
     "label": "语言",
@@ -49,47 +49,47 @@
   },
   "policies": {
     "new": {
-      "pageTitle": "契約申請精靈",
-      "pageDescription": "依序選擇方案、觀測站、門檻、給付區分，最後透過 BFF 送出申請。",
-      "eyebrow": "5 步驟",
-      "title": "申請模擬契約",
-      "description": "使用卡片式介面逐步選擇，最後勾選 reCAPTCHA 再送出。",
-      "stepperLabel": "申請步驟",
+      "pageTitle": "合同申请向导",
+      "pageDescription": "依序选择方案、观测站、门槛、给付区分，最后通过 BFF 提交申请。",
+      "eyebrow": "5 步骤",
+      "title": "申请模拟合同",
+      "description": "使用卡片式界面逐步选择，最后勾选 reCAPTCHA 并提交。",
+      "stepperLabel": "申请步骤",
       "steps": {
         "plan": "1. 方案",
-        "station": "2. 觀測站",
-        "threshold": "3. 觸發門檻",
-        "payoutTier": "4. 給付區分",
-        "confirm": "5. 確認"
+        "station": "2. 观测站",
+        "threshold": "3. 触发门槛",
+        "payoutTier": "4. 给付区分",
+        "confirm": "5. 确认"
       },
-      "planHelp": "請選擇符合災害觸發條件的方案。",
-      "stationHelp": "請選擇用來判定觸發條件的觀測站。",
-      "thresholdHelp": "請選擇將送往 Rails 的門檻值。",
-      "payoutHelp": "請選擇此契約的模擬給付金額區分。",
+      "planHelp": "请选择符合灾害触发条件的方案。",
+      "stationHelp": "请选择用来判定触发条件的观测站。",
+      "thresholdHelp": "请选择将送往 Rails 的门槛值。",
+      "payoutHelp": "请选择此合同的模拟给付金额区分。",
       "planDescriptions": {
-        "seismic": "地震連動契約",
-        "rainfall": "降雨連動契約"
+        "seismic": "地震联动合同",
+        "rainfall": "降雨联动合同"
       },
       "stationBadges": {
-        "seismic": "地震觀測站",
-        "rainfall": "雨量觀測站"
+        "seismic": "地震观测站",
+        "rainfall": "雨量观测站"
       },
       "thresholdBadges": {
-        "seismic": "地震門檻",
-        "rainfall": "雨量門檻"
+        "seismic": "地震门槛",
+        "rainfall": "雨量门槛"
       },
       "payoutBadges": {
-        "ten_thousand": "相當於 10,000 日圓（模擬）",
-        "thirty_thousand": "相當於 30,000 日圓（模擬）"
+        "ten_thousand": "相当于 10,000 日元（模拟）",
+        "thirty_thousand": "相当于 30,000 日元（模拟）"
       },
       "plans": {
-        "seismic": "地震連動",
-        "rainfall": "降雨連動"
+        "seismic": "地震联动",
+        "rainfall": "降雨联动"
       },
       "stations": {
-        "seismic_tokyo": "東京地震觀測站",
-        "seismic_osaka": "大阪地震觀測站",
-        "rainfall_tokyo": "東京雨量觀測站"
+        "seismic_tokyo": "东京地震观测站",
+        "seismic_osaka": "大阪地震观测站",
+        "rainfall_tokyo": "东京雨量观测站"
       },
       "thresholds": {
         "seismic": {
@@ -99,9 +99,9 @@
           "seismic_3": "3",
           "seismic_4": "4",
           "seismic_5_weak": "5 弱",
-          "seismic_5_strong": "5 強",
+          "seismic_5_strong": "5 强",
           "seismic_6_weak": "6 弱",
-          "seismic_6_strong": "6 強",
+          "seismic_6_strong": "6 强",
           "seismic_7": "7"
         },
         "rainfall": {
@@ -113,68 +113,68 @@
         }
       },
       "payoutTiers": {
-        "ten_thousand": "相當於 10,000 日圓（模擬）",
-        "thirty_thousand": "相當於 30,000 日圓（模擬）"
+        "ten_thousand": "相当于 10,000 日元（模拟）",
+        "thirty_thousand": "相当于 30,000 日元（模拟）"
       },
-      "ageGroupLabel": "年齡層（可選）",
+      "ageGroupLabel": "年龄层（可选）",
       "ageGroups": {
         "unspecified": "未指定",
-        "under30": "30 歲以下",
-        "thirties": "30 多歲",
-        "forties": "40 多歲",
-        "fiftyPlus": "50 歲以上"
+        "under30": "30 岁以下",
+        "thirties": "30 多岁",
+        "forties": "40 多岁",
+        "fiftyPlus": "50 岁以上"
       },
-      "reviewTitle": "請確認內容",
+      "reviewTitle": "请确认内容",
       "reviewLabels": {
         "plan": "方案",
-        "station": "觀測站",
-        "threshold": "門檻",
-        "payoutTier": "給付區分"
+        "station": "观测站",
+        "threshold": "门槛",
+        "payoutTier": "给付区分"
       },
-      "recaptchaLabel": "reCAPTCHA 驗證",
-      "recaptchaHint": "完成驗證後即可送出申請。",
+      "recaptchaLabel": "reCAPTCHA 验证",
+      "recaptchaHint": "完成验证后即可提交申请。",
       "actions": {
         "back": "返回",
         "next": "下一步",
-        "submit": "申請",
-        "submitting": "送出中"
+        "submit": "申请",
+        "submitting": "提交中"
       },
       "errors": {
-        "duplicatePolicy": "您已經有同一方案類型的有效契約。",
-        "recaptchaRequired": "請完成 reCAPTCHA 驗證。",
-        "submitFailed": "申請失敗。",
-        "recaptchaUnavailable": "reCAPTCHA 目前無法使用，請稍後再試。",
-        "mastersLoadFailed": "主資料讀取失敗，請稍後再試。"
+        "duplicatePolicy": "您已经有同一方案类型的有效合同。",
+        "recaptchaRequired": "请完成 reCAPTCHA 验证。",
+        "submitFailed": "申请失败。",
+        "recaptchaUnavailable": "reCAPTCHA 目前无法使用，请稍后再试。",
+        "mastersLoadFailed": "主数据加载失败，请稍后再试。"
       },
       "statuses": {
         "pending": "等待中",
         "active": "有效",
-        "processing": "給付處理中",
-        "cap_reached": "達到上限",
-        "cancelled": "解約",
+        "processing": "给付处理中",
+        "cap_reached": "达到上限",
+        "cancelled": "解约",
         "expired": "失效",
         "unknown": "未知"
       },
-      "loadingMasters": "讀取中..."
+      "loadingMasters": "加载中..."
     }
   },
   "mypage": {
-    "title": "我的頁面",
-    "description": "您可以查看自己的契約狀態。",
-    "emptyState": "目前尚無契約，請透過申請精靈建立。",
-    "primaryAction": "開啟申請流程",
-    "waitingExplanation": "在此示範中，送出的契約會顯示為等待中。",
+    "title": "我的页面",
+    "description": "您可以查看自己的合同状态。",
+    "emptyState": "目前尚无合同，请通过申请向导创建。",
+    "primaryAction": "开启申请流程",
+    "waitingExplanation": "在此演示中，提交的合同会显示为等待中。",
     "labels": {
       "plan": "方案",
-      "station": "觀測站",
-      "threshold": "門檻",
-      "payoutTier": "給付區分",
-      "ageGroup": "年齡層"
+      "station": "观测站",
+      "threshold": "门槛",
+      "payoutTier": "给付区分",
+      "ageGroup": "年龄层"
     },
-    "applicationsHeading": "我的契約",
-    "loading": "讀取中...",
-    "loadFailed": "契約資料讀取失敗，請稍後再試。",
-    "unauthenticated": "請先登入以查看您的契約。",
+    "applicationsHeading": "我的合同",
+    "loading": "加载中...",
+    "loadFailed": "合同数据加载失败，请稍后再试。",
+    "unauthenticated": "请先登录以查看您的合同。",
     "survey": {
       "requestTitle": "问卷调查",
       "requestDescription": "请在模拟赔付完成后协助填写问卷。",
