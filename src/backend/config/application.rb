@@ -52,5 +52,10 @@ module Backend
     # 明示的に渡す（引数なしで ActionDispatch::Session::CookieStore を use すると
     # key・path・same_site が既定値（_session_id・Path=/）にフォールバックしてしまう）
     config.middleware.use config.session_store, config.session_options
+    # config.api_only = true では ActionDispatch::Flash もミドルウェアスタックから
+    # 自動で外れるため、管理画面（app/views/layouts/admin.html.erb）が使う
+    # flash を有効にするために明示的に追加する（Issue #62）。セッションに依存するため
+    # ActionDispatch::Cookies / セッションストアの後に追加すること。
+    config.middleware.use ActionDispatch::Flash
   end
 end
