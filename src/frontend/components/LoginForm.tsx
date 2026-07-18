@@ -11,7 +11,7 @@ type LoginState = {
 };
 
 export function LoginForm() {
-  const { locale, messages } = useLocale();
+  const { getLocale, messages } = useLocale();
   const [idToken, setIdToken] = useState("");
   const [state, setState] = useState<LoginState>({ kind: "idle", message: "" });
   const [submitting, setSubmitting] = useState(false);
@@ -35,8 +35,10 @@ export function LoginForm() {
         return;
       }
 
-      // ログイン時点でのローカル選択言語をUser#localeへ同期する（Issue #65）
-      void syncLocalePreference(locale);
+      // ログイン成功時点で最新のlocaleをUser#localeへ同期する（Issue #65）。
+      // フォーム送信開始時にクロージャで捕捉した値ではなくgetLocale()で読み直すことで、
+      // ログイン処理中に言語が切り替わった場合でも古い値で上書きしない
+      void syncLocalePreference(getLocale());
 
       setState({ kind: "success", message: messages.login.success });
       setIdToken("");
