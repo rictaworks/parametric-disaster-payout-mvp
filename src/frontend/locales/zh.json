@@ -26,14 +26,14 @@
     }
   },
   "home": {
-    "eyebrow": "BFF / Route Handler",
-    "title": "在浏览器中运行演示流程，同时让 Rails 保持隐藏。",
-    "description": "浏览器始终只与 Vercel 域通信，Next.js Route Handler 再把 API 请求转发给 Rails。",
-    "primaryAction": "打开登录页",
-    "secondaryAction": "仅 Vercel 网络",
-    "featureA": "持续显示演示提示条",
-    "featureB": "一键切换 7 种语言",
-    "featureC": "会话 Cookie 由 Next.js 颁发"
+    "eyebrow": "参数化灾害保险（演示）",
+    "title": "体验基于地震与降雨量数据的次世代即日模拟赔付",
+    "description": "无需受灾评估，无需提交证明材料。本演示系统仅依据客观气象观测数据自动判定赔付。*本服务仅为需求调研的模拟演示，不承保真实保单，亦不进行真实资金赔付。",
+    "primaryAction": "登录并提交模拟申请",
+    "secondaryAction": "*无需支付任何注册费或保费。",
+    "featureA": "无需损失评估或证明材料",
+    "featureB": "气象数据联动，即日模拟判定",
+    "featureC": "全程清晰标注，安全模拟体验"
   },
   "login": {
     "eyebrow": "Google 登录",

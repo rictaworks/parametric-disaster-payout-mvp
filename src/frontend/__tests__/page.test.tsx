@@ -7,9 +7,9 @@ describe("Home page", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: /ブラウザから Rails を隠したまま、模擬支払の流れを確認できます。/,
+        name: /震度・降雨量に連動する、次世代の即日模擬支払を体験/,
       })
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /ログイン画面へ/ })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /ログインして模擬申込へ/ })).toBeInTheDocument();
   });
 });

@@ -26,14 +26,14 @@
     }
   },
   "home": {
-    "eyebrow": "BFF / Route Handler",
-    "title": "Gardez Rails masqué pendant que le parcours de démo s’exécute dans le navigateur.",
-    "description": "Le navigateur communique toujours avec le domaine Vercel, et les Route Handlers Next.js relaient les appels API vers Rails.",
-    "primaryAction": "Ouvrir la connexion",
-    "secondaryAction": "Réseau Vercel uniquement",
-    "featureA": "Bandeau permanent avec l’avis de démonstration",
-    "featureB": "Bascule instantanée entre 7 langues",
-    "featureC": "Cookie de session émis côté Next.js"
+    "eyebrow": "Assurance Paramétrique Contre les Catastrophes (Démo)",
+    "title": "Découvrez le paiement simulé instantané lié aux données sismiques et de pluie",
+    "description": "Aucune expertise de sinistre ni paperasse requise. Une démonstration où les versements sont automatiquement déterminés sur la seule base de données d'observation météo objectives. *Ce service est une simulation pour une étude de marché ; aucun contrat réel n'est souscrit et aucun argent réel n'est versé.",
+    "primaryAction": "Se connecter et simuler une demande",
+    "secondaryAction": "*Aucuns frais d'inscription ou de prime.",
+    "featureA": "Pas d'expertise de sinistre ni de paperasse",
+    "featureB": "Décision instantanée via données météo",
+    "featureC": "Simulation sécurisée clairement indiquée comme démo"
   },
   "login": {
     "eyebrow": "Connexion Google",

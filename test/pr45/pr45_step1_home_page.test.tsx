@@ -95,7 +95,7 @@ describe("PR45 手順1: ホーム画面が正しく表示されるか", () => {
     const primaryAction = screen.getByRole("link", { name: ja.home.primaryAction });
     expect(primaryAction).toBeInTheDocument();
     expect(primaryAction).toHaveAttribute("href", "/login");
-    expect(primaryAction).toHaveTextContent("ログイン画面へ");
+    expect(primaryAction).toHaveTextContent("ログインして模擬申込へ");
   });
 
   it("失敗パターンの回帰確認: エラーメッセージ文字列（Error / 500 / 404）が表示されていない", () => {

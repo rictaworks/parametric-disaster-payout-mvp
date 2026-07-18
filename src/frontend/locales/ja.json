@@ -26,14 +26,14 @@
     }
   },
   "home": {
-    "eyebrow": "BFF / Route Handler",
-    "title": "ブラウザから Rails を隠したまま、模擬支払の流れを確認できます。",
-    "description": "画面は常に Vercel ドメインで動作し、API は Next.js の Route Handler が Rails に中継します。",
-    "primaryAction": "ログイン画面へ",
-    "secondaryAction": "Vercel ドメインのみ通信",
-    "featureA": "常時ストリップで模擬デモ注記を表示",
-    "featureB": "7 言語をワンクリック切替",
-    "featureC": "セッション Cookie は Next.js 側で発行"
+    "eyebrow": "パラメトリック災害保険（デモ）",
+    "title": "震度・降雨量に連動する、次世代の即日模擬支払を体験",
+    "description": "損害査定や書類提出は一切不要。客観的な気象観測データ（震度・降雨量）のみで支払を自動判定する模擬体験デモです。※本サイトは需要調査のための模擬デモであり、実際の保険引受や金銭の支払いは行いません。",
+    "primaryAction": "ログインして模擬申込へ",
+    "secondaryAction": "※登録料や保険料は一切かかりません。",
+    "featureA": "損害査定・書類提出なし",
+    "featureB": "気象データ連動で即日模擬支払",
+    "featureC": "常時デモ明示による安全な模擬体験"
   },
   "login": {
     "eyebrow": "Google ログイン",
