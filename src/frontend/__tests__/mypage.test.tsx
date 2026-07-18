@@ -11,6 +11,8 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
+const WAITING_UNTIL = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
+
 describe("My page", () => {
   afterEach(() => {
     jest.restoreAllMocks();
@@ -32,7 +34,7 @@ describe("My page", () => {
                 payout_tier_code: "ten_thousand",
                 policy_status_code: "pending",
                 threshold: "0",
-                waiting_until: "2026-07-18T03:00:00.000Z",
+                waiting_until: WAITING_UNTIL,
                 expires_at: "2027-07-16T00:00:00.000Z",
                 terminated_at: null,
               },
@@ -101,7 +103,7 @@ describe("My page", () => {
       payout_tier_code: "ten_thousand",
       policy_status_code: "pending",
       threshold: "0",
-      waiting_until: "2026-07-18T03:00:00.000Z",
+      waiting_until: WAITING_UNTIL,
       expires_at: "2027-07-16T00:00:00.000Z",
       terminated_at: null,
     };
