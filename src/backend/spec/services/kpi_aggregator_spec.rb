@@ -128,12 +128,12 @@ RSpec.describe KpiAggregator do
           )
         end
 
-        observation_1 = Observation.create!(
+        simulated_observation = Observation.create!(
           station: station,
-          event_id: "event-kpi-1",
+          event_id: "event-kpi-simulated",
           observed_at: zone.parse("2026-07-17 00:00:00"),
           seismic_intensity_level: SeismicIntensityLevel.create!(
-            code: "level-kpi-1",
+            code: "level-kpi-simulated",
             sort_order: 5,
             label_ja: "5強",
             label_en: "5 strong",
@@ -146,12 +146,12 @@ RSpec.describe KpiAggregator do
           max_value: 5,
           simulated: true
         )
-        observation_2 = Observation.create!(
+        real_observation = Observation.create!(
           station: station,
-          event_id: "event-kpi-2",
-          observed_at: zone.parse("2026-07-16 22:50:00"),
+          event_id: "event-kpi-real",
+          observed_at: zone.parse("2026-07-17 22:30:00"),
           seismic_intensity_level: SeismicIntensityLevel.create!(
-            code: "level-kpi-2",
+            code: "level-kpi-real",
             sort_order: 6,
             label_ja: "5強",
             label_en: "5 strong",
@@ -169,17 +169,17 @@ RSpec.describe KpiAggregator do
           policy: policy_1,
           payout_tier: payout_tier,
           payout_status: completed_status,
-          observation: observation_1,
-          idempotency_key: "policy_#{policy_1.id}_event-kpi-1",
+          observation: simulated_observation,
+          idempotency_key: "policy_#{policy_1.id}_event-kpi-simulated",
           decided_at: zone.parse("2026-07-17 00:10:00")
         )
         payout_2 = Payout.create!(
           policy: policy_2,
           payout_tier: payout_tier,
           payout_status: completed_status,
-          observation: observation_2,
-          idempotency_key: "policy_#{policy_2.id}_event-kpi-2",
-          decided_at: zone.parse("2026-07-16 23:50:00")
+          observation: real_observation,
+          idempotency_key: "policy_#{policy_2.id}_event-kpi-real",
+          decided_at: zone.parse("2026-07-17 23:00:00")
         )
 
         SurveyResponse.create!(
@@ -203,7 +203,7 @@ RSpec.describe KpiAggregator do
           survey_response_count: 2,
           average_satisfaction: 4.5,
           todays_payout_orders_count: 1,
-          average_order_latency_minutes: 35.0
+          average_order_latency_minutes: 30.0
         )
       end
     end

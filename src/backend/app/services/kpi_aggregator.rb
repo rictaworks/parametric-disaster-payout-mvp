@@ -63,12 +63,15 @@ class KpiAggregator
   end
 
   def todays_payout_orders_count
-    Payout.where(decided_at: jst_today_range).count
+    Payout.joins(:observation)
+          .where(decided_at: jst_today_range, observations: { simulated: false })
+          .count
   end
 
   def average_order_latency_minutes
     durations = Payout.joins(:observation)
                       .where.not(decided_at: nil)
+                      .where(observations: { simulated: false })
                       .pluck(:decided_at, "observations.observed_at")
                       .filter_map do |decided_at, observed_at|
       next if decided_at.blank? || observed_at.blank?

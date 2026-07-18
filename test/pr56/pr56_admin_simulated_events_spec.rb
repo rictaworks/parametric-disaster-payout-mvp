@@ -373,17 +373,15 @@ RSpec.describe "PR56: 管理画面 模擬イベント注入タブ（F5 injectSim
   end
 
   # -----------------------------------------------------------------
-  # 設計資料F5「KPI集計では実イベントと区別する」の確認（既知のギャップの検出）
+  # 設計資料F5「KPI集計では実イベントと区別する」の確認
   #
-  # 現状の KpiAggregator#todays_payout_orders_count / #average_order_latency_minutes は
-  # Observation#simulated による絞り込みを行っておらず、模擬イベント経由の支払指図も
-  # 実イベントと同様にKPIへ算入してしまう。これは設計資料1.5 F5「KPI集計では実イベントと
-  # 区別する」の要求を満たしていないため、本テストは意図的に red（失敗）として現状のギャップ
-  # を可視化する（実装済みで green になることを確認する趣旨の対象外）。
+  # KpiAggregator#todays_payout_orders_count / #average_order_latency_minutes は
+  # Observation#simulated による絞り込みを行い、模擬イベント経由の支払指図を
+  # 実イベントと区別する。設計資料1.5 F5「KPI集計では実イベントと区別する」の要求を
+  # 満たすことを確認する。
   # -----------------------------------------------------------------
-  describe "設計資料F5: KPI集計での実/模擬イベントの区別（既知の未実装ギャップ・意図的red）" do
-    it "模擬イベント経由の支払指図は本日の支払指図件数KPIに算入されない（現状未実装のため失敗する想定）",
-      pending: "Issue #60: KpiAggregatorがObservation#simulatedで絞り込んでおらず模擬イベントがKPIに混入する（要修正）" do
+  describe "設計資料F5: KPI集計での実/模擬イベントの区別" do
+    it "模擬イベント経由の支払指図は本日の支払指図件数KPIと平均判定所要時間KPIに算入されない" do
       post "/admin/simulated_events",
         headers: valid_auth_headers,
         params: { station_id: seismic_station.id, event_mode: "new", seismic_intensity_level_id: seismic_level_5_weak.id }
@@ -395,6 +393,7 @@ RSpec.describe "PR56: 管理画面 模擬イベント注入タブ（F5 injectSim
       metrics = KpiAggregator.new.call
 
       expect(metrics[:todays_payout_orders_count]).to eq(0)
+      expect(metrics[:average_order_latency_minutes]).to eq(0.0)
     end
   end
 end
