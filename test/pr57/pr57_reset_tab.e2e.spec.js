@@ -29,7 +29,7 @@
 //   （Railsアプリ本体は ../../src/backend にある。global-setup.js が
 //    そのパスを解決して RAILS_ENV=test でサーバーを起動する）
 //
-// [重要・既知の不具合（RED）について]
+// [解消済み・旧「既知の不具合（RED）」について]
 // 本テストを実際にローカルの Rails サーバー（Puma, `bin/rails server -e test`）に
 // 対して実行したところ、認証成功後に管理画面のHTMLページ（/admin, /admin/kpi,
 // /admin/payouts, /admin/simulated_events, /admin/reset のすべて）が
@@ -55,19 +55,11 @@
 // 「開発サーバーを対象にテストする」ことが明示的に求められている理由そのものの
 // 実例と言える。
 //
-// 対応（アプリケーションコードの修正）は本テスト作成タスクの範囲外のため、
-// ここでは修正を行わず、DEBUG/admin_html_pages_500_missing_flash_middleware.md /
-// GitHub Issue #62 として起票済み。
-// 対応候補（参考・未実施）: config/application.rb に
-// `config.middleware.use ActionDispatch::Flash` を追加する。
-//
-// 「既知の不具合(RED)」のテストは test.fail() で意図的な失敗として明示し、
-// 修正が入って予期せず成功した場合はPlaywright側がそれを検知して失敗扱いにする
-// （＝ pending解除のタイミングを自動検知できる）。
-// それ以降、認証成功後のページ表示に依存するテスト（手順1〜2, 手順3〜5）は
-// 同じ不具合の影響で実行しても必ず失敗するため、test.skip(true, "Issue #62 ...")
-// で明示的にスキップし、デフォルト実行（npx playwright test）が
-// 常にgreenで終わるようにしている（Issue #62対応後にスキップを解除すること）。
+// 対応: config/application.rb に `config.middleware.use ActionDispatch::Flash` を
+// 追加して解消した（Issue #62）。以前は「既知の不具合(RED)」として test.fail() で
+// 明示し、それ以降の認証成功後のページ表示に依存するテスト（手順1〜2, 手順3〜5）は
+// test.skip(true, "Issue #62 ...") でスキップしていたが、修正確認のため
+// 全てのskip/test.fail()を解除し、通常のgreenテストとして実行する。
 
 const { test, expect } = require("@playwright/test");
 
@@ -98,12 +90,7 @@ test.describe.serial("PR#57 管理画面「リセット」タブ ユーザーテ
     await context.close();
   });
 
-  test("既知の不具合(RED): 認証成功後の管理画面ページが実サーバーでは500を返す（config.api_only=trueによりActionDispatch::Flashミドルウェアが欠落・Issue #62）", async ({ request }) => {
-    // Issue #62 対応待ち。修正後にこのassertionが200で成立するようになった場合、
-    // test.fail()の効果でPlaywrightが「期待していた失敗が起きなかった」として
-    // このテスト自体を失敗扱いにする（＝修正完了を自動検知できる）。
-    test.fail();
-
+  test("回帰確認: 認証成功後の管理画面ページが実サーバーで200を返す（Issue #62修正の検証。ActionDispatch::Flashミドルウェア欠落の再発防止）", async ({ request }) => {
     const res = await request.get("/admin/reset", {
       headers: { Authorization: basicAuthHeader(ADMIN_USER, ADMIN_PASSWORD) },
     });
@@ -112,8 +99,6 @@ test.describe.serial("PR#57 管理画面「リセット」タブ ユーザーテ
   });
 
   test("手順1〜2: 正しい認証でログインし、タブとリセット画面の内容を確認する", async ({ browser }) => {
-    test.skip(true, "Issue #62 対応待ち: ActionDispatch::Flash欠落により認証成功後の管理画面ページが500になるため実行不可");
-
     const context = await browser.newContext({
       httpCredentials: { username: ADMIN_USER, password: ADMIN_PASSWORD },
     });
@@ -136,8 +121,6 @@ test.describe.serial("PR#57 管理画面「リセット」タブ ユーザーテ
   });
 
   test("手順3: 確認文字列を入力せずに実行しようとすると送信がブロックされる（ネイティブconfirm/alertは使われない）", async ({ browser }) => {
-    test.skip(true, "Issue #62 対応待ち: ActionDispatch::Flash欠落により認証成功後の管理画面ページが500になるため実行不可");
-
     const context = await browser.newContext({
       httpCredentials: { username: ADMIN_USER, password: ADMIN_PASSWORD },
     });
@@ -177,8 +160,6 @@ test.describe.serial("PR#57 管理画面「リセット」タブ ユーザーテ
   });
 
   test("手順3(サーバー側): 確認文字列なしでAPIへ直接送信しても失敗する（クライアント側チェックのみに依存しない）", async ({ request }) => {
-    test.skip(true, "Issue #62 対応待ち: ActionDispatch::Flash欠落により認証成功後の管理画面ページが500になるため実行不可");
-
     const res = await request.post("/admin/reset", {
       headers: { Authorization: basicAuthHeader(ADMIN_USER, ADMIN_PASSWORD) },
       form: {},
@@ -190,8 +171,6 @@ test.describe.serial("PR#57 管理画面「リセット」タブ ユーザーテ
   });
 
   test("手順3(サーバー側): 誤った確認文字列でも失敗する（一字一句の一致が必須）", async ({ request }) => {
-    test.skip(true, "Issue #62 対応待ち: ActionDispatch::Flash欠落により認証成功後の管理画面ページが500になるため実行不可");
-
     const res = await request.post("/admin/reset", {
       headers: { Authorization: basicAuthHeader(ADMIN_USER, ADMIN_PASSWORD) },
       form: { confirmation_text: "デモデータを初期化します" },
@@ -201,8 +180,6 @@ test.describe.serial("PR#57 管理画面「リセット」タブ ユーザーテ
   });
 
   test("手順4: 正しい確認文字列を入力して実行すると成功メッセージが表示される", async ({ browser }) => {
-    test.skip(true, "Issue #62 対応待ち: ActionDispatch::Flash欠落により認証成功後の管理画面ページが500になるため実行不可");
-
     const context = await browser.newContext({
       httpCredentials: { username: ADMIN_USER, password: ADMIN_PASSWORD },
     });
@@ -239,8 +216,6 @@ test.describe.serial("PR#57 管理画面「リセット」タブ ユーザーテ
   });
 
   test("手順5: 契約一覧・支払一覧タブからサンプルデータが消えている", async ({ browser }) => {
-    test.skip(true, "Issue #62 対応待ち: ActionDispatch::Flash欠落により認証成功後の管理画面ページが500になるため実行不可");
-
     const context = await browser.newContext({
       httpCredentials: { username: ADMIN_USER, password: ADMIN_PASSWORD },
     });
