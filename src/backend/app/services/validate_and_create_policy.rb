@@ -29,6 +29,48 @@ class ValidateAndCreatePolicy
     return Result.new(policy: policy, status: :created) if policy.persisted?
 
     failure(:unprocessable_entity, "validation_failed", policy.errors.to_hash(true))
+  rescue ActiveRecord::StatementInvalid, ActiveRecord::Deadlocked => e
+    # ロック競合に関連する例外以外（外部キー違反、タイムアウト、SQLエラーなど）は
+    # 再試行や409変換の対象外とし、直ちに再送出する
+    unless lock_conflict_error?(e)
+      raise e
+    end
+
+    # データベース例外が発生した際、競合相手（先行トランザクション）のコミット完了まで
+    # 一定時間バックオフ（リトライ）しながら重複契約の存在を再確認する。
+    max_attempts = 10
+    sleep_duration = 0.1 # 100ms
+    attempts = 0
+    confirmed = false
+
+    # HTTPリクエストではクエリキャッシュが有効なため、uncached を使用して
+    # 先行トランザクションのコミット結果を常に最新のDB状態から読み取れるようにする
+    ActiveRecord::Base.uncached do
+      while attempts < max_attempts
+        begin
+          if masters && duplicate_policy_exists?(masters)
+            confirmed = true
+            break
+          end
+        rescue ActiveRecord::StatementInvalid, ActiveRecord::Deadlocked => read_error
+          # 読み取り自体がロック競合で失敗した場合はリトライを継続する
+          unless lock_conflict_error?(read_error)
+            raise read_error
+          end
+        end
+
+        attempts += 1
+        sleep sleep_duration
+      end
+    end
+
+    if confirmed
+      Rails.logger.warn "Database lock/conflict occurred during policy creation. Duplicate policy confirmed after #{attempts} retries: #{e.message}"
+      failure(:conflict, "duplicate_policy")
+    else
+      # 重複が確認できなかった場合は、他の要因（外部キー違反、構文エラーなど）による例外として再送出する
+      raise e
+    end
   end
 
   private
@@ -115,5 +157,18 @@ class ValidateAndCreatePolicy
 
   def failure(status, error, details = nil)
     Result.new(status: status, error: error, details: details)
+  end
+
+  def lock_conflict_error?(error)
+    return true if error.is_a?(ActiveRecord::Deadlocked)
+    return true if defined?(ActiveRecord::LockWaitTimeout) && error.is_a?(ActiveRecord::LockWaitTimeout)
+
+    cause = error.cause
+    if cause
+      return true if defined?(SQLite3::BusyException) && cause.is_a?(SQLite3::BusyException)
+      return true if defined?(SQLite3::LockedException) && cause.is_a?(SQLite3::LockedException)
+    end
+
+    false
   end
 end
