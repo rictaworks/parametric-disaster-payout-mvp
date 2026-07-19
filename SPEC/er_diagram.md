@@ -25,6 +25,7 @@ erDiagram
     USERS {
         int id PK
         string google_sub UK "opaqueなsub値・メール不保持"
+        string locale "選好言語（ja/en/fr/zh/ru/es/ar、既定ja。個人情報ではない）"
     }
     PLANS {
         int id PK

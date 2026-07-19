@@ -8,6 +8,13 @@ Rails の API 仕様メモです。README の API 一覧からも参照します
 - 開発環境では Google ID トークンなしで `development-user` を作成できる
 - BFF からは `X-Internal-API-Secret` を付与して Rails に中継する
 
+## PATCH /api/v1/locale
+
+- ログイン中のユーザー本人の選好言語（`User#locale`）を更新する
+- パラメータ: `locale`（`ja`/`en`/`fr`/`zh`/`ru`/`es`/`ar` のいずれか。ホワイトリスト外は `422 Unprocessable Entity`）
+- 支払完了・アンケート依頼のアプリ内通知（`ExecutePayout`/`EvaluateTrigger`）は、管理画面操作時のロケール固定に関わらずここで保存した `locale` で本文が生成される（Issue #65）
+- フロントエンドの言語切り替え操作時、およびログイン成功直後に同期される（`src/frontend/lib/locale-api.ts`）
+
 ## GET /api/v1/masters
 
 - マスタ一覧
