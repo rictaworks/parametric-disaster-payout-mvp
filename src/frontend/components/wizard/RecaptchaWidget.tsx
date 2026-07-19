@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 
 const SCRIPT_ID = "recaptcha-api-script";
+const ONLOAD_CALLBACK_NAME = "__pdpRecaptchaOnLoad";
 
 type RecaptchaRenderParams = {
   sitekey: string;
@@ -16,6 +17,7 @@ declare global {
       render: (container: HTMLElement, params: RecaptchaRenderParams) => number;
       reset: (widgetId?: number) => void;
     };
+    __pdpRecaptchaOnLoad?: () => void;
   }
 }
 
@@ -42,26 +44,23 @@ export function RecaptchaWidget({ siteKey, onVerify, onExpire }: RecaptchaWidget
       });
     }
 
-    if (window.grecaptcha) {
+    if (window.grecaptcha && typeof window.grecaptcha.render === "function") {
       renderWidget();
       return;
     }
 
-    const existingScript = document.getElementById(SCRIPT_ID);
-    if (existingScript) {
-      existingScript.addEventListener("load", renderWidget);
-      return () => existingScript.removeEventListener("load", renderWidget);
+    window.__pdpRecaptchaOnLoad = renderWidget;
+
+    if (document.getElementById(SCRIPT_ID)) {
+      return;
     }
 
     const script = document.createElement("script");
     script.id = SCRIPT_ID;
-    script.src = "https://www.google.com/recaptcha/api.js";
+    script.src = `https://www.google.com/recaptcha/api.js?onload=${ONLOAD_CALLBACK_NAME}&render=explicit`;
     script.async = true;
     script.defer = true;
-    script.addEventListener("load", renderWidget);
     document.body.appendChild(script);
-
-    return () => script.removeEventListener("load", renderWidget);
   }, [siteKey, onVerify, onExpire]);
 
   return <div ref={containerRef} className="recaptcha-widget" />;
