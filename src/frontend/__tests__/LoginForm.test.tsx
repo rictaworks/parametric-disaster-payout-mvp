@@ -1,12 +1,80 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { LocaleProvider, useLocale } from "../components/LocaleContext";
 import { LoginForm } from "../components/LoginForm";
 
+type GoogleCredentialResponse = {
+  credential?: string;
+};
+
+function installGoogleIdentityServicesMock() {
+  const renderButton = jest.fn((container: HTMLElement) => {
+    container.replaceChildren();
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = "Googleでログイン";
+    container.appendChild(button);
+  });
+
+  let callback: ((response: GoogleCredentialResponse) => void) | undefined;
+  const initialize = jest.fn((config: { client_id: string; callback: (response: GoogleCredentialResponse) => void }) => {
+    callback = config.callback;
+  });
+
+  (window as typeof window & {
+    google?: {
+      accounts?: {
+        id?: {
+          initialize: typeof initialize;
+          renderButton: typeof renderButton;
+        };
+      };
+    };
+  }).google = {
+    accounts: {
+      id: {
+        initialize,
+        renderButton,
+      },
+    },
+  };
+
+  return {
+    initialize,
+    renderButton,
+    triggerCredentialResponse(response: GoogleCredentialResponse) {
+      if (!callback) {
+        throw new Error("Google callback was not initialized");
+      }
+
+      callback(response);
+    },
+  };
+}
+
 describe("LoginForm", () => {
+  const originalClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
   afterEach(() => {
     jest.restoreAllMocks();
     window.localStorage.clear();
+    delete (window as typeof window & { google?: unknown }).google;
+    document.getElementById("google-identity-services-script")?.remove();
+    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID = originalClientId;
+  });
+
+  it("shows a dedicated unavailable message instead of a silently empty button when NEXT_PUBLIC_GOOGLE_CLIENT_ID is missing", () => {
+    delete process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+    render(
+      <LocaleProvider>
+        <LoginForm />
+      </LocaleProvider>
+    );
+
+    expect(screen.getByText("Googleログインを利用できません。時間をおいて再度お試しください。")).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
   it("syncs the current locale to the backend right after a successful login", async () => {
@@ -21,15 +89,17 @@ describe("LoginForm", () => {
     });
     global.fetch = fetchMock;
 
-    const user = userEvent.setup();
+    const google = installGoogleIdentityServicesMock();
     render(
       <LocaleProvider>
         <LoginForm />
       </LocaleProvider>
     );
 
-    await user.type(screen.getByRole("textbox"), "dummy-id-token");
-    await user.click(screen.getByRole("button"));
+    await waitFor(() => expect(google.initialize).toHaveBeenCalled());
+    await act(async () => {
+      google.triggerCredentialResponse({ credential: "dummy-id-token" });
+    });
 
     await screen.findByText("ログインに成功しました。");
 
@@ -44,17 +114,27 @@ describe("LoginForm", () => {
   });
 
   it("does not sync locale when login fails", async () => {
-    global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 401, json: async () => ({}) });
+    global.fetch = jest.fn().mockImplementation((input: RequestInfo | URL) => {
+      const url = input.toString();
 
-    const user = userEvent.setup();
+      if (url === "/api/v1/session") {
+        return Promise.resolve({ ok: false, status: 401, json: async () => ({}) });
+      }
+
+      return Promise.resolve({ ok: true, status: 200, json: async () => ({}) });
+    });
+
+    const google = installGoogleIdentityServicesMock();
     render(
       <LocaleProvider>
         <LoginForm />
       </LocaleProvider>
     );
 
-    await user.type(screen.getByRole("textbox"), "dummy-id-token");
-    await user.click(screen.getByRole("button"));
+    await waitFor(() => expect(google.initialize).toHaveBeenCalled());
+    await act(async () => {
+      google.triggerCredentialResponse({ credential: "dummy-id-token" });
+    });
 
     await screen.findByText("ログインに失敗しました。");
 
@@ -80,6 +160,8 @@ describe("LoginForm", () => {
     });
     global.fetch = fetchMock;
 
+    const google = installGoogleIdentityServicesMock();
+
     function Harness() {
       const { setLocale } = useLocale();
       return (
@@ -97,8 +179,10 @@ describe("LoginForm", () => {
       </LocaleProvider>
     );
 
-    await user.type(screen.getByRole("textbox"), "dummy-id-token");
-    await user.click(screen.getByRole("button", { name: "セッションを作成" }));
+    await waitFor(() => expect(google.initialize).toHaveBeenCalled());
+    await act(async () => {
+      google.triggerCredentialResponse({ credential: "dummy-id-token" });
+    });
 
     // ユーザーはログイン処理が完了する前に言語を切り替える
     await user.click(screen.getByRole("button", { name: "switch to fr" }));

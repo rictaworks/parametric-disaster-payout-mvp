@@ -63,7 +63,7 @@ cp .env.example .env
 ### 1. 通常の Google ログイン
 
 1. `src/frontend` と `src/backend` を起動します。
-2. `http://localhost:3000/login` を開き、Google ID トークンを貼り付けて送信します。
+2. `http://localhost:3000/login` を開き、Google Identity Services の「Googleでログイン」ボタンでサインインします。
 3. 成功すると `parametric_session_token` Cookie が設定され、`/mypage` で契約情報を確認できます。
 
 ### 2. development 環境の認証済み分岐
@@ -108,7 +108,7 @@ curl -i http://localhost:3000/api/v1/policies \
 | ページ名 | URL | 用途 |
 | --- | --- | --- |
 | ホーム | `http://localhost:3000/` | 模擬デモの概要とログイン導線 |
-| ログイン | `http://localhost:3000/login` | Google ID トークンでセッション作成 |
+| ログイン | `http://localhost:3000/login` | Google でログインしてセッション作成 |
 | 申込ウィザード | `http://localhost:3000/policies/new` | 模擬契約の申込 |
 | マイページ | `http://localhost:3000/mypage` | 契約・支払・通知の確認 |
 
