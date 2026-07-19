@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "Parametric Disaster Payout Demo",
-    "tagline": "Insurance demo flow through the Vercel BFF"
+    "tagline": "Instant simulated payouts triggered by objective weather data"
   },
   "banner": {
     "notice": "This service is a demo for demand research and does not underwrite policies or make real payments."
@@ -37,20 +37,20 @@
   },
   "login": {
     "eyebrow": "Google login",
-    "title": "Send a Google ID token to the BFF to start a session.",
-    "description": "The browser posts only to the Vercel domain, and Next.js forwards the request safely to Rails.",
+    "title": "Sign in with your Google account",
+    "description": "Your information is sent securely over an encrypted connection.",
     "idTokenLabel": "Google ID token",
     "idTokenPlaceholder": "Paste the ID token from Google",
     "submit": "Create session",
     "submitting": "Sending",
-    "hint": "A successful sign-in sets a session cookie scoped to the Vercel domain.",
+    "hint": "Once you sign in, you'll stay logged in on this device.",
     "success": "Login succeeded.",
     "error": "Login failed."
   },
   "policies": {
     "new": {
       "pageTitle": "Policy application wizard",
-      "pageDescription": "Choose the plan, station, trigger threshold, payout tier, and then submit through the BFF.",
+      "pageDescription": "Choose the plan, station, trigger threshold, and payout tier in order, then submit your application.",
       "eyebrow": "5 steps",
       "title": "Apply for a simulated policy",
       "description": "Pick options with mock-style cards, then turn on reCAPTCHA before submitting.",
@@ -64,7 +64,7 @@
       },
       "planHelp": "Choose the plan type that matches the disaster trigger.",
       "stationHelp": "Select the observation point used to evaluate the trigger.",
-      "thresholdHelp": "Select the threshold value that will be sent to Rails.",
+      "thresholdHelp": "Select the threshold value that will trigger a payout.",
       "payoutHelp": "Choose the simulated payout tier for this policy.",
       "planDescriptions": {
         "seismic": "Earthquake-linked policy",

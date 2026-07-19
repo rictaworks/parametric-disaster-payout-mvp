@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "Demo de pago paramétrico",
-    "tagline": "Flujo de demostración a través del BFF de Vercel"
+    "tagline": "Pagos simulados instantáneos basados en datos meteorológicos objetivos"
   },
   "banner": {
     "notice": "Este servicio es una demo para investigación de demanda y no emite pólizas ni realiza pagos reales."
@@ -37,20 +37,20 @@
   },
   "login": {
     "eyebrow": "Acceso con Google",
-    "title": "Envía un token de identidad de Google al BFF para iniciar sesión.",
-    "description": "El navegador envía solicitudes solo al dominio de Vercel, y Next.js las reenvía de forma segura a Rails.",
+    "title": "Inicia sesión con tu cuenta de Google",
+    "description": "Tu información se envía de forma segura a través de una conexión cifrada.",
     "idTokenLabel": "Token de identidad de Google",
     "idTokenPlaceholder": "Pega el token de identidad obtenido en Google",
     "submit": "Crear sesión",
     "submitting": "Enviando",
-    "hint": "Un acceso correcto establece una cookie de sesión limitada al dominio de Vercel.",
+    "hint": "Una vez que inicies sesión, permanecerás conectado en este dispositivo.",
     "success": "Acceso correcto.",
     "error": "Error al acceder."
   },
   "policies": {
     "new": {
       "pageTitle": "Asistente de solicitud de póliza",
-      "pageDescription": "Elige plan, estación, umbral, tramo de pago y envía la solicitud mediante el BFF.",
+      "pageDescription": "Elige el plan, la estación, el umbral de activación y el tramo de pago, y luego envía tu solicitud.",
       "eyebrow": "5 pasos",
       "title": "Solicitar una póliza simulada",
       "description": "Selecciona tarjetas de estilo maqueta y activa reCAPTCHA antes de enviar.",
@@ -64,7 +64,7 @@
       },
       "planHelp": "Elige el tipo de plan que coincida con el disparador del desastre.",
       "stationHelp": "Selecciona el punto de observación usado para evaluar el disparador.",
-      "thresholdHelp": "Selecciona el valor del umbral que se enviará a Rails.",
+      "thresholdHelp": "Selecciona el umbral que activará un pago.",
       "payoutHelp": "Elige el tramo de pago simulado para esta póliza.",
       "planDescriptions": {
         "seismic": "Póliza vinculada a sismos",

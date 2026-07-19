@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "パラメトリック災害保険デモ",
-    "tagline": "Vercel BFF 経由の保険（デモ）体験"
+    "tagline": "客観データ連動の即日模擬支払デモ"
   },
   "banner": {
     "notice": "本サービスは保険の引受・実支払を行わない需要調査用の模擬デモです。"
@@ -37,20 +37,20 @@
   },
   "login": {
     "eyebrow": "Google ログイン",
-    "title": "Google ID トークンを BFF に渡してセッションを開始します。",
-    "description": "ブラウザは Vercel ドメインにだけ送信し、Next.js が Rails へ安全に転送します。",
+    "title": "Googleアカウントでログインします",
+    "description": "入力いただいた情報は暗号化通信で安全に送信されます。",
     "idTokenLabel": "Google ID トークン",
     "idTokenPlaceholder": "Google で取得した ID トークンを貼り付け",
     "submit": "セッションを作成",
     "submitting": "送信中",
-    "hint": "成功すると Vercel ドメインスコープのセッション Cookie が設定されます。",
+    "hint": "ログインに成功すると、この端末でログイン状態が保持されます。",
     "success": "ログインに成功しました。",
     "error": "ログインに失敗しました。"
   },
   "policies": {
     "new": {
       "pageTitle": "契約申込ウィザード",
-      "pageDescription": "プラン、観測点、閾値、支払額区分を順に選び、BFF 経由で申込を送信します。",
+      "pageDescription": "プラン・観測点・トリガー閾値・支払額区分を順番に選択し、申込を送信します。",
       "eyebrow": "5 ステップ",
       "title": "模擬契約を申し込む",
       "description": "モック風のカードで選択し、最後に reCAPTCHA チェックを入れて送信します。",
@@ -64,7 +64,7 @@
       },
       "planHelp": "災害トリガーに合うプランを選択してください。",
       "stationHelp": "トリガー判定に使う観測点を選択してください。",
-      "thresholdHelp": "Rails に送る閾値を選択してください。",
+      "thresholdHelp": "支払のトリガーとなる閾値を選択してください。",
       "payoutHelp": "この契約で使う模擬支払額区分を選択してください。",
       "planDescriptions": {
         "seismic": "震度に連動する契約",

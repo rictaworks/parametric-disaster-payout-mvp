@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "参数化灾害赔付演示",
-    "tagline": "通过 Vercel BFF 的保险演示流程"
+    "tagline": "基于客观气象数据的即日模拟赔付演示"
   },
   "banner": {
     "notice": "本服务是用于需求调研的演示，不承保保单，也不进行真实赔付。"
@@ -37,20 +37,20 @@
   },
   "login": {
     "eyebrow": "Google 登录",
-    "title": "把 Google ID 令牌发送给 BFF 即可开始会话。",
-    "description": "浏览器只向 Vercel 域发送请求，Next.js 会安全地转发到 Rails。",
+    "title": "使用 Google 账号登录",
+    "description": "您输入的信息将通过加密连接安全传输。",
     "idTokenLabel": "Google ID 令牌",
     "idTokenPlaceholder": "粘贴从 Google 获取的 ID 令牌",
     "submit": "创建会话",
     "submitting": "发送中",
-    "hint": "登录成功后会设置作用域为 Vercel 域的会话 Cookie。",
+    "hint": "登录成功后，此设备将保持登录状态。",
     "success": "登录成功。",
     "error": "登录失败。"
   },
   "policies": {
     "new": {
       "pageTitle": "合同申请向导",
-      "pageDescription": "依序选择方案、观测站、门槛、给付区分，最后通过 BFF 提交申请。",
+      "pageDescription": "依序选择方案、观测站、触发门槛、给付区分，然后提交申请。",
       "eyebrow": "5 步骤",
       "title": "申请模拟合同",
       "description": "使用卡片式界面逐步选择，最后勾选 reCAPTCHA 并提交。",
@@ -64,7 +64,7 @@
       },
       "planHelp": "请选择符合灾害触发条件的方案。",
       "stationHelp": "请选择用来判定触发条件的观测站。",
-      "thresholdHelp": "请选择将送往 Rails 的门槛值。",
+      "thresholdHelp": "请选择触发赔付的门槛值。",
       "payoutHelp": "请选择此合同的模拟给付金额区分。",
       "planDescriptions": {
         "seismic": "地震联动合同",
