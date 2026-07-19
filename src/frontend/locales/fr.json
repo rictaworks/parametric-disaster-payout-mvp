@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "Démo d’indemnisation paramétrique",
-    "tagline": "Parcours de démonstration via le BFF Vercel"
+    "tagline": "Versements simulés instantanés déclenchés par des données météo objectives"
   },
   "banner": {
     "notice": "Ce service est une démo de recherche de demande et ne souscrit aucune police ni n’effectue de paiement réel."
@@ -37,20 +37,20 @@
   },
   "login": {
     "eyebrow": "Connexion Google",
-    "title": "Envoyez un jeton d’identité Google au BFF pour démarrer une session.",
-    "description": "Le navigateur envoie uniquement au domaine Vercel, et Next.js relaie la requête vers Rails.",
+    "title": "Connectez-vous avec votre compte Google",
+    "description": "Vos informations sont transmises de manière sécurisée via une connexion chiffrée.",
     "idTokenLabel": "Jeton d’identité Google",
     "idTokenPlaceholder": "Collez le jeton d’identité obtenu auprès de Google",
     "submit": "Créer la session",
     "submitting": "Envoi",
-    "hint": "Une connexion réussie crée un cookie de session limité au domaine Vercel.",
+    "hint": "Une fois connecté, vous resterez connecté sur cet appareil.",
     "success": "Connexion réussie.",
     "error": "Échec de la connexion."
   },
   "policies": {
     "new": {
       "pageTitle": "Assistant de demande de contrat",
-      "pageDescription": "Choisissez le plan, la station, le seuil, le montant simulé, puis envoyez la demande via le BFF.",
+      "pageDescription": "Choisissez le plan, la station, le seuil de déclenchement et le montant simulé, puis envoyez votre demande.",
       "eyebrow": "5 étapes",
       "title": "Demander un contrat simulé",
       "description": "Sélectionnez des cartes de type maquette, puis activez reCAPTCHA avant l’envoi.",
@@ -64,7 +64,7 @@
       },
       "planHelp": "Choisissez le type de plan qui correspond au déclencheur.",
       "stationHelp": "Sélectionnez la station d’observation utilisée pour le déclencheur.",
-      "thresholdHelp": "Sélectionnez la valeur de seuil envoyée à Rails.",
+      "thresholdHelp": "Sélectionnez le seuil qui déclenchera un versement.",
       "payoutHelp": "Choisissez la tranche de paiement simulée pour ce contrat.",
       "planDescriptions": {
         "seismic": "Contrat lié aux séismes",

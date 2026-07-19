@@ -7,7 +7,7 @@ describe("Login page", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: /Google ID トークンを BFF に渡してセッションを開始します。/,
+        name: /Googleアカウントでログインします/,
       })
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /セッションを作成/ })).toBeInTheDocument();
