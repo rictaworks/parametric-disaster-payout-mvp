@@ -157,19 +157,20 @@ RSpec.describe "PR59: READMEの最終整備とAPI参照の追加" do
 
   # -----------------------------------------------------------------
   # 手順4: API一覧のリンク整合性
-  #   README「API 一覧」表の9つのリンクが、SPEC/api/README.md の実際の見出しに解決できるか確認する。
+  #   README「API 一覧」表の14個のリンクが、SPEC/api/README.md の実際の見出しに解決できるか確認する。
   # -----------------------------------------------------------------
   describe "手順4: API一覧のリンク整合性" do
     it "SPEC/api/README.md が存在する" do
       expect(File.exist?(spec_api_readme_path)).to be(true)
     end
 
-    it "README「API 一覧」表に9つの利用者向けエンドポイントが記載されている" do
+    it "README「API 一覧」表に10個の利用者向けエンドポイントが記載されている" do
       table_section = readme_body[/## API 一覧.*/m]
       expect(table_section).not_to be_nil
 
       expected_endpoints = [
         "POST /api/v1/session",
+        "PATCH /api/v1/locale",
         "GET /api/v1/masters",
         "GET /api/v1/policies",
         "POST /api/v1/policies",
@@ -215,7 +216,7 @@ RSpec.describe "PR59: READMEの最終整備とAPI参照の追加" do
       end
     end
 
-    it "README「API 一覧」の13エンドポイント（利用者向け9+管理API4）すべてに SPEC/api/README.md へのリンクが付与されている" do
+    it "README「API 一覧」の14エンドポイント（利用者向け10+管理API4）すべてに SPEC/api/README.md へのリンクが付与されている" do
       table_section = readme_body[/## API 一覧.*/m]
       # 表の各行は `[`...`](SPEC/api/README.md#...)` の形式のため、
       # 実際のリンクURL部分（`](...)` の中）だけを数える。
@@ -223,10 +224,10 @@ RSpec.describe "PR59: READMEの最終整備とAPI参照の追加" do
       # 単純に "SPEC/api/README.md#" の出現回数を数えると2倍になってしまう点に注意。
       link_count = table_section.scan(%r{\]\(SPEC/api/README\.md#[a-z0-9_\-]+\)}).size
 
-      expect(link_count).to eq(13)
+      expect(link_count).to eq(14)
     end
 
-    it "SPEC/api/README.md に記載された13エンドポイント（利用者向け9+管理API4）が、実際のRailsルーティングに存在する（ドキュメントとコードの整合性）" do
+    it "SPEC/api/README.md に記載された14エンドポイント（利用者向け10+管理API4）が、実際のRailsルーティングに存在する（ドキュメントとコードの整合性）" do
       routes = Rails.application.routes.routes.map do |route|
         verb = route.verb.to_s
         path = route.path.spec.to_s.gsub(%r{\(\.:format\)\z}, "")
@@ -235,6 +236,7 @@ RSpec.describe "PR59: READMEの最終整備とAPI参照の追加" do
 
       documented_endpoints = [
         [ "POST", "/api/v1/session" ],
+        [ "PATCH", "/api/v1/locale" ],
         [ "GET", "/api/v1/masters" ],
         [ "GET", "/api/v1/policies" ],
         [ "POST", "/api/v1/policies" ],
