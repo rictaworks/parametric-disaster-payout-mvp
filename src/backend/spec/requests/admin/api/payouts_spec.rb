@@ -153,6 +153,14 @@ RSpec.describe "PATCH /admin/api/payouts/:id/complete", type: :request do
     expect(payout.reload.payout_status).to eq(completed_payout_status)
   end
 
+  it "handles POST request with _method=patch from HTML forms (Rack::MethodOverride)" do
+    post "/admin/api/payouts/#{payout.id}/complete", headers: auth_headers, params: { _method: "patch", return_to_admin_payouts: "1" }
+
+    expect(response).to have_http_status(:see_other)
+    expect(response).to redirect_to("/admin/payouts")
+    expect(payout.reload.payout_status).to eq(completed_payout_status)
+  end
+
   it "returns 422 and does not process when payout is invalid" do
     invalid_status = PayoutStatus.find_or_create_by!(code: "invalid", sort_order: 2, label_ja: "無効", label_en: "Invalid", label_fr: "Invalid", label_zh: "Invalid", label_ru: "Invalid", label_es: "Invalid", label_ar: "Invalid")
     payout.update_columns(payout_status_id: invalid_status.id)
