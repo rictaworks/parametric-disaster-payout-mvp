@@ -165,6 +165,7 @@ export async function proxyRequest(request: Request, pathSegments: string[]) {
   const responseBody = await backendResponse.text();
   const responseHeaders = new Headers(backendResponse.headers);
   responseHeaders.delete("content-length");
+  responseHeaders.delete("content-encoding");
   responseHeaders.delete("transfer-encoding");
   responseHeaders.delete("connection");
 
