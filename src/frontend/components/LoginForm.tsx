@@ -47,10 +47,15 @@ export function LoginForm() {
   const [state, setState] = useState<LoginState>({ kind: "idle", message: "" });
   const [submitting, setSubmitting] = useState(false);
   const buttonRef = useRef<HTMLDivElement | null>(null);
+  const submittingRef = useRef(false);
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
   const submitIdToken = useCallback(
     async (idToken: string) => {
+      if (submittingRef.current) {
+        return false;
+      }
+      submittingRef.current = true;
       setSubmitting(true);
       setState({ kind: "idle", message: "" });
 
@@ -80,6 +85,7 @@ export function LoginForm() {
         return false;
       } finally {
         setSubmitting(false);
+        submittingRef.current = false;
       }
     },
     [getLocale, messages.login.error, messages.login.success]
@@ -87,6 +93,9 @@ export function LoginForm() {
 
   const handleCredentialResponse = useCallback(
     (response: GoogleCredentialResponse) => {
+      if (submittingRef.current) {
+        return;
+      }
       if (!response.credential) {
         setState({ kind: "error", message: messages.login.error });
         return;
