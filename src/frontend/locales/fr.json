@@ -45,7 +45,8 @@
     "submitting": "Envoi",
     "hint": "Une fois connecté, vous resterez connecté sur cet appareil.",
     "success": "Connexion réussie.",
-    "error": "Échec de la connexion."
+    "error": "Échec de la connexion.",
+    "googleUnavailable": "La connexion Google est indisponible pour le moment. Veuillez réessayer plus tard."
   },
   "policies": {
     "new": {

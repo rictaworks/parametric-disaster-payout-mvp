@@ -45,7 +45,8 @@
     "submitting": "Enviando",
     "hint": "Una vez que inicies sesión, permanecerás conectado en este dispositivo.",
     "success": "Acceso correcto.",
-    "error": "Error al acceder."
+    "error": "Error al acceder.",
+    "googleUnavailable": "El inicio de sesión con Google no está disponible en este momento. Inténtalo de nuevo más tarde."
   },
   "policies": {
     "new": {

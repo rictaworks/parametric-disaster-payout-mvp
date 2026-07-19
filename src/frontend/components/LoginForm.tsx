@@ -177,7 +177,11 @@ export function LoginForm() {
     <div className="login-form">
       <div className="field">
         <span className="field__label">{messages.login.title}</span>
-        <div ref={buttonRef} className="google-login-button" aria-label={messages.login.title} />
+        {clientId ? (
+          <div ref={buttonRef} className="google-login-button" aria-label={messages.login.title} />
+        ) : (
+          <p className="status-message status-message--error">{messages.login.googleUnavailable}</p>
+        )}
       </div>
 
       <div className="login-form__actions">

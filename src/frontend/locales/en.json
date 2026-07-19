@@ -45,7 +45,8 @@
     "submitting": "Sending",
     "hint": "Once you sign in, you'll stay logged in on this device.",
     "success": "Login succeeded.",
-    "error": "Login failed."
+    "error": "Login failed.",
+    "googleUnavailable": "Google sign-in is unavailable right now. Please try again later."
   },
   "policies": {
     "new": {

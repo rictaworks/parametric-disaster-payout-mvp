@@ -54,11 +54,27 @@ function installGoogleIdentityServicesMock() {
 }
 
 describe("LoginForm", () => {
+  const originalClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
   afterEach(() => {
     jest.restoreAllMocks();
     window.localStorage.clear();
     delete (window as typeof window & { google?: unknown }).google;
     document.getElementById("google-identity-services-script")?.remove();
+    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID = originalClientId;
+  });
+
+  it("shows a dedicated unavailable message instead of a silently empty button when NEXT_PUBLIC_GOOGLE_CLIENT_ID is missing", () => {
+    delete process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+    render(
+      <LocaleProvider>
+        <LoginForm />
+      </LocaleProvider>
+    );
+
+    expect(screen.getByText("Googleログインを利用できません。時間をおいて再度お試しください。")).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
   it("syncs the current locale to the backend right after a successful login", async () => {
