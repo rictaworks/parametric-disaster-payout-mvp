@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { AppShell } from "@/components/AppShell";
 import ja from "@/locales/ja.json";
 import "./globals.css";
@@ -16,6 +17,19 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
+        {/* GA4（RictaWorks 全デモ共通タグ） */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-C04W1XKS16"
+          strategy="afterInteractive"
+        />
+        <Script id="ga4" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-C04W1XKS16');
+          `}
+        </Script>
         <AppShell>{children}</AppShell>
       </body>
     </html>
