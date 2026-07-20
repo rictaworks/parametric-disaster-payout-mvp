@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale } from "@/components/LocaleContext";
 import { syncLocalePreference } from "@/lib/locale-api";
@@ -19,6 +20,8 @@ type LoginState = {
   kind: "idle" | "success" | "error";
   message: string;
 };
+
+type SessionState = "checking" | "unauthenticated" | "authenticated";
 
 type GoogleCredentialResponse = {
   credential?: string;
@@ -45,10 +48,45 @@ declare global {
 export function LoginForm() {
   const { getLocale, messages } = useLocale();
   const [state, setState] = useState<LoginState>({ kind: "idle", message: "" });
+  const [sessionState, setSessionState] = useState<SessionState>("checking");
   const [submitting, setSubmitting] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const buttonRef = useRef<HTMLDivElement | null>(null);
   const submittingRef = useRef(false);
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSession() {
+      try {
+        const response = await fetch("/api/v1/session", {
+          method: "GET",
+        });
+
+        if (cancelled) {
+          return;
+        }
+
+        if (response.ok) {
+          setSessionState("authenticated");
+          return;
+        }
+
+        setSessionState("unauthenticated");
+      } catch {
+        if (!cancelled) {
+          setSessionState("unauthenticated");
+        }
+      }
+    }
+
+    void loadSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const submitIdToken = useCallback(
     async (idToken: string) => {
@@ -78,6 +116,7 @@ export function LoginForm() {
         // ログイン処理中に言語が切り替わった場合でも古い値で上書きしない
         void syncLocalePreference(getLocale());
 
+        setSessionState("authenticated");
         setState({ kind: "success", message: messages.login.success });
         return true;
       } catch {
@@ -90,6 +129,33 @@ export function LoginForm() {
     },
     [getLocale, messages.login.error, messages.login.success]
   );
+
+  const handleLogout = useCallback(async () => {
+    if (loggingOut) {
+      return;
+    }
+
+    setLoggingOut(true);
+    setState({ kind: "idle", message: "" });
+
+    try {
+      const response = await fetch("/api/v1/session", {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        setState({ kind: "error", message: messages.login.error });
+        return;
+      }
+
+      setSessionState("unauthenticated");
+      setState({ kind: "success", message: messages.login.loggedOut });
+    } catch {
+      setState({ kind: "error", message: messages.login.error });
+    } finally {
+      setLoggingOut(false);
+    }
+  }, [loggingOut, messages.login.error, messages.login.loggedOut]);
 
   const handleCredentialResponse = useCallback(
     (response: GoogleCredentialResponse) => {
@@ -110,7 +176,7 @@ export function LoginForm() {
     let cancelled = false;
 
     function renderGoogleButton() {
-      if (cancelled || !buttonRef.current || !clientId) {
+      if (cancelled || sessionState !== "unauthenticated" || !buttonRef.current || !clientId) {
         return;
       }
 
@@ -130,6 +196,12 @@ export function LoginForm() {
       if (!cancelled) {
         setState({ kind: "error", message: messages.login.error });
       }
+    }
+
+    if (sessionState !== "unauthenticated") {
+      return () => {
+        cancelled = true;
+      };
     }
 
     if (window.google?.accounts?.id) {
@@ -171,13 +243,17 @@ export function LoginForm() {
       script.removeEventListener("load", renderGoogleButton);
       script.removeEventListener("error", handleScriptError);
     };
-  }, [clientId, handleCredentialResponse, messages.login.error]);
+  }, [clientId, handleCredentialResponse, messages.login.error, sessionState]);
 
   return (
     <div className="login-form">
       <div className="field">
-        <span className="field__label">{messages.login.title}</span>
-        {clientId ? (
+        <span className="field__label">
+          {sessionState === "authenticated" ? messages.login.loggedIn : messages.login.title}
+        </span>
+        {sessionState === "authenticated" ? (
+          <p className="status-message status-message--success">{messages.login.loggedIn}</p>
+        ) : clientId ? (
           <div ref={buttonRef} className="google-login-button" aria-label={messages.login.title} />
         ) : (
           <p className="status-message status-message--error">{messages.login.googleUnavailable}</p>
@@ -185,7 +261,18 @@ export function LoginForm() {
       </div>
 
       <div className="login-form__actions">
-        <p className="login-form__hint">{messages.login.hint}</p>
+        {sessionState === "authenticated" ? (
+          <>
+            <Link href="/mypage" className="secondary-button">
+              {messages.navigation.mypage}
+            </Link>
+            <button className="primary-button" type="button" onClick={() => void handleLogout()} disabled={loggingOut}>
+              {messages.login.logout}
+            </button>
+          </>
+        ) : (
+          <p className="login-form__hint">{messages.login.hint}</p>
+        )}
       </div>
 
       {submitting ? <p className="status-message">{messages.login.submitting}</p> : null}

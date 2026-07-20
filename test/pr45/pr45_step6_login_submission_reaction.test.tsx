@@ -81,7 +81,7 @@ describe("PR45 手順6: セッション作成を試したときの画面反応",
       </AppShell>
     );
 
-    expect(gisCallback).toBeDefined();
+    await waitFor(() => expect(gisCallback).toBeDefined());
     act(() => {
       gisCallback!({ credential: "test-token-12345" });
     });
@@ -105,7 +105,7 @@ describe("PR45 手順6: セッション作成を試したときの画面反応",
       </AppShell>
     );
 
-    expect(gisCallback).toBeDefined();
+    await waitFor(() => expect(gisCallback).toBeDefined());
     act(() => {
       gisCallback!({ credential: "test-token-12345" });
     });
@@ -115,11 +115,21 @@ describe("PR45 手順6: セッション作成を試したときの画面反応",
 
   it("Railsが有効なGoogle IDトークンで成功応答を返す場合、「ログインに成功しました。」が表示される", async () => {
     mockGoogleIdentityServices();
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({ user: { id: 1 } }),
-      text: async () => JSON.stringify({ user: { id: 1 } }),
+    global.fetch = jest.fn().mockImplementation((_url, options) => {
+      if (!options || options.method === "GET") {
+        return Promise.resolve({
+          ok: false,
+          status: 401,
+          json: async () => ({ error: "unauthorized" }),
+          text: async () => JSON.stringify({ error: "unauthorized" }),
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: async () => ({ user: { id: 1 } }),
+        text: async () => JSON.stringify({ user: { id: 1 } }),
+      });
     });
 
     render(
@@ -128,7 +138,7 @@ describe("PR45 手順6: セッション作成を試したときの画面反応",
       </AppShell>
     );
 
-    expect(gisCallback).toBeDefined();
+    await waitFor(() => expect(gisCallback).toBeDefined());
     act(() => {
       gisCallback!({ credential: "test-token-12345" });
     });
@@ -140,12 +150,19 @@ describe("PR45 手順6: セッション作成を試したときの画面反応",
   it("送信中は「送信中」表示になる", async () => {
     mockGoogleIdentityServices();
     let resolveFetch: (value: unknown) => void = () => undefined;
-    global.fetch = jest.fn().mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          resolveFetch = resolve;
-        })
-    );
+    global.fetch = jest.fn().mockImplementation((_url, options) => {
+      if (!options || options.method === "GET") {
+        return Promise.resolve({
+          ok: false,
+          status: 401,
+          json: async () => ({ error: "unauthorized" }),
+          text: async () => JSON.stringify({ error: "unauthorized" }),
+        });
+      }
+      return new Promise((resolve) => {
+        resolveFetch = resolve;
+      });
+    });
 
     render(
       <AppShell>
@@ -153,7 +170,7 @@ describe("PR45 手順6: セッション作成を試したときの画面反応",
       </AppShell>
     );
 
-    expect(gisCallback).toBeDefined();
+    await waitFor(() => expect(gisCallback).toBeDefined());
     act(() => {
       gisCallback!({ credential: "test-token-12345" });
     });
@@ -185,7 +202,7 @@ describe("PR45 手順6: セッション作成を試したときの画面反応",
       </AppShell>
     );
 
-    expect(gisCallback).toBeDefined();
+    await waitFor(() => expect(gisCallback).toBeDefined());
     act(() => {
       gisCallback!({ credential: "test-token-12345" });
     });
@@ -201,12 +218,19 @@ describe("PR45 手順6: セッション作成を試したときの画面反応",
   it("ログイン処理中にさらに credential callback が発火されても、多重送信を行わない", async () => {
     mockGoogleIdentityServices();
     let resolveFetch: (value: unknown) => void = () => undefined;
-    const fetchMock = jest.fn().mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          resolveFetch = resolve;
-        })
-    );
+    const fetchMock = jest.fn().mockImplementation((_url, options) => {
+      if (!options || options.method === "GET") {
+        return Promise.resolve({
+          ok: false,
+          status: 401,
+          json: async () => ({ error: "unauthorized" }),
+          text: async () => JSON.stringify({ error: "unauthorized" }),
+        });
+      }
+      return new Promise((resolve) => {
+        resolveFetch = resolve;
+      });
+    });
     global.fetch = fetchMock;
 
     render(
@@ -215,7 +239,7 @@ describe("PR45 手順6: セッション作成を試したときの画面反応",
       </AppShell>
     );
 
-    expect(gisCallback).toBeDefined();
+    await waitFor(() => expect(gisCallback).toBeDefined());
 
     // 1回目の発火
     act(() => {
@@ -227,7 +251,7 @@ describe("PR45 手順6: セッション作成を試したときの画面反応",
       gisCallback!({ credential: "test-token-2" });
     });
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
 
     // 1回目を完了させる
     resolveFetch({
@@ -245,6 +269,6 @@ describe("PR45 手順6: セッション作成を試したときの画面反応",
     act(() => {
       gisCallback!({ credential: "test-token-3" });
     });
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 });

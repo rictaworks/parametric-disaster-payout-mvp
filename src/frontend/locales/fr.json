@@ -46,7 +46,10 @@
     "hint": "Une fois connecté, vous resterez connecté sur cet appareil.",
     "success": "Connexion réussie.",
     "error": "Échec de la connexion.",
-    "googleUnavailable": "La connexion Google est indisponible pour le moment. Veuillez réessayer plus tard."
+    "googleUnavailable": "La connexion Google est indisponible pour le moment. Veuillez réessayer plus tard.",
+    "loggedIn": "Vous êtes connecté·e.",
+    "logout": "Se déconnecter",
+    "loggedOut": "Vous avez été déconnecté·e."
   },
   "policies": {
     "new": {

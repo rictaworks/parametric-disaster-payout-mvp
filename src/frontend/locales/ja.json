@@ -46,7 +46,10 @@
     "hint": "ログインに成功すると、この端末でログイン状態が保持されます。",
     "success": "ログインに成功しました。",
     "error": "ログインに失敗しました。",
-    "googleUnavailable": "Googleログインを利用できません。時間をおいて再度お試しください。"
+    "googleUnavailable": "Googleログインを利用できません。時間をおいて再度お試しください。",
+    "loggedIn": "ログイン済みです。",
+    "logout": "ログアウト",
+    "loggedOut": "ログアウトしました。"
   },
   "policies": {
     "new": {

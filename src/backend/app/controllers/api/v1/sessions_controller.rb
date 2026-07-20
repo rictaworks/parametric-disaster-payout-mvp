@@ -1,14 +1,15 @@
 module Api
   module V1
     class SessionsController < ApplicationController
-      INTERNAL_API_SECRET_HEADER = "X-Internal-API-Secret"
+      include InternalApiAuthentication
+
+      before_action :authenticate_internal_session!, only: :show
 
       def create
-        return head :forbidden unless internal_api_secret_valid?
-
         user = authenticate_user!
+        _user_session, session_token = UserSession.generate_for_user(user)
         render json: {
-          session_token: user.internal_session_token,
+          session_token: session_token,
           user: {
             id: user.id,
             google_sub: user.google_sub
@@ -16,6 +17,18 @@ module Api
         }, status: :ok
       rescue Google::Auth::IDTokens::VerificationError
         head :unauthorized
+      end
+
+      def show
+        render json: {
+          user: session_user_payload(current_user)
+        }, status: :ok
+      end
+
+      def destroy
+        current_session&.revoke!
+        clear_session_cookie
+        head :no_content
       end
 
       private
@@ -45,14 +58,25 @@ module Api
         end
       end
 
-      def internal_api_secret_valid?
-        expected_secret = ENV["INTERNAL_API_SECRET"].to_s
-        provided_secret = request.headers[INTERNAL_API_SECRET_HEADER].to_s
+      def session_user_payload(user)
+        {
+          id: user.id,
+          google_sub: user.google_sub
+        }
+      end
 
-        return false if expected_secret.blank? || provided_secret.blank?
-        return false if expected_secret.bytesize != provided_secret.bytesize
-
-        ActiveSupport::SecurityUtils.secure_compare(expected_secret, provided_secret)
+      def clear_session_cookie
+        response.set_header(
+          "Set-Cookie",
+          [
+            "parametric_session_token=",
+            "Max-Age=0",
+            "Path=/",
+            "SameSite=Lax",
+            "HttpOnly",
+            (Rails.env.production? ? "Secure" : nil)
+          ].compact.join("; ")
+        )
       end
     end
   end

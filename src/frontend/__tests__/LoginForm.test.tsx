@@ -64,8 +64,9 @@ describe("LoginForm", () => {
     process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID = originalClientId;
   });
 
-  it("shows a dedicated unavailable message instead of a silently empty button when NEXT_PUBLIC_GOOGLE_CLIENT_ID is missing", () => {
+  it("shows a dedicated unavailable message instead of a silently empty button when NEXT_PUBLIC_GOOGLE_CLIENT_ID is missing", async () => {
     delete process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 401, json: async () => ({}) });
 
     render(
       <LocaleProvider>
@@ -73,15 +74,25 @@ describe("LoginForm", () => {
       </LocaleProvider>
     );
 
+    await waitFor(() => expect(global.fetch).toHaveBeenCalled());
     expect(screen.getByText("Googleログインを利用できません。時間をおいて再度お試しください。")).toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
   it("syncs the current locale to the backend right after a successful login", async () => {
-    const fetchMock = jest.fn().mockImplementation((input: RequestInfo | URL) => {
+    const fetchMock = jest.fn().mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
       const url = input.toString();
+      const method = init?.method ?? "GET";
 
-      if (url === "/api/v1/session") {
+      if (url === "/api/v1/session" && method === "GET") {
+        return Promise.resolve({ ok: false, status: 401, json: async () => ({}) });
+      }
+
+      if (url === "/api/v1/locale") {
+        return Promise.resolve({ ok: true, status: 200, json: async () => ({}) });
+      }
+
+      if (url === "/api/v1/session" && method === "POST") {
         return Promise.resolve({ ok: true, status: 200, json: async () => ({}) });
       }
 
@@ -114,10 +125,15 @@ describe("LoginForm", () => {
   });
 
   it("does not sync locale when login fails", async () => {
-    global.fetch = jest.fn().mockImplementation((input: RequestInfo | URL) => {
+    global.fetch = jest.fn().mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
       const url = input.toString();
+      const method = init?.method ?? "GET";
 
-      if (url === "/api/v1/session") {
+      if (url === "/api/v1/session" && method === "GET") {
+        return Promise.resolve({ ok: false, status: 401, json: async () => ({}) });
+      }
+
+      if (url === "/api/v1/session" && method === "POST") {
         return Promise.resolve({ ok: false, status: 401, json: async () => ({}) });
       }
 
@@ -141,6 +157,48 @@ describe("LoginForm", () => {
     expect(global.fetch).not.toHaveBeenCalledWith("/api/v1/locale", expect.anything());
   });
 
+  it("shows a logged-in state and allows logging out when the current session already exists", async () => {
+    const fetchMock = jest.fn().mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = input.toString();
+      const method = init?.method ?? "GET";
+
+      if (url === "/api/v1/session" && method === "GET") {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: async () => ({ user: { id: 7, google_sub: "google-sub-123" } }),
+        });
+      }
+
+      if (url === "/api/v1/session" && method === "DELETE") {
+        return Promise.resolve({ ok: true, status: 204, json: async () => ({}) });
+      }
+
+      return Promise.resolve({ ok: true, status: 200, json: async () => ({}) });
+    });
+    global.fetch = fetchMock;
+
+    const google = installGoogleIdentityServicesMock();
+
+    render(
+      <LocaleProvider>
+        <LoginForm />
+      </LocaleProvider>
+    );
+
+    await screen.findByText("ログイン済みです。", { selector: ".status-message--success" });
+    expect(screen.queryByRole("button", { name: "Googleでログイン" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "ログアウト" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "マイページ" })).toBeInTheDocument();
+    expect(google.initialize).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole("button", { name: "ログアウト" }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/v1/session", expect.objectContaining({ method: "DELETE" })));
+    await waitFor(() => expect(google.initialize).toHaveBeenCalled());
+    expect(screen.getByRole("button", { name: "Googleでログイン" })).toBeInTheDocument();
+  });
+
   it("syncs the locale current at the moment login succeeds, not the one captured when the form was submitted (stale-closure race regression)", async () => {
     let resolveSession: (value: { ok: boolean; status: number; json: () => Promise<unknown> }) => void = () => undefined;
     const sessionResponse = new Promise<{ ok: boolean; status: number; json: () => Promise<unknown> }>((resolve) => {
@@ -150,8 +208,13 @@ describe("LoginForm", () => {
     const localeCalls: string[] = [];
     const fetchMock = jest.fn().mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
       const url = input.toString();
+      const method = init?.method ?? "GET";
 
-      if (url === "/api/v1/session") {
+      if (url === "/api/v1/session" && method === "GET") {
+          return Promise.resolve({ ok: false, status: 401, json: async () => ({}) });
+      }
+
+      if (url === "/api/v1/session" && method === "POST") {
         return sessionResponse;
       }
 

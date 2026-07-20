@@ -204,7 +204,8 @@ RSpec.describe "PR44: Google IDトークン認証用の内部セッションAPI 
   # ---------------------------------------------------------------------
   describe "合言葉比較の実装確認" do
     it "秘密情報の比較にActiveSupport::SecurityUtils.secure_compareが使用されている" do
-      source = File.read(Rails.root.join("app/controllers/api/v1/sessions_controller.rb"))
+      # PR92でsecure_compare比較はInternalApiAuthentication concernへ移設された
+      source = File.read(Rails.root.join("app/controllers/concerns/internal_api_authentication.rb"))
       expect(source).to include("ActiveSupport::SecurityUtils.secure_compare")
     end
   end
