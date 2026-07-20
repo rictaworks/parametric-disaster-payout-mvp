@@ -83,10 +83,25 @@ RSpec.describe "API session endpoint", type: :request do
     expect(User.count).to eq(0)
   end
 
-  it "clears the browser session cookie when logging out" do
+  it "clears the browser session cookie and revokes session token when logging out" do
     user = User.create!(google_sub: "google-sub-logout")
+    session_token = user.internal_session_token
 
-    delete "/api/v1/session", headers: request_headers.merge("X-Internal-Session-Token" => user.internal_session_token)
+    get "/api/v1/session", headers: request_headers.merge("X-Internal-Session-Token" => session_token)
+    expect(response).to have_http_status(:ok)
+
+    delete "/api/v1/session", headers: request_headers.merge("X-Internal-Session-Token" => session_token)
+
+    expect(response).to have_http_status(:no_content)
+    expect(response.headers["Set-Cookie"]).to include("parametric_session_token=")
+    expect(response.headers["Set-Cookie"]).to include("Max-Age=0")
+
+    get "/api/v1/session", headers: request_headers.merge("X-Internal-Session-Token" => session_token)
+    expect(response).to have_http_status(:unauthorized)
+  end
+
+  it "clears the browser session cookie on logout even if the session token is invalid or missing" do
+    delete "/api/v1/session", headers: request_headers.merge("X-Internal-Session-Token" => "invalid-token")
 
     expect(response).to have_http_status(:no_content)
     expect(response.headers["Set-Cookie"]).to include("parametric_session_token=")

@@ -7,8 +7,9 @@ module Api
 
       def create
         user = authenticate_user!
+        _user_session, session_token = UserSession.generate_for_user(user)
         render json: {
-          session_token: user.internal_session_token,
+          session_token: session_token,
           user: {
             id: user.id,
             google_sub: user.google_sub
@@ -25,6 +26,7 @@ module Api
       end
 
       def destroy
+        current_session&.revoke!
         clear_session_cookie
         head :no_content
       end

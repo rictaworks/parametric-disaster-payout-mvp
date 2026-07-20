@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_18_200000) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_20_110000) do
   create_table "legacy_payouts", force: :cascade do |t|
     t.integer "policy_id"
     t.integer "payout_tier_id"
@@ -345,6 +345,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_18_200000) do
     t.index ["user_id"], name: "index_survey_responses_on_user_id"
   end
 
+  create_table "user_sessions", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "token_digest", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "revoked_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token_digest"], name: "index_user_sessions_on_token_digest", unique: true
+    t.index ["user_id"], name: "index_user_sessions_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "google_sub", null: false
     t.datetime "created_at", null: false
@@ -377,4 +388,5 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_18_200000) do
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "survey_responses", "payouts"
   add_foreign_key "survey_responses", "users"
+  add_foreign_key "user_sessions", "users"
 end

@@ -19,9 +19,13 @@ module InternalApiAuthentication
   end
 
   def current_user
-    @current_user ||= begin
+    @current_user ||= current_session&.user
+  end
+
+  def current_session
+    @current_session ||= begin
       token = request.headers[INTERNAL_SESSION_TOKEN_HEADER].to_s
-      token.present? ? User.find_signed(token, purpose: :internal_session) : nil
+      token.present? ? UserSession.find_active_by_token(token) : nil
     end
   end
 
