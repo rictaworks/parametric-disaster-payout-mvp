@@ -182,4 +182,23 @@ describe("PR54 手順6: マイページの表示言語切り替え", () => {
     await waitFor(() => expect(document.documentElement.dir).toBe("rtl"));
     expect(document.documentElement.lang).toBe("ar");
   });
+
+  it("(d) 「中文」を選ぶと待機期間カウントダウンの単位も中国語になる", async () => {
+    global.fetch = mockFetchWithFixtures();
+    jest.spyOn(Date, "now").mockReturnValue(new Date("2098-12-29T01:00:00.000Z").getTime());
+
+    const user = userEvent.setup();
+    render(
+      <AppShell>
+        <MyPage />
+      </AppShell>
+    );
+
+    await screen.findByText("アンケート依頼");
+
+    await user.click(screen.getByRole("button", { name: "中文" }));
+
+    expect(await screen.findByText("距离免责结束: 还剩 2天 23小时")).toBeInTheDocument();
+    expect(screen.queryByText("距离免责结束: 还剩 2日 23時間")).not.toBeInTheDocument();
+  });
 });
