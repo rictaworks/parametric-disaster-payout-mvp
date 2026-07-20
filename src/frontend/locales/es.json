@@ -46,7 +46,10 @@
     "hint": "Una vez que inicies sesión, permanecerás conectado en este dispositivo.",
     "success": "Acceso correcto.",
     "error": "Error al acceder.",
-    "googleUnavailable": "El inicio de sesión con Google no está disponible en este momento. Inténtalo de nuevo más tarde."
+    "googleUnavailable": "El inicio de sesión con Google no está disponible en este momento. Inténtalo de nuevo más tarde.",
+    "loggedIn": "Ya has iniciado sesión.",
+    "logout": "Cerrar sesión",
+    "loggedOut": "Has cerrado sesión."
   },
   "policies": {
     "new": {

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "POST /api/v1/session", type: :request do
+RSpec.describe "API session endpoint", type: :request do
   let(:internal_api_secret) { "shared-secret" }
   let(:google_client_id) { "google-client-id" }
   let(:request_headers) { { "X-Internal-API-Secret" => internal_api_secret } }
@@ -41,6 +41,27 @@ RSpec.describe "POST /api/v1/session", type: :request do
     expect(User.column_names & %w[email name first_name last_name given_name family_name avatar_url phone_number]).to be_empty
   end
 
+  it "returns the signed-in user for the current internal session token" do
+    user = User.create!(google_sub: "google-sub-456")
+    session_token = user.internal_session_token
+
+    get "/api/v1/session", headers: request_headers.merge("X-Internal-Session-Token" => session_token)
+
+    expect(response).to have_http_status(:ok)
+    expect(JSON.parse(response.body)).to eq(
+      "user" => {
+        "id" => user.id,
+        "google_sub" => user.google_sub
+      }
+    )
+  end
+
+  it "returns 401 when no internal session token is present" do
+    get "/api/v1/session", headers: request_headers
+
+    expect(response).to have_http_status(:unauthorized)
+  end
+
   it "returns 401 for an invalid Google ID token" do
     allow(Google::Auth::IDTokens).to receive(:verify_oidc)
       .and_raise(Google::Auth::IDTokens::VerificationError, "invalid token")
@@ -60,6 +81,16 @@ RSpec.describe "POST /api/v1/session", type: :request do
 
     expect(response).to have_http_status(:forbidden)
     expect(User.count).to eq(0)
+  end
+
+  it "clears the browser session cookie when logging out" do
+    user = User.create!(google_sub: "google-sub-logout")
+
+    delete "/api/v1/session", headers: request_headers.merge("X-Internal-Session-Token" => user.internal_session_token)
+
+    expect(response).to have_http_status(:no_content)
+    expect(response.headers["Set-Cookie"]).to include("parametric_session_token=")
+    expect(response.headers["Set-Cookie"]).to include("Max-Age=0")
   end
 
   it "allows the development-only authentication bypass" do
