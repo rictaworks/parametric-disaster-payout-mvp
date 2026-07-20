@@ -5,7 +5,7 @@ import Link from "next/link";
 import { PageSection } from "@/components/PageSection";
 import { useLocale } from "@/components/LocaleContext";
 import { POLICY_PLAN_OPTIONS, findThresholdOption } from "@/components/wizard/policyWizardData";
-import type { Messages } from "@/lib/i18n";
+import type { Locale, Messages } from "@/lib/i18n";
 
 type FetchedPolicy = {
   id: number;
@@ -67,7 +67,21 @@ function formatDateTime(value: string | null) {
   }).format(new Date(value));
 }
 
-function formatCountdown(waitingUntil: string | null, messages: Messages) {
+function formatCountdownUnit(value: number, unit: "day" | "hour" | "minute", locale: Locale) {
+  if (locale === "ja") {
+    const labels = {
+      day: "日",
+      hour: "時間",
+      minute: "分",
+    } as const;
+
+    return `${value}${labels[unit]}`;
+  }
+
+  return new Intl.NumberFormat(locale, { style: "unit", unit, unitDisplay: "long" }).format(value);
+}
+
+function formatCountdown(waitingUntil: string | null, locale: Locale, messages: Messages) {
   if (!waitingUntil) {
     return "-";
   }
@@ -84,20 +98,20 @@ function formatCountdown(waitingUntil: string | null, messages: Messages) {
 
   const parts = [] as string[];
   if (days > 0) {
-    parts.push(`${days}日`);
+    parts.push(formatCountdownUnit(days, "day", locale));
   }
   if (hours > 0) {
-    parts.push(`${hours}時間`);
+    parts.push(formatCountdownUnit(hours, "hour", locale));
   }
   if (parts.length === 0) {
-    parts.push(`${minutes}分`);
+    parts.push(formatCountdownUnit(minutes, "minute", locale));
   }
 
   return `${messages.mypage.countdown.remainingPrefix}${parts.join(" ")}`;
 }
 
 export default function MyPage() {
-  const { messages } = useLocale();
+  const { locale, messages } = useLocale();
   const [state, setState] = useState<PageState>({ status: "loading" });
   const [surveyDraft, setSurveyDraft] = useState(messages.mypage.survey.defaultFeedback);
   const [satisfaction, setSatisfaction] = useState<number>(5);
@@ -385,7 +399,7 @@ export default function MyPage() {
                   <article key={policy.id} className="mypage-card">
                     <div className="mypage-card__header">
                       <strong className="mypage-card__status">{statusLabel(policy.policy_status_code)}</strong>
-                      <span>{`${messages.mypage.countdownLabel}${formatCountdown(policy.waiting_until, messages)}`}</span>
+                      <span>{`${messages.mypage.countdownLabel}${formatCountdown(policy.waiting_until, locale, messages)}`}</span>
                     </div>
 
                     <dl className="mypage-card__list">
