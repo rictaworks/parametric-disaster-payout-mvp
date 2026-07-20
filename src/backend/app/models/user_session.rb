@@ -22,7 +22,7 @@ class UserSession < ApplicationRecord
       )
     end
 
-    [session, raw_token]
+    [ session, raw_token ]
   end
 
   def self.cleanup_expired_and_revoked_for(user)
