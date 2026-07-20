@@ -57,5 +57,9 @@ module Backend
     # flash を有効にするために明示的に追加する（Issue #62）。セッションに依存するため
     # ActionDispatch::Cookies / セッションストアの後に追加すること。
     config.middleware.use ActionDispatch::Flash
+    # config.api_only = true では Rack::MethodOverride も自動で外れるため、
+    # 管理画面（button_to method: :patch 等）が送信する <form method="post"> ＋
+    # 隠しフィールド _method=patch を PATCH リクエストへ変換するために追加する（Issue #87）。
+    config.middleware.use Rack::MethodOverride
   end
 end
