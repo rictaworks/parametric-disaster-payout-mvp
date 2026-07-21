@@ -53,6 +53,7 @@ export function LoginForm() {
   const [loggingOut, setLoggingOut] = useState(false);
   const buttonRef = useRef<HTMLDivElement | null>(null);
   const submittingRef = useRef(false);
+  const logoutSucceededRef = useRef(false);
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
   useEffect(() => {
@@ -111,6 +112,8 @@ export function LoginForm() {
           return false;
         }
 
+        logoutSucceededRef.current = false;
+
         // ログイン成功時点で最新のlocaleをUser#localeへ同期する（Issue #65）。
         // フォーム送信開始時にクロージャで捕捉した値ではなくgetLocale()で読み直すことで、
         // ログイン処理中に言語が切り替わった場合でも古い値で上書きしない
@@ -137,6 +140,7 @@ export function LoginForm() {
 
     setLoggingOut(true);
     setState({ kind: "idle", message: "" });
+    logoutSucceededRef.current = false;
 
     try {
       const response = await fetch("/api/v1/session", {
@@ -149,6 +153,7 @@ export function LoginForm() {
       }
 
       setSessionState("unauthenticated");
+      logoutSucceededRef.current = true;
       setState({ kind: "success", message: messages.login.loggedOut });
     } catch {
       setState({ kind: "error", message: messages.login.error });
@@ -162,6 +167,7 @@ export function LoginForm() {
       if (submittingRef.current) {
         return;
       }
+      logoutSucceededRef.current = false;
       if (!response.credential) {
         setState({ kind: "error", message: messages.login.error });
         return;
@@ -193,6 +199,9 @@ export function LoginForm() {
     }
 
     function handleScriptError() {
+      if (logoutSucceededRef.current) {
+        return;
+      }
       if (!cancelled) {
         setState({ kind: "error", message: messages.login.error });
       }

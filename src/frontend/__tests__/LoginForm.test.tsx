@@ -199,6 +199,45 @@ describe("LoginForm", () => {
     expect(screen.getByRole("button", { name: "Googleでログイン" })).toBeInTheDocument();
   });
 
+  it("keeps the logout success message even if Google button script loading fails after signing out", async () => {
+    const fetchMock = jest.fn().mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = input.toString();
+      const method = init?.method ?? "GET";
+
+      if (url === "/api/v1/session" && method === "GET") {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: async () => ({ user: { id: 7, google_sub: "google-sub-123" } }),
+        });
+      }
+
+      if (url === "/api/v1/session" && method === "DELETE") {
+        return Promise.resolve({ ok: true, status: 204, json: async () => ({}) });
+      }
+
+      return Promise.resolve({ ok: true, status: 200, json: async () => ({}) });
+    });
+    global.fetch = fetchMock;
+
+    render(
+      <LocaleProvider>
+        <LoginForm />
+      </LocaleProvider>
+    );
+
+    await screen.findByText("ログイン済みです。", { selector: ".status-message--success" });
+
+    await userEvent.click(screen.getByRole("button", { name: "ログアウト" }));
+
+    await waitFor(() => expect(document.getElementById("google-identity-services-script")).toBeInTheDocument());
+
+    document.getElementById("google-identity-services-script")?.dispatchEvent(new Event("error"));
+
+    await screen.findByText("ログアウトしました。");
+    expect(screen.queryByText("ログインに失敗しました。")).not.toBeInTheDocument();
+  });
+
   it("syncs the locale current at the moment login succeeds, not the one captured when the form was submitted (stale-closure race regression)", async () => {
     let resolveSession: (value: { ok: boolean; status: number; json: () => Promise<unknown> }) => void = () => undefined;
     const sessionResponse = new Promise<{ ok: boolean; status: number; json: () => Promise<unknown> }>((resolve) => {
