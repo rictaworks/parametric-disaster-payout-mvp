@@ -11,7 +11,43 @@
     "home": "Home",
     "policies": "Apply",
     "mypage": "My page",
-    "login": "Login"
+    "login": "Login",
+    "demoList": "← Demo list"
+  },
+  "footer": {
+    "legal": "Terms, Disclaimer & Contact",
+    "copyright": "© 2026 Ricta Works"
+  },
+  "consult": {
+    "cta": "Contact us"
+  },
+  "legal": {
+    "pageTitle": "Terms, Disclaimer & Contact",
+    "backLink": "← Back to Home",
+    "termsHeading": "Terms of Use",
+    "terms": [
+      "This service is provided for demonstration purposes only. Commercial use and redistribution are prohibited.",
+      "The content of the service may change or be discontinued without notice.",
+      "Data such as policies, payouts, and survey responses may be deleted without notice for demo operation purposes.",
+      "By using this service, you are deemed to have agreed to these terms."
+    ],
+    "disclaimerHeading": "Disclaimer",
+    "disclaimer": [
+      "This service is a simulated demo for demand research only, and does not underwrite, execute, or pay out any real insurance policy.",
+      "All displayed policy details, observation data, payout determinations, and payout amounts are simulated for demo purposes and do not represent any real insurance product.",
+      "Ricta Works accepts no liability for any damage arising from the use of this service.",
+      "The availability, accuracy, and continuity of the service are not guaranteed."
+    ],
+    "contactHeading": "Contact",
+    "contactLabels": {
+      "name": "Business name",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "web": "Web",
+      "x": "X",
+      "github": "GitHub"
+    }
   },
   "language": {
     "label": "Language",

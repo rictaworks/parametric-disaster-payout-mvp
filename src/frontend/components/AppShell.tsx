@@ -21,7 +21,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         </header>
 
         <main className="app-content">{children}</main>
+
+        <AppFooter />
       </div>
+
+      <ConsultButton />
     </LocaleProvider>
   );
 }
@@ -54,6 +58,40 @@ function AppNavigation() {
       <Link href="/login" className="app-nav__link">
         {messages.navigation.login}
       </Link>
+      <a
+        href="https://rictaworks.jp/#demos"
+        className="app-nav__link app-nav__link--external"
+      >
+        {messages.navigation.demoList}
+      </a>
     </nav>
+  );
+}
+
+function AppFooter() {
+  const { messages } = useLocale();
+
+  return (
+    <footer className="app-footer">
+      <Link href="/legal" className="app-footer__link">
+        {messages.footer.legal}
+      </Link>
+      <span className="app-footer__copyright">{messages.footer.copyright}</span>
+    </footer>
+  );
+}
+
+function ConsultButton() {
+  const { messages } = useLocale();
+
+  return (
+    <a
+      href="https://rictaworks.jp/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="consult-button"
+    >
+      {messages.consult.cta}
+    </a>
   );
 }

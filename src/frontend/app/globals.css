@@ -188,6 +188,115 @@ input {
   gap: 1.25rem;
 }
 
+.app-nav__link--external {
+  padding-left: 1rem;
+  margin-left: 0.25rem;
+  border-left: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.app-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-top: 1px solid var(--border);
+  padding: 1rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.app-footer__link {
+  color: var(--muted);
+  text-decoration: underline;
+}
+
+.app-footer__link:hover {
+  color: var(--foreground);
+}
+
+.consult-button {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 300;
+  border: 1px solid var(--accent-strong);
+  background: var(--panel);
+  color: var(--foreground);
+  padding: 0.75rem 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+}
+
+.consult-button:hover {
+  border-color: var(--accent-strong);
+  background: rgba(31, 59, 89, 0.95);
+}
+
+.legal-page__back {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-decoration: underline;
+  justify-self: start;
+}
+
+.legal-page__back:hover {
+  color: var(--foreground);
+}
+
+.legal-section {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.legal-section h2 {
+  font-size: 1.1rem;
+}
+
+.legal-list {
+  display: grid;
+  gap: 0.5rem;
+  padding-inline-start: 1.25rem;
+  color: var(--muted);
+}
+
+.legal-list li {
+  line-height: 1.6;
+}
+
+.legal-contact {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.legal-contact div {
+  display: grid;
+  gap: 0.35rem;
+  border: 1px solid var(--border);
+  background: rgba(6, 17, 29, 0.45);
+  padding: 0.85rem 1rem;
+}
+
+.legal-contact dt {
+  color: var(--muted);
+  font-size: 0.84rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.legal-contact dd {
+  font-weight: 700;
+}
+
+.legal-contact a {
+  color: var(--foreground);
+}
+
 .panel {
   border: 1px solid var(--border);
   background: rgba(16, 38, 61, 0.9);
