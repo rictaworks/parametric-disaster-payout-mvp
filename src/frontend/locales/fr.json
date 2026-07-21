@@ -11,7 +11,43 @@
     "home": "Accueil",
     "policies": "Demande",
     "mypage": "Mon espace",
-    "login": "Connexion"
+    "login": "Connexion",
+    "demoList": "← Liste des démos"
+  },
+  "footer": {
+    "legal": "Conditions, avis de non-responsabilité et contact",
+    "copyright": "© 2026 Ricta Works"
+  },
+  "consult": {
+    "cta": "Nous contacter"
+  },
+  "legal": {
+    "pageTitle": "Conditions, avis de non-responsabilité et contact",
+    "backLink": "← Retour à l'accueil",
+    "termsHeading": "Conditions d'utilisation",
+    "terms": [
+      "Ce service est fourni uniquement à des fins de démonstration. Toute utilisation commerciale ou redistribution est interdite.",
+      "Le contenu du service peut être modifié ou interrompu sans préavis.",
+      "Les données telles que les contrats, les versements et les réponses aux questionnaires peuvent être supprimées sans préavis pour des raisons d'exploitation de la démo.",
+      "En utilisant ce service, vous êtes réputé avoir accepté ces conditions."
+    ],
+    "disclaimerHeading": "Avis de non-responsabilité",
+    "disclaimer": [
+      "Ce service est une démo simulée destinée uniquement à l'étude de la demande, et ne souscrit, n'exécute ni ne verse aucune police d'assurance réelle.",
+      "Tous les détails de contrat, données d'observation, déterminations de versement et montants affichés sont simulés à des fins de démonstration et ne représentent aucun produit d'assurance réel.",
+      "Ricta Works décline toute responsabilité pour tout dommage résultant de l'utilisation de ce service.",
+      "La disponibilité, l'exactitude et la continuité du service ne sont pas garanties."
+    ],
+    "contactHeading": "Contact",
+    "contactLabels": {
+      "name": "Raison sociale",
+      "address": "Adresse",
+      "phone": "Téléphone",
+      "email": "E-mail",
+      "web": "Site web",
+      "x": "X",
+      "github": "GitHub"
+    }
   },
   "language": {
     "label": "Langue",

@@ -11,7 +11,43 @@
     "home": "Inicio",
     "policies": "Solicitud",
     "mypage": "Mi página",
-    "login": "Iniciar sesión"
+    "login": "Iniciar sesión",
+    "demoList": "← Lista de demos"
+  },
+  "footer": {
+    "legal": "Términos, aviso legal y contacto",
+    "copyright": "© 2026 Ricta Works"
+  },
+  "consult": {
+    "cta": "Contáctenos"
+  },
+  "legal": {
+    "pageTitle": "Términos, aviso legal y contacto",
+    "backLink": "← Volver al inicio",
+    "termsHeading": "Términos de uso",
+    "terms": [
+      "Este servicio se ofrece únicamente con fines de demostración. Se prohíbe el uso comercial y la redistribución.",
+      "El contenido del servicio puede cambiar o suspenderse sin previo aviso.",
+      "Los datos como pólizas, pagos y respuestas de encuestas pueden eliminarse sin previo aviso por motivos de operación de la demo.",
+      "Al utilizar este servicio, se considera que ha aceptado estos términos."
+    ],
+    "disclaimerHeading": "Aviso legal",
+    "disclaimer": [
+      "Este servicio es una demo simulada únicamente para estudio de demanda, y no suscribe, ejecuta ni paga ninguna póliza de seguro real.",
+      "Todos los detalles de la póliza, datos de observación, determinaciones de pago y montos mostrados son simulados con fines de demostración y no representan ningún producto de seguro real.",
+      "Ricta Works no asume responsabilidad alguna por los daños derivados del uso de este servicio.",
+      "No se garantiza la disponibilidad, precisión ni continuidad del servicio."
+    ],
+    "contactHeading": "Contacto",
+    "contactLabels": {
+      "name": "Nombre comercial",
+      "address": "Dirección",
+      "phone": "Teléfono",
+      "email": "Correo electrónico",
+      "web": "Web",
+      "x": "X",
+      "github": "GitHub"
+    }
   },
   "language": {
     "label": "Idioma",
