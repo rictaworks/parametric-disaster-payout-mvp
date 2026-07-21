@@ -86,7 +86,7 @@ RSpec.describe "PATCH /admin/api/payouts/:id/complete", type: :request do
     )
   end
 
-  let(:payout) do
+  let!(:payout) do
     Payout.create!(
       policy: policy,
       payout_tier: payout_tier,
@@ -199,14 +199,11 @@ RSpec.describe "PATCH /admin/api/payouts/:id/complete", type: :request do
   describe "CSRF protection" do
     around do |example|
       orig_base = ActionController::Base.allow_forgery_protection
-      orig_api = Admin::Api::PayoutsController.allow_forgery_protection
       begin
         ActionController::Base.allow_forgery_protection = true
-        Admin::Api::PayoutsController.allow_forgery_protection = true
         example.run
       ensure
         ActionController::Base.allow_forgery_protection = orig_base
-        Admin::Api::PayoutsController.allow_forgery_protection = orig_api
       end
     end
 
@@ -218,6 +215,44 @@ RSpec.describe "PATCH /admin/api/payouts/:id/complete", type: :request do
     it "rejects invalidate request without CSRF token" do
       patch "/admin/api/payouts/#{payout.id}/invalidate", headers: auth_headers
       expect(response).to have_http_status(:unprocessable_entity)
+    end
+
+    it "accepts a CSRF-protected form submission for complete" do
+      get "/admin/payouts", headers: auth_headers
+      token = Nokogiri::HTML.parse(response.body)
+        .at_css(%(form[action="/admin/api/payouts/#{payout.id}/complete"] input[name="authenticity_token"]))
+        &.[]("value")
+
+      expect(token).to be_present
+
+      post "/admin/api/payouts/#{payout.id}/complete", headers: auth_headers, params: {
+        _method: "patch",
+        authenticity_token: token,
+        return_to_admin_payouts: "1"
+      }
+
+      expect(response).to have_http_status(:see_other)
+      expect(response).to redirect_to("/admin/payouts")
+      expect(payout.reload.payout_status).to eq(completed_payout_status)
+    end
+
+    it "accepts a CSRF-protected form submission for invalidate" do
+      get "/admin/payouts", headers: auth_headers
+      token = Nokogiri::HTML.parse(response.body)
+        .at_css(%(form[action="/admin/api/payouts/#{payout.id}/invalidate"] input[name="authenticity_token"]))
+        &.[]("value")
+
+      expect(token).to be_present
+
+      post "/admin/api/payouts/#{payout.id}/invalidate", headers: auth_headers, params: {
+        _method: "patch",
+        authenticity_token: token,
+        return_to_admin_payouts: "1"
+      }
+
+      expect(response).to have_http_status(:see_other)
+      expect(response).to redirect_to("/admin/payouts")
+      expect(payout.reload.payout_status.code).to eq("invalid")
     end
   end
 
