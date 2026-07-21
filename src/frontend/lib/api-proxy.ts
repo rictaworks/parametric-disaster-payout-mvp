@@ -1,4 +1,5 @@
 const SESSION_COOKIE_NAME = "parametric_session_token";
+const NULL_BODY_STATUSES = new Set([204, 205, 304]);
 
 function getBackendBaseUrl() {
   const value = process.env.BACKEND_API_URL;
@@ -199,7 +200,7 @@ export async function proxyRequest(request: Request, pathSegments: string[]) {
     }
   }
 
-  return new Response(proxiedBody, {
+  return new Response(NULL_BODY_STATUSES.has(backendResponse.status) ? null : proxiedBody, {
     status: backendResponse.status,
     headers: responseHeadersWithCookies,
   });
