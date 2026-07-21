@@ -6,8 +6,14 @@ class MockResponse {
   headers: Headers;
 
   constructor(body?: BodyInit | null, init?: ResponseInit) {
+    const status = init?.status ?? 200;
+
+    if ([204, 205, 304].includes(status) && body !== null) {
+      throw new TypeError(`Response constructor: Invalid response status code ${status}`);
+    }
+
     this.body = typeof body === "string" ? body : "";
-    this.status = init?.status ?? 200;
+    this.status = status;
     this.headers = new Headers(init?.headers);
   }
 
@@ -84,6 +90,31 @@ describe("API proxy", () => {
     expect(init.headers.get("X-Internal-Session-Token")).toBe("existing-token");
     expect(init.headers.get("cookie")).toBeNull();
     expect(response.headers.get("set-cookie")).toContain("parametric_session_token=signed-token");
+  });
+
+  it("returns a null body for 204 No Content responses", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      status: 204,
+      headers: new Headers(),
+      text: async () => "",
+    });
+
+    const request = {
+      method: "DELETE",
+      url: "http://localhost:3000/api/v1/session",
+      headers: new Headers({
+        origin: "http://localhost:3000",
+        host: "localhost:3000",
+      }),
+      arrayBuffer: async () => new ArrayBuffer(0),
+    } as unknown as Request;
+
+    const response = await proxyRequest(request, ["v1", "session"]);
+
+    expect(response.status).toBe(204);
+    expect(response.body).toBe("");
+    expect(global.fetch).toHaveBeenCalledTimes(1);
   });
 
   it("rejects state-changing requests with invalid Origin header with 403 Forbidden", async () => {
