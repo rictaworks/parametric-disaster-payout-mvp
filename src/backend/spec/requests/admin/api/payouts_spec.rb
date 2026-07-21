@@ -86,7 +86,7 @@ RSpec.describe "PATCH /admin/api/payouts/:id/complete", type: :request do
     )
   end
 
-  let(:payout) do
+  let!(:payout) do
     Payout.create!(
       policy: policy,
       payout_tier: payout_tier,
@@ -199,20 +199,11 @@ RSpec.describe "PATCH /admin/api/payouts/:id/complete", type: :request do
   describe "CSRF protection" do
     around do |example|
       orig_base = ActionController::Base.allow_forgery_protection
-      orig_html = Admin::HtmlController.allow_forgery_protection
-      orig_payouts = Admin::PayoutsController.allow_forgery_protection
-      orig_api = Admin::Api::PayoutsController.allow_forgery_protection
       begin
         ActionController::Base.allow_forgery_protection = true
-        Admin::HtmlController.allow_forgery_protection = true
-        Admin::PayoutsController.allow_forgery_protection = true
-        Admin::Api::PayoutsController.allow_forgery_protection = true
         example.run
       ensure
         ActionController::Base.allow_forgery_protection = orig_base
-        Admin::HtmlController.allow_forgery_protection = orig_html
-        Admin::PayoutsController.allow_forgery_protection = orig_payouts
-        Admin::Api::PayoutsController.allow_forgery_protection = orig_api
       end
     end
 
