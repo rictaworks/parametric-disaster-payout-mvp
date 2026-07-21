@@ -1,12 +1,6 @@
 module Admin
   module Api
-    class PayoutsController < ApplicationController
-      include ActionController::RequestForgeryProtection
-      self.allow_forgery_protection = ActionController::Base.allow_forgery_protection
-      protect_from_forgery with: :exception
-
-      include Admin::Authentication
-
+    class PayoutsController < Admin::HtmlController
       def complete
         payout = Payout.find(params[:id])
         result = ExecutePayout.new(payout: payout).call
